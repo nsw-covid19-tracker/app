@@ -10,6 +10,7 @@ class HomePage extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
+          Map(),
           SearchBar(),
         ],
       ),
