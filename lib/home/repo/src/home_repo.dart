@@ -19,13 +19,8 @@ class HomeRepo {
     return locations;
   }
 
-  Future<List<Case>> fetchCases([String postcode]) async {
-    var query = _casesRef;
-    if (postcode != null) {
-      query = query.orderByChild('postcode').equalTo(postcode);
-    }
-
-    final snapshot = await query.once();
+  Future<List<Case>> fetchCases() async {
+    final snapshot = await _casesRef.once();
     var cases = <Case>[];
 
     for (MapEntry entry in snapshot.value.entries) {
