@@ -46,7 +46,11 @@ class _HomePageState extends State<HomePage> {
           collapsed: _isLoading
               ? _LoadingPanel()
               : _CollapsedPanel(controller: _controller),
-          panelBuilder: (sc) => _Panel(controller: sc, cases: _cases),
+          panelBuilder: (sc) => _Panel(
+            scrollController: sc,
+            panelController: _controller,
+            cases: _cases,
+          ),
           body: Stack(
             fit: StackFit.expand,
             children: [
@@ -126,22 +130,31 @@ class _CollapsedPanel extends StatelessWidget {
 }
 
 class _Panel extends StatelessWidget {
-  final ScrollController controller;
+  final ScrollController scrollController;
+  final PanelController panelController;
   final List<Case> cases;
 
-  const _Panel({Key key, @required this.cases, this.controller})
-      : assert(cases != null),
+  const _Panel({
+    Key key,
+    @required this.cases,
+    @required this.panelController,
+    this.scrollController,
+  })  : assert(cases != null),
+        assert(panelController != null),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _SlidingBar(),
+        GestureDetector(
+          onTap: () => panelController.close(),
+          child: _SlidingBar(),
+        ),
         SizedBox(height: 16),
         Expanded(
           child: ListView.separated(
-            controller: controller,
+            controller: scrollController,
             shrinkWrap: true,
             itemCount: cases.length,
             itemBuilder: (context, index) => ListTile(
