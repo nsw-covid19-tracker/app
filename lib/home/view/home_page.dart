@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
           body: Stack(
             fit: StackFit.expand,
             children: [
-              Map(markers: _markers),
+              Map(panelController: _controller, markers: _markers),
               SearchBar(),
             ],
           ),
