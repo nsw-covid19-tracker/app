@@ -2,11 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Map extends StatefulWidget {
+  final PanelController panelController;
   final Set<Marker> markers;
 
-  const Map({Key key, this.markers}) : super(key: key);
+  const Map({Key key, this.markers, @required this.panelController})
+      : assert(panelController != null),
+        super(key: key);
 
   @override
   _MapState createState() => _MapState();
@@ -28,6 +32,7 @@ class _MapState extends State<Map> {
         _controller.complete(controller);
       },
       markers: widget.markers,
+      onTap: (_) => widget.panelController.close(),
     );
   }
 }
