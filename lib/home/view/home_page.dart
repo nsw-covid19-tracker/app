@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   HomeBloc _homeBloc;
   bool _isLoading = true;
   Set<Marker> _markers;
-  List<Case> _cases;
+  var _cases = <Case>[];
 
   @override
   void initState() {
@@ -46,9 +46,7 @@ class _HomePageState extends State<HomePage> {
           collapsed: _isLoading
               ? _LoadingPanel()
               : _CollapsedPanel(controller: _controller),
-          panel: Column(
-            children: [_SlidingBar()],
-          ),
+          panelBuilder: (sc) => _Panel(controller: sc, cases: _cases),
           body: Stack(
             fit: StackFit.expand,
             children: [
@@ -99,27 +97,65 @@ class _CollapsedPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => controller.open(),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topCenter,
-            child: _SlidingBar(),
-          ),
-          Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.list),
-                SizedBox(width: 8),
-                Text(
-                  'Show List',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
+      child: Container(
+        color: Colors.white,
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topCenter,
+              child: _SlidingBar(),
             ),
-          )
-        ],
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.list),
+                  SizedBox(width: 8),
+                  Text(
+                    'Show List',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _Panel extends StatelessWidget {
+  final ScrollController controller;
+  final List<Case> cases;
+
+  const _Panel({Key key, @required this.cases, this.controller})
+      : assert(cases != null),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _SlidingBar(),
+        SizedBox(height: 16),
+        Expanded(
+          child: ListView.separated(
+            controller: controller,
+            shrinkWrap: true,
+            itemCount: cases.length,
+            itemBuilder: (context, index) => ListTile(
+              title: Text(cases[index].location),
+              subtitle: Text(cases[index].dates),
+            ),
+            separatorBuilder: (context, index) => Divider(
+              color: Colors.grey,
+              indent: 16,
+              endIndent: 16,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
