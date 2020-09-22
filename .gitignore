@@ -358,3 +358,5 @@ dmypy.json
 .history
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,flutter,dart,firebase,android,python
+
+*.g.dart
