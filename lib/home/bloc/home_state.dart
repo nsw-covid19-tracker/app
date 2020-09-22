@@ -23,4 +23,11 @@ class HomeSuccess extends HomeState {
 
   @override
   List<Object> get props => [locations, cases, locationsResult, casesResult];
+
+  @override
+  String toString() {
+    return 'HomeSuccess: { locations: ${locations?.length}, '
+        'cases: ${cases?.length}, locationsResult: ${locationsResult?.length}, '
+        'casesResult: ${casesResult?.length} }';
+  }
 }

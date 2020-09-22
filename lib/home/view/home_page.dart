@@ -1,30 +1,85 @@
+import 'package:covid_tracing/home/bloc/home_bloc.dart';
+import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:covid_tracing/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final _controller = PanelController();
+  HomeBloc _homeBloc;
+  bool _isLoading = true;
+  Set<Marker> _markers;
+  List<Case> _cases;
+
+  @override
+  void initState() {
+    super.initState();
+    _homeBloc = context.bloc<HomeBloc>()..add(FetchAll());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // This is handled by the search bar itself.
       resizeToAvoidBottomInset: false,
-      body: SlidingUpPanel(
-        controller: _controller,
-        minHeight: 80,
-        panel: Column(
-          children: [_SlidingBar()],
-        ),
-        collapsed: _CollapsedPanel(controller: _controller),
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            Map(),
-            SearchBar(),
-          ],
+      body: BlocListener<HomeBloc, HomeState>(
+        listener: (context, state) {
+          if (state is HomeSuccess) {
+            setState(() {
+              _isLoading = false;
+              if (state.cases != null && _markers == null) {
+                final markers = <Marker>{};
+                for (var myCase in state.cases) {
+                  markers.add(Marker(
+                    markerId: MarkerId(myCase.location),
+                    position: myCase.latLng,
+                  ));
+                }
+
+                _cases = state.cases;
+                _markers = markers;
+              }
+            });
+          }
+        },
+        child: SlidingUpPanel(
+          controller: _controller,
+          minHeight: 80,
+          collapsed: _isLoading
+              ? _LoadingPanel()
+              : _CollapsedPanel(controller: _controller),
+          panel: Column(
+            children: [_SlidingBar()],
+          ),
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              Map(markers: _markers),
+              SearchBar(),
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _LoadingPanel extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(),
+        SizedBox(width: 16),
+        Text('Fetching locations'),
+      ],
     );
   }
 }
