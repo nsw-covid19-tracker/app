@@ -18,4 +18,21 @@ class HomeRepo {
 
     return locations;
   }
+
+  Future<List<Case>> fetchCases([String postcode]) async {
+    var query = _casesRef;
+    if (postcode != null) {
+      query = query.orderByChild('postcode').equalTo(postcode);
+    }
+
+    final snapshot = await query.once();
+    var cases = <Case>[];
+
+    for (MapEntry entry in snapshot.value.entries) {
+      final data = Map<String, dynamic>.from(entry.value);
+      cases.add(Case.fromJson(data));
+    }
+
+    return cases;
+  }
 }
