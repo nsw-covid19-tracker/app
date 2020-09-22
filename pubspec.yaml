@@ -38,6 +38,7 @@ dependencies:
   firebase_database: ^4.0.0
   json_annotation: ^3.0.1
   copy_with_extension: ^1.2.0
+  collection: ^1.14.13
 
 dev_dependencies:
   flutter_test:
