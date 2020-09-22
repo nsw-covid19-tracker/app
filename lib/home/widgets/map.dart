@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Map extends StatefulWidget {
+  final Set<Marker> markers;
+
+  const Map({Key key, this.markers}) : super(key: key);
+
   @override
   _MapState createState() => _MapState();
 }
@@ -23,6 +27,7 @@ class _MapState extends State<Map> {
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
       },
+      markers: widget.markers,
     );
   }
 }

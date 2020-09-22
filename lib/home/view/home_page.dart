@@ -2,6 +2,7 @@ import 'package:covid_tracing/home/bloc/home_bloc.dart';
 import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:covid_tracing/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   final _controller = PanelController();
   HomeBloc _homeBloc;
   bool _isLoading = true;
+  Set<Marker> _markers;
   List<Case> _cases;
 
   @override
@@ -31,7 +33,18 @@ class _HomePageState extends State<HomePage> {
           if (state is HomeSuccess) {
             setState(() {
               _isLoading = false;
-              _cases = state.cases;
+              if (state.cases != null && _markers == null) {
+                final markers = <Marker>{};
+                for (var myCase in state.cases) {
+                  markers.add(Marker(
+                    markerId: MarkerId(myCase.location),
+                    position: myCase.latLng,
+                  ));
+                }
+
+                _cases = state.cases;
+                _markers = markers;
+              }
             });
           }
         },
@@ -47,7 +60,7 @@ class _HomePageState extends State<HomePage> {
           body: Stack(
             fit: StackFit.expand,
             children: [
-              Map(),
+              Map(markers: _markers),
               SearchBar(),
             ],
           ),
