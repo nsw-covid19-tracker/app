@@ -9,6 +9,8 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="covid_tracing"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBQGDyHDSWZph4CIPERN9o8bUJKmnQ67dc"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
