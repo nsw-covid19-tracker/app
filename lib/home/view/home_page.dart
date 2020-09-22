@@ -34,16 +34,8 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               _isLoading = false;
               if (state.cases != null && _markers == null) {
-                final markers = <Marker>{};
-                for (var myCase in state.cases) {
-                  markers.add(Marker(
-                    markerId: MarkerId(myCase.location),
-                    position: myCase.latLng,
-                  ));
-                }
-
                 _cases = state.cases;
-                _markers = markers;
+                _markers = _mapCasesToMarkers(state.cases);
               }
             });
           }
@@ -67,6 +59,18 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Set<Marker> _mapCasesToMarkers(List<Case> cases) {
+    final markers = <Marker>{};
+    for (var myCase in cases) {
+      markers.add(Marker(
+        markerId: MarkerId(myCase.location),
+        position: myCase.latLng,
+      ));
+    }
+
+    return markers;
   }
 }
 
