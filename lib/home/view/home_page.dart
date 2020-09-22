@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   HomeBloc _homeBloc;
   bool _isLoading = true;
   Set<Marker> _markers;
-  List<Case> _cases;
+  var _cases = <Case>[];
 
   @override
   void initState() {
@@ -34,16 +34,8 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               _isLoading = false;
               if (state.cases != null && _markers == null) {
-                final markers = <Marker>{};
-                for (var myCase in state.cases) {
-                  markers.add(Marker(
-                    markerId: MarkerId(myCase.location),
-                    position: myCase.latLng,
-                  ));
-                }
-
                 _cases = state.cases;
-                _markers = markers;
+                _markers = _mapCasesToMarkers(state.cases);
               }
             });
           }
@@ -54,8 +46,10 @@ class _HomePageState extends State<HomePage> {
           collapsed: _isLoading
               ? _LoadingPanel()
               : _CollapsedPanel(controller: _controller),
-          panel: Column(
-            children: [_SlidingBar()],
+          panelBuilder: (sc) => _Panel(
+            scrollController: sc,
+            panelController: _controller,
+            cases: _cases,
           ),
           body: Stack(
             fit: StackFit.expand,
@@ -67,6 +61,18 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Set<Marker> _mapCasesToMarkers(List<Case> cases) {
+    final markers = <Marker>{};
+    for (var myCase in cases) {
+      markers.add(Marker(
+        markerId: MarkerId(myCase.location),
+        position: myCase.latLng,
+      ));
+    }
+
+    return markers;
   }
 }
 
@@ -95,27 +101,74 @@ class _CollapsedPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => controller.open(),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topCenter,
-            child: _SlidingBar(),
-          ),
-          Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.list),
-                SizedBox(width: 8),
-                Text(
-                  'Show List',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
+      child: Container(
+        color: Colors.white,
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topCenter,
+              child: _SlidingBar(),
             ),
-          )
-        ],
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.list),
+                  SizedBox(width: 8),
+                  Text(
+                    'Show List',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _Panel extends StatelessWidget {
+  final ScrollController scrollController;
+  final PanelController panelController;
+  final List<Case> cases;
+
+  const _Panel({
+    Key key,
+    @required this.cases,
+    @required this.panelController,
+    this.scrollController,
+  })  : assert(cases != null),
+        assert(panelController != null),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => panelController.close(),
+          child: _SlidingBar(),
+        ),
+        SizedBox(height: 16),
+        Expanded(
+          child: ListView.separated(
+            controller: scrollController,
+            shrinkWrap: true,
+            itemCount: cases.length,
+            itemBuilder: (context, index) => ListTile(
+              title: Text(cases[index].location),
+              subtitle: Text(cases[index].dates),
+            ),
+            separatorBuilder: (context, index) => Divider(
+              color: Colors.grey,
+              indent: 16,
+              endIndent: 16,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

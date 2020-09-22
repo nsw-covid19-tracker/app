@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:covid_tracing/home/repo/models/models.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -8,7 +9,7 @@ class HomeRepo {
 
   Future<List<Location>> fetchLocations() async {
     final snapshot = await _locationsRef.once();
-    var locations = <Location>[];
+    final locations = <Location>[];
 
     for (MapEntry entry in snapshot.value.entries) {
       final data = Map<String, dynamic>.from(entry.value);
@@ -21,13 +22,15 @@ class HomeRepo {
 
   Future<List<Case>> fetchCases() async {
     final snapshot = await _casesRef.once();
-    var cases = <Case>[];
+    final queue = PriorityQueue<Case>(
+      (Case a, Case b) => a.location.compareTo(b.location),
+    );
 
     for (MapEntry entry in snapshot.value.entries) {
       final data = Map<String, dynamic>.from(entry.value);
-      cases.add(Case.fromJson(data));
+      queue.add(Case.fromJson(data));
     }
 
-    return cases;
+    return queue.toList();
   }
 }
