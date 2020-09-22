@@ -31,6 +31,7 @@ dependencies:
   bloc: ^6.0.3
   flutter_bloc: ^6.0.5
   equatable: ^1.2.5
+  material_floating_search_bar: ^0.1.7
 
 dev_dependencies:
   flutter_test:
