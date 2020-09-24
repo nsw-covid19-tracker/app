@@ -1,10 +1,11 @@
 import firebase_admin
 import hashlib
-import html
 import re
 import requests
+import sys
 
 from firebase_admin import credentials, db
+from loguru import logger
 
 cred = credentials.Certificate("keyfile.json")
 firebase_admin.initialize_app(
@@ -13,6 +14,15 @@ firebase_admin.initialize_app(
 
 
 def main():
+    logger.remove()
+    logger.add(
+        sys.stdout,
+        format=(
+            "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
+            "<level>{level: <8}</level> | <level>{message}</level>"
+        ),
+    )
+
     base_url = "https://data.nsw.gov.au/data"
     url = (
         "https://data.nsw.gov.au/data/api/3/action/datastore_search?"
@@ -20,6 +30,7 @@ def main():
     )
     locations_ref = db.reference("locations")
     cases_ref = db.reference("cases")
+    new_loc_count = new_case_count = updated_count = 0
 
     while True:
         r = requests.get(url)
@@ -44,6 +55,7 @@ def main():
             location_ref = locations_ref.child(postcode)
 
             if location_ref.get() is None:
+                new_loc_count += 1
                 location_ref.set({"suburb": suburb})
 
             case_dict = {
@@ -64,14 +76,20 @@ def main():
             snapshot = case_ref.get()
 
             if snapshot is None:
+                new_case_count += 1
                 case_ref.set(case_dict)
             elif (
                 snapshot["dates"] != case_dict["dates"]
                 or snapshot["isExpired"] != case_dict["isExpired"]
             ):
+                updated_count += 1
                 case_ref.update(case_dict)
 
         url = base_url + result["_links"]["next"]
+
+    logger.info(f"Added {new_loc_count} suburb(s)\n")
+    logger.info(f"Added {new_case_count} cases\n")
+    logger.info(f"Updated {updated_count} cases")
 
 
 if __name__ == "__main__":
