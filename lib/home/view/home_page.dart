@@ -15,11 +15,6 @@ class _HomePageState extends State<HomePage> {
   final _panelController = PanelController();
   final _scrollController = ScrollController();
 
-  bool _isLoading = true;
-  Set<Marker> _markers;
-  var _cases = <Case>[];
-  var _locations = <Location>[];
-
   @override
   void initState() {
     super.initState();
@@ -35,42 +30,41 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: BlocListener<HomeBloc, HomeState>(
-        listener: (context, state) {
-          if (state is HomeSuccess) {
-            setState(() {
-              _isLoading = false;
-              _locations = state.locationsResult;
+        resizeToAvoidBottomInset: false,
+        body: BlocBuilder<HomeBloc, HomeState>(
+          builder: (context, state) {
+            var cases = <Case>[];
+            var locations = <Location>[];
 
-              if (state.cases != null && _markers == null) {
-                _cases = state.cases;
-                _markers = _mapCasesToMarkers(state.cases);
-              }
-            });
-          }
-        },
-        child: SlidingUpPanel(
-          controller: _panelController,
-          minHeight: 80,
-          collapsed: _isLoading
-              ? LoadingPanel()
-              : CollapsedPanel(controller: _panelController),
-          panelBuilder: (sc) => Panel(
-            panelSc: sc,
-            panelController: _panelController,
-            cases: _cases,
-          ),
-          body: Stack(
-            fit: StackFit.expand,
-            children: [
-              Map(panelController: _panelController, markers: _markers),
-              SearchBar(locations: _locations),
-            ],
-          ),
-        ),
-      ),
-    );
+            if (state is HomeSuccess) {
+              cases = state.cases;
+              locations = state.locationsResult;
+            }
+
+            return SlidingUpPanel(
+              controller: _panelController,
+              minHeight: 80,
+              collapsed: cases.isEmpty
+                  ? LoadingPanel()
+                  : CollapsedPanel(controller: _panelController),
+              panelBuilder: (sc) => Panel(
+                panelSc: sc,
+                panelController: _panelController,
+                cases: cases,
+              ),
+              body: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Map(
+                    panelController: _panelController,
+                    markers: _mapCasesToMarkers(cases),
+                  ),
+                  SearchBar(locations: locations),
+                ],
+              ),
+            );
+          },
+        ));
   }
 
   Set<Marker> _mapCasesToMarkers(List<Case> cases) {
