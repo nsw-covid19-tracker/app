@@ -1,4 +1,5 @@
 import 'package:covid_tracing/home/repo/repo.dart';
+import 'package:covid_tracing/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -55,8 +56,8 @@ class CollapsedPanel extends StatelessWidget {
   }
 }
 
-class Panel extends StatelessWidget {
-  final ScrollController scrollController;
+class Panel extends StatefulWidget {
+  final ScrollController panelSc;
   final PanelController panelController;
   final List<Case> cases;
 
@@ -64,29 +65,51 @@ class Panel extends StatelessWidget {
     Key key,
     @required this.cases,
     @required this.panelController,
-    this.scrollController,
+    @required this.panelSc,
   })  : assert(cases != null),
         assert(panelController != null),
+        assert(panelSc != null),
         super(key: key);
+
+  @override
+  _PanelState createState() => _PanelState();
+}
+
+class _PanelState extends State<Panel> {
+  final _dialogSc = ScrollController();
+
+  @override
+  void dispose() {
+    _dialogSc.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         GestureDetector(
-          onTap: () => panelController.close(),
+          onTap: () => widget.panelController.close(),
           child: _SlidingBar(),
         ),
         SizedBox(height: 16),
         Expanded(
           child: ListView.separated(
-            controller: scrollController,
+            controller: widget.panelSc,
             shrinkWrap: true,
-            itemCount: cases.length,
-            itemBuilder: (context, index) => ListTile(
-              title: Text(cases[index].location),
-              subtitle: Text(cases[index].dates),
-            ),
+            itemCount: widget.cases.length,
+            itemBuilder: (context, index) {
+              final myCase = widget.cases[index];
+              final expiredText = myCase.isExpired ? ' (Expired)' : '';
+
+              return ListTile(
+                title: Text('${myCase.location}$expiredText'),
+                subtitle: Text(myCase.dates),
+                onTap: () {
+                  CaseDialog.show(context, _dialogSc, myCase);
+                },
+              );
+            },
             separatorBuilder: (context, index) => Divider(
               color: Colors.grey,
               indent: 16,
