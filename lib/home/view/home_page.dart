@@ -55,9 +55,9 @@ class _HomePageState extends State<HomePage> {
           controller: _panelController,
           minHeight: 80,
           collapsed: _isLoading
-              ? _LoadingPanel()
-              : _CollapsedPanel(controller: _panelController),
-          panelBuilder: (sc) => _Panel(
+              ? LoadingPanel()
+              : CollapsedPanel(controller: _panelController),
+          panelBuilder: (sc) => Panel(
             scrollController: sc,
             panelController: _panelController,
             cases: _cases,
@@ -88,164 +88,68 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showCaseInfo(Case myCase) {
-    final height = MediaQuery.of(context).size.height * 0.3;
-    final expiredText = myCase.isExpired ? ' (Expired)' : '';
     AwesomeDialog(
       context: context,
       animType: AnimType.SCALE,
       dialogType: myCase.isExpired ? DialogType.INFO : DialogType.WARNING,
-      body: Container(
-        height: height,
-        padding: kLayoutPadding,
-        child: FadingEdgeScrollView.fromScrollView(
-          child: ListView(
-            controller: _scrollController,
-            children: [
-              Text(
-                '${myCase.location}$expiredText',
-                style: Theme.of(context)
-                    .textTheme
-                    .subtitle1
-                    .apply(fontWeightDelta: 1),
-              ),
-              WidgetPaddingSm(),
-              Text('Dates', style: TextStyle(fontWeight: FontWeight.bold)),
-              Text(myCase.dates),
-              WidgetPaddingSm(),
-              RichText(
-                text: TextSpan(
-                  text: 'Suggested Action ',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: '(If you visited this location at the times above)',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                  ],
-                ),
-              ),
-              Text(myCase.action),
-              WidgetPaddingSm(),
-            ],
-          ),
-        ),
-      ),
+      body: _CaseInfo(myCase: myCase, controller: _scrollController),
       btnOkOnPress: () {},
       btnOkText: 'Close',
     )..show();
   }
 }
 
-class _LoadingPanel extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircularProgressIndicator(),
-        SizedBox(width: 16),
-        Text('Fetching locations'),
-      ],
-    );
-  }
-}
+class _CaseInfo extends StatelessWidget {
+  final Case myCase;
+  final ScrollController controller;
 
-class _CollapsedPanel extends StatelessWidget {
-  final PanelController controller;
-
-  const _CollapsedPanel({Key key, @required this.controller})
-      : assert(controller != null),
+  const _CaseInfo({Key key, @required this.myCase, @required this.controller})
+      : assert(myCase != null),
+        assert(controller != null),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => controller.open(),
-      child: Container(
-        color: Colors.white,
-        child: Stack(
+    final height = MediaQuery.of(context).size.height * 0.3;
+    final expiredText = myCase.isExpired ? ' (Expired)' : '';
+
+    return Container(
+      height: height,
+      padding: kLayoutPadding,
+      child: FadingEdgeScrollView.fromScrollView(
+        child: ListView(
+          controller: controller,
           children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: _SlidingBar(),
+            Text(
+              '${myCase.location}$expiredText',
+              style: Theme.of(context)
+                  .textTheme
+                  .subtitle1
+                  .apply(fontWeightDelta: 1),
             ),
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.list),
-                  SizedBox(width: 8),
-                  Text(
-                    'Show List',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+            WidgetPaddingSm(),
+            Text('Dates', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(myCase.dates),
+            WidgetPaddingSm(),
+            RichText(
+              text: TextSpan(
+                text: 'Suggested Action ',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: '(If you visited this location at the times above)',
+                    style: Theme.of(context).textTheme.caption,
                   ),
                 ],
               ),
-            )
+            ),
+            Text(myCase.action),
+            WidgetPaddingSm(),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Panel extends StatelessWidget {
-  final ScrollController scrollController;
-  final PanelController panelController;
-  final List<Case> cases;
-
-  const _Panel({
-    Key key,
-    @required this.cases,
-    @required this.panelController,
-    this.scrollController,
-  })  : assert(cases != null),
-        assert(panelController != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () => panelController.close(),
-          child: _SlidingBar(),
-        ),
-        SizedBox(height: 16),
-        Expanded(
-          child: ListView.separated(
-            controller: scrollController,
-            shrinkWrap: true,
-            itemCount: cases.length,
-            itemBuilder: (context, index) => ListTile(
-              title: Text(cases[index].location),
-              subtitle: Text(cases[index].dates),
-            ),
-            separatorBuilder: (context, index) => Divider(
-              color: Colors.grey,
-              indent: 16,
-              endIndent: 16,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SlidingBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 80,
-      height: 4,
-      margin: const EdgeInsets.only(top: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey,
-        borderRadius: BorderRadius.circular(10),
       ),
     );
   }
