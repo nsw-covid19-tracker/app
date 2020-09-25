@@ -9,15 +9,17 @@ class HomeRepo {
 
   Future<List<Location>> fetchLocations() async {
     final snapshot = await _locationsRef.once();
-    final locations = <Location>[];
+    final queue = PriorityQueue<Location>(
+      (Location a, Location b) => a.suburb.compareTo(b.suburb),
+    );
 
     for (MapEntry entry in snapshot.value.entries) {
       final data = Map<String, dynamic>.from(entry.value);
       data['postcode'] = entry.key;
-      locations.add(Location.fromJson(data));
+      queue.add(Location.fromJson(data));
     }
 
-    return locations;
+    return queue.toList();
   }
 
   Future<List<Case>> fetchCases() async {
