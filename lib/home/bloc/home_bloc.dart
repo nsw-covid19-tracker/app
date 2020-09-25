@@ -53,7 +53,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (query.isNotEmpty) {
         results = locations
             .where((element) =>
-                element.postcode.toLowerCase().contains(query) ||
+                element.postcode == query ||
                 element.suburb.toLowerCase().contains(query))
             .take(5)
             .toList();
