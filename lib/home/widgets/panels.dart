@@ -79,6 +79,12 @@ class _PanelState extends State<Panel> {
   final _dialogSc = ScrollController();
 
   @override
+  void dispose() {
+    _dialogSc.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
