@@ -85,13 +85,18 @@ class Panel extends StatelessWidget {
             controller: scrollController,
             shrinkWrap: true,
             itemCount: cases.length,
-            itemBuilder: (context, index) => ListTile(
-              title: Text(cases[index].location),
-              subtitle: Text(cases[index].dates),
-              onTap: () {
-                CaseDialog.show(context, scrollController, cases[index]);
-              },
-            ),
+            itemBuilder: (context, index) {
+              final myCase = cases[index];
+              final expiredText = myCase.isExpired ? ' (Expired)' : '';
+
+              return ListTile(
+                title: Text('${myCase.location}$expiredText'),
+                subtitle: Text(myCase.dates),
+                onTap: () {
+                  CaseDialog.show(context, scrollController, myCase);
+                },
+              );
+            },
             separatorBuilder: (context, index) => Divider(
               color: Colors.grey,
               indent: 16,
