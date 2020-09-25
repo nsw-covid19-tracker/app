@@ -44,11 +44,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeSuccess) {
       try {
         final locations = List<Location>.from(currState.locations);
-        final results = locations
-            .where((element) =>
-                element.postcode.contains(event.query) ||
-                element.suburb.contains(event.query))
-            .toList();
+        final query = event.query.toLowerCase();
+        var results = <Location>[];
+
+        if (query.isNotEmpty) {
+          results = locations
+              .where((element) =>
+                  element.postcode.toLowerCase().contains(query) ||
+                  element.suburb.toLowerCase().contains(query))
+              .take(5)
+              .toList();
+        }
+
         yield currState.copyWith(locationsResult: results);
       } catch (_) {
         yield HomeFailure();

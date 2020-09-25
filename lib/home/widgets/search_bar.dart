@@ -1,7 +1,16 @@
+import 'package:covid_tracing/home/bloc/home_bloc.dart';
+import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SearchBar extends StatelessWidget {
+  final List<Location> locations;
+
+  const SearchBar({Key key, @required this.locations})
+      : assert(locations != null),
+        super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final isPortrait =
@@ -18,7 +27,7 @@ class SearchBar extends StatelessWidget {
       maxWidth: isPortrait ? 600 : 500,
       debounceDelay: const Duration(milliseconds: 500),
       onQueryChanged: (query) {
-        // Call your model, bloc, controller here.
+        context.bloc<HomeBloc>().add(SearchLocations(query));
       },
       // Specify a custom transition to be used for
       // animating between opened and closed stated.
@@ -41,10 +50,15 @@ class SearchBar extends StatelessWidget {
           child: Material(
             color: Colors.white,
             elevation: 4.0,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [Text('Result')],
-            ),
+            child: locations.isNotEmpty
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: locations
+                        .map((location) =>
+                            ListTile(title: Text(location.suburb)))
+                        .toList(),
+                  )
+                : ListTile(title: Text('No results found')),
           ),
         );
       },

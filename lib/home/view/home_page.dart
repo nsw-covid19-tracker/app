@@ -15,15 +15,15 @@ class _HomePageState extends State<HomePage> {
   final _panelController = PanelController();
   final _scrollController = ScrollController();
 
-  HomeBloc _homeBloc;
   bool _isLoading = true;
   Set<Marker> _markers;
   var _cases = <Case>[];
+  var _locations = <Location>[];
 
   @override
   void initState() {
     super.initState();
-    _homeBloc = context.bloc<HomeBloc>()..add(FetchAll());
+    context.bloc<HomeBloc>()..add(FetchAll());
   }
 
   @override
@@ -41,6 +41,8 @@ class _HomePageState extends State<HomePage> {
           if (state is HomeSuccess) {
             setState(() {
               _isLoading = false;
+              _locations = state.locationsResult;
+
               if (state.cases != null && _markers == null) {
                 _cases = state.cases;
                 _markers = _mapCasesToMarkers(state.cases);
@@ -63,7 +65,7 @@ class _HomePageState extends State<HomePage> {
             fit: StackFit.expand,
             children: [
               Map(panelController: _panelController, markers: _markers),
-              SearchBar(),
+              SearchBar(locations: _locations),
             ],
           ),
         ),
