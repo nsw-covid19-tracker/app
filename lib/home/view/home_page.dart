@@ -1,6 +1,9 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:covid_tracing/home/bloc/home_bloc.dart';
+import 'package:covid_tracing/home/common/consts.dart';
 import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:covid_tracing/home/widgets/widgets.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -21,6 +24,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    FirebaseDatabase.instance.setPersistenceEnabled(true);
+    FirebaseDatabase.instance.setPersistenceCacheSizeBytes(1000000);
     _homeBloc = context.bloc<HomeBloc>()..add(FetchAll());
   }
 
@@ -69,10 +74,39 @@ class _HomePageState extends State<HomePage> {
       markers.add(Marker(
         markerId: MarkerId(myCase.location),
         position: myCase.latLng,
+        onTap: () => _showCaseInfo(myCase),
       ));
     }
 
     return markers;
+  }
+
+  void _showCaseInfo(Case myCase) {
+    final height = MediaQuery.of(context).size.height * 0.3;
+    AwesomeDialog(
+      context: context,
+      animType: AnimType.SCALE,
+      dialogType: myCase.isExpired ? DialogType.INFO : DialogType.WARNING,
+      body: Container(
+        height: height,
+        padding: kLayoutPadding,
+        child: ListView(
+          children: [
+            Text(
+              myCase.location,
+              style: Theme.of(context)
+                  .textTheme
+                  .subtitle1
+                  .apply(fontWeightDelta: 1),
+            ),
+            WidgetPadding(),
+            Text(myCase.dates),
+          ],
+        ),
+      ),
+      btnOkOnPress: () {},
+      btnOkText: 'Close',
+    )..show();
   }
 }
 

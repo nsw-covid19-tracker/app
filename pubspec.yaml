@@ -39,6 +39,8 @@ dependencies:
   json_annotation: ^3.0.1
   copy_with_extension: ^1.2.0
   collection: ^1.14.13
+  awesome_dialog: ^1.2.0
+  fading_edge_scrollview: ^1.1.4
 
 dev_dependencies:
   flutter_test:
