@@ -84,11 +84,12 @@ def main():
             ):
                 updated_count += 1
                 case_ref.update(case_dict)
+                logger.info(f"Updating {case_loc}")
 
         url = base_url + result["_links"]["next"]
 
-    logger.info(f"Added {new_loc_count} suburb(s)\n")
-    logger.info(f"Added {new_case_count} cases\n")
+    logger.info(f"Added {new_loc_count} suburb(s)")
+    logger.info(f"Added {new_case_count} cases")
     logger.info(f"Updated {updated_count} cases")
 
 
