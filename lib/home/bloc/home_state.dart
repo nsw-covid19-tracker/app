@@ -18,8 +18,12 @@ class HomeSuccess extends HomeState {
   final List<Location> locationsResult;
   final List<Case> casesResult;
 
-  HomeSuccess(
-      {this.locations, this.cases, this.locationsResult, this.casesResult});
+  HomeSuccess({
+    this.locations,
+    this.cases,
+    this.locationsResult = const <Location>[],
+    this.casesResult = const <Case>[],
+  });
 
   @override
   List<Object> get props => [locations, cases, locationsResult, casesResult];
