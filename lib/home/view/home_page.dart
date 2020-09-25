@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
               ? LoadingPanel()
               : CollapsedPanel(controller: _panelController),
           panelBuilder: (sc) => Panel(
-            scrollController: sc,
+            panelSc: sc,
             panelController: _panelController,
             cases: _cases,
           ),
