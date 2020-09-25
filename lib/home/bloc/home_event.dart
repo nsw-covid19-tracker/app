@@ -17,3 +17,12 @@ class SearchLocations extends HomeEvent {
   @override
   List<Object> get props => [query];
 }
+
+class FilterCases extends HomeEvent {
+  final String postcode;
+
+  FilterCases(this.postcode);
+
+  @override
+  List<Object> get props => [postcode];
+}
