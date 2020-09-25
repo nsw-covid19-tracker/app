@@ -26,3 +26,5 @@ class FilterCases extends HomeEvent {
   @override
   List<Object> get props => [postcode];
 }
+
+class ClearFilteredCases extends HomeEvent {}

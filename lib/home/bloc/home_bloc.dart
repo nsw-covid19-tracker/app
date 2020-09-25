@@ -23,6 +23,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapSearchLocationsToState(event);
     } else if (event is FilterCases) {
       yield* _mapFilterCasesToState(event);
+    } else if (event is ClearFilteredCases) {
+      yield* _mapClearFilteredCasesToState(event);
     }
   }
 
@@ -68,6 +70,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       var results =
           cases.where((element) => element.postcode == event.postcode).toList();
       yield currState.copyWith(casesResult: results);
+    }
+  }
+
+  Stream<HomeState> _mapClearFilteredCasesToState(
+      ClearFilteredCases event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      yield currState.copyWith(casesResult: <Case>[]);
     }
   }
 }
