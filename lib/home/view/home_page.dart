@@ -89,6 +89,7 @@ class _HomePageState extends State<HomePage> {
 
   void _showCaseInfo(Case myCase) {
     final height = MediaQuery.of(context).size.height * 0.3;
+    final expiredText = myCase.isExpired ? ' (Expired)' : '';
     AwesomeDialog(
       context: context,
       animType: AnimType.SCALE,
@@ -101,14 +102,33 @@ class _HomePageState extends State<HomePage> {
             controller: _scrollController,
             children: [
               Text(
-                myCase.location,
+                '${myCase.location}$expiredText',
                 style: Theme.of(context)
                     .textTheme
                     .subtitle1
                     .apply(fontWeightDelta: 1),
               ),
-              WidgetPadding(),
+              WidgetPaddingSm(),
+              Text('Dates', style: TextStyle(fontWeight: FontWeight.bold)),
               Text(myCase.dates),
+              WidgetPaddingSm(),
+              RichText(
+                text: TextSpan(
+                  text: 'Suggested Action ',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '(If you visited this location at the times above)',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                  ],
+                ),
+              ),
+              Text(myCase.action),
+              WidgetPaddingSm(),
             ],
           ),
         ),
