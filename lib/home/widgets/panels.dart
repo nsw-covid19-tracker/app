@@ -1,4 +1,5 @@
 import 'package:covid_tracing/home/repo/repo.dart';
+import 'package:covid_tracing/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -64,9 +65,10 @@ class Panel extends StatelessWidget {
     Key key,
     @required this.cases,
     @required this.panelController,
-    this.scrollController,
+    @required this.scrollController,
   })  : assert(cases != null),
         assert(panelController != null),
+        assert(scrollController != null),
         super(key: key);
 
   @override
@@ -86,6 +88,9 @@ class Panel extends StatelessWidget {
             itemBuilder: (context, index) => ListTile(
               title: Text(cases[index].location),
               subtitle: Text(cases[index].dates),
+              onTap: () {
+                CaseDialog.show(context, scrollController, cases[index]);
+              },
             ),
             separatorBuilder: (context, index) => Divider(
               color: Colors.grey,
