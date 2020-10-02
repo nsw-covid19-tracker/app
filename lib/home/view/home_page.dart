@@ -37,13 +37,18 @@ class _HomePageState extends State<HomePage> {
             var locations = <Location>[];
 
             if (state is HomeSuccess) {
-              cases = state.cases;
               locations = state.locationsResult;
+              if (state.casesResult.isEmpty) {
+                cases = state.cases;
+              } else {
+                cases = state.casesResult;
+              }
             }
 
             return SlidingUpPanel(
               controller: _panelController,
               minHeight: 80,
+              maxHeight: MediaQuery.of(context).size.height * 0.8,
               collapsed: cases.isEmpty
                   ? LoadingPanel()
                   : CollapsedPanel(controller: _panelController),
@@ -59,7 +64,11 @@ class _HomePageState extends State<HomePage> {
                     panelController: _panelController,
                     markers: _mapCasesToMarkers(cases),
                   ),
-                  SearchBar(locations: locations),
+                  SearchBar(
+                    locations: locations,
+                    onSearchBarTap: () => _panelController.close(),
+                    onSearchResultTap: () => _panelController.open(),
+                  ),
                 ],
               ),
             );

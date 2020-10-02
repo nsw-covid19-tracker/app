@@ -20,7 +20,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (event is FetchAll) {
       yield* _mapFetchAllToState(event);
     } else if (event is SearchLocations) {
-      yield* _mapSearchLocationToState(event);
+      yield* _mapSearchLocationsToState(event);
+    } else if (event is FilterCases) {
+      yield* _mapFilterCasesToState(event);
+    } else if (event is ClearFilteredCases) {
+      yield* _mapClearFilteredCasesToState(event);
     }
   }
 
@@ -39,27 +43,42 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Stream<HomeState> _mapSearchLocationToState(SearchLocations event) async* {
+  Stream<HomeState> _mapSearchLocationsToState(SearchLocations event) async* {
     final currState = state;
     if (currState is HomeSuccess) {
-      try {
-        final locations = List<Location>.from(currState.locations);
-        final query = event.query.toLowerCase();
-        var results = <Location>[];
+      final locations = List<Location>.from(currState.locations);
+      final query = event.query.toLowerCase();
+      var results = <Location>[];
 
-        if (query.isNotEmpty) {
-          results = locations
-              .where((element) =>
-                  element.postcode.toLowerCase().contains(query) ||
-                  element.suburb.toLowerCase().contains(query))
-              .take(5)
-              .toList();
-        }
-
-        yield currState.copyWith(locationsResult: results);
-      } catch (_) {
-        yield HomeFailure();
+      if (query.isNotEmpty) {
+        results = locations
+            .where((element) =>
+                element.postcode.contains(query) ||
+                element.suburb.toLowerCase().contains(query))
+            .take(5)
+            .toList();
       }
+
+      yield currState.copyWith(locationsResult: results);
+    }
+  }
+
+  Stream<HomeState> _mapFilterCasesToState(FilterCases event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      final cases = List<Case>.from(currState.cases);
+      var results =
+          cases.where((element) => element.postcode == event.postcode).toList();
+      yield currState.copyWith(casesResult: results);
+    }
+  }
+
+  Stream<HomeState> _mapClearFilteredCasesToState(
+      ClearFilteredCases event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      yield currState
+          .copyWith(casesResult: <Case>[], locationsResult: <Location>[]);
     }
   }
 }

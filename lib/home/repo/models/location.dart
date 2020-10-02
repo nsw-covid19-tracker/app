@@ -16,4 +16,6 @@ class Location extends Equatable {
 
   @override
   List<Object> get props => [postcode, suburb];
+
+  String get name => '$suburb ($postcode)';
 }
