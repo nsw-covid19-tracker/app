@@ -43,7 +43,11 @@ class _SearchBarState extends State<SearchBar> {
       maxWidth: isPortrait ? 600 : 500,
       debounceDelay: const Duration(milliseconds: 500),
       onQueryChanged: (query) {
-        context.bloc<HomeBloc>().add(SearchLocations(query));
+        if (query.isNotEmpty) {
+          context.bloc<HomeBloc>().add(SearchLocations(query));
+        } else {
+          context.bloc<HomeBloc>().add(ClearFilteredCases());
+        }
       },
       clearQueryOnClose: false,
       // Specify a custom transition to be used for
