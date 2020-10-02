@@ -77,7 +77,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       ClearFilteredCases event) async* {
     final currState = state;
     if (currState is HomeSuccess) {
-      yield currState.copyWith(casesResult: <Case>[]);
+      yield currState
+          .copyWith(casesResult: <Case>[], locationsResult: <Location>[]);
     }
   }
 }
