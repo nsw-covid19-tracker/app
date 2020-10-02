@@ -94,7 +94,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         return (event.isShowActiveOnly && !myCase.isExpired) ||
             !event.isShowActiveOnly;
       }).toList();
-      yield currState.copyWith(casesResult: results);
+      yield currState.copyWith(
+          casesResult: results, isShowActiveOnly: event.isShowActiveOnly);
     }
   }
 }

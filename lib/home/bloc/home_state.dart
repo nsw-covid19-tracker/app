@@ -17,21 +17,26 @@ class HomeSuccess extends HomeState {
   final List<Case> cases;
   final List<Location> locationsResult;
   final List<Case> casesResult;
+  final bool isShowActiveOnly;
 
   HomeSuccess({
     this.locations,
     this.cases,
     this.locationsResult = const <Location>[],
     this.casesResult = const <Case>[],
+    this.isShowActiveOnly = false,
   });
 
   @override
-  List<Object> get props => [locations, cases, locationsResult, casesResult];
+  List<Object> get props {
+    return [locations, cases, locationsResult, casesResult, isShowActiveOnly];
+  }
 
   @override
   String toString() {
     return 'HomeSuccess: { locations: ${locations?.length}, '
         'cases: ${cases?.length}, locationsResult: ${locationsResult?.length}, '
-        'casesResult: ${casesResult?.length} }';
+        'casesResult: ${casesResult?.length}, '
+        'isShowActiveOnly: $isShowActiveOnly }';
   }
 }

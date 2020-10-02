@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:covid_tracing/home/bloc/home_bloc.dart';
 import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:covid_tracing/home/widgets/widgets.dart';
@@ -34,7 +35,23 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: BlocBuilder<HomeBloc, HomeState>(
+      body: BlocConsumer<HomeBloc, HomeState>(
+        listener: (context, state) {
+          if (state is HomeSuccess &&
+              state.isShowActiveOnly &&
+              state.casesResult.isEmpty) {
+            AwesomeDialog(
+              context: context,
+              animType: AnimType.SCALE,
+              dialogType: DialogType.INFO,
+              title: 'No active cases found',
+              desc: 'Keep maintaining social distancing and '
+                  'wear a mask when physical distancing is not possible',
+              btnOkOnPress: () {},
+              btnOkText: 'Close',
+            )..show();
+          }
+        },
         builder: (context, state) {
           var cases = <Case>[];
           var locations = <Location>[];
