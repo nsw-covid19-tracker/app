@@ -7,17 +7,17 @@ typedef ExpiryCallbackFunc = void Function(bool value);
 class MyBottomSheet {
   static void show({
     @required BuildContext context,
-    @required bool isShowNotExpiredOnly,
+    @required bool isShowActiveOnly,
     @required ExpiryCallbackFunc expiryCallback,
   }) {
     assert(context != null);
-    assert(isShowNotExpiredOnly != null);
+    assert(isShowActiveOnly != null);
     assert(expiryCallback != null);
 
     showCustomModalBottomSheet(
       context: context,
       builder: (context, scrollController) => _ModalFit(
-        isShowNotExpiredOnly: isShowNotExpiredOnly,
+        isShowActiveOnly: isShowActiveOnly,
         expiryCallback: expiryCallback,
       ),
       containerWidget: (context, animation, child) {
@@ -29,12 +29,12 @@ class MyBottomSheet {
 }
 
 class _ModalFit extends StatelessWidget {
-  final bool isShowNotExpiredOnly;
+  final bool isShowActiveOnly;
   final ExpiryCallbackFunc expiryCallback;
 
   const _ModalFit({
     Key key,
-    @required this.isShowNotExpiredOnly,
+    @required this.isShowActiveOnly,
     @required this.expiryCallback,
   }) : super(key: key);
 
@@ -47,7 +47,7 @@ class _ModalFit extends StatelessWidget {
         children: [
           CheckboxListTile(
             title: const Text('Show not expired cases only'),
-            value: isShowNotExpiredOnly,
+            value: isShowActiveOnly,
             onChanged: (value) {
               expiryCallback(value);
               Navigator.of(context).pop();

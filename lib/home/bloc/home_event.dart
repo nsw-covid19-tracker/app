@@ -30,10 +30,10 @@ class FilterCasesByPostcode extends HomeEvent {
 class ClearFilteredCases extends HomeEvent {}
 
 class FilterCasesByExpiry extends HomeEvent {
-  final bool isShowNotExpiredOnly;
+  final bool isShowActiveOnly;
 
-  FilterCasesByExpiry(this.isShowNotExpiredOnly);
+  FilterCasesByExpiry(this.isShowActiveOnly);
 
   @override
-  List<Object> get props => [isShowNotExpiredOnly];
+  List<Object> get props => [isShowActiveOnly];
 }
