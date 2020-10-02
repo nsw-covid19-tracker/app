@@ -4,12 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SearchBar extends StatelessWidget {
+class SearchBar extends StatefulWidget {
   final List<Location> locations;
+  final Function callback;
 
-  const SearchBar({Key key, @required this.locations})
+  const SearchBar({Key key, @required this.locations, @required this.callback})
       : assert(locations != null),
+        assert(callback != null),
         super(key: key);
+
+  @override
+  _SearchBarState createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<SearchBar> {
+  final controller = FloatingSearchBarController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +32,7 @@ class SearchBar extends StatelessWidget {
         MediaQuery.of(context).orientation == Orientation.portrait;
 
     return FloatingSearchBar(
+      controller: controller,
       hint: 'Postcode or Suburb',
       scrollPadding: const EdgeInsets.only(top: 16, bottom: 56),
       transitionDuration: const Duration(milliseconds: 800),
@@ -29,20 +45,12 @@ class SearchBar extends StatelessWidget {
       onQueryChanged: (query) {
         context.bloc<HomeBloc>().add(SearchLocations(query));
       },
+      clearQueryOnClose: false,
       // Specify a custom transition to be used for
       // animating between opened and closed stated.
       transition: CircularFloatingSearchBarTransition(),
       actions: [
-        FloatingSearchBarAction(
-          showIfOpened: false,
-          child: CircularButton(
-            icon: const Icon(Icons.place),
-            onPressed: () {},
-          ),
-        ),
-        FloatingSearchBarAction.searchToClear(
-          showIfClosed: false,
-        ),
+        FloatingSearchBarAction.searchToClear(showIfClosed: true),
       ],
       builder: (context, transition) {
         return ClipRRect(
@@ -50,13 +58,22 @@ class SearchBar extends StatelessWidget {
           child: Material(
             color: Colors.white,
             elevation: 4.0,
-            child: locations.isNotEmpty
+            child: widget.locations.isNotEmpty
                 ? Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: locations
-                        .map((location) =>
-                            ListTile(title: Text(location.suburb)))
-                        .toList(),
+                    children: widget.locations.map((location) {
+                      return ListTile(
+                        title: Text(location.suburb),
+                        onTap: () {
+                          controller.query = location.suburb;
+                          controller.close();
+                          widget.callback();
+                          context
+                              .bloc<HomeBloc>()
+                              .add(FilterCases(location.postcode));
+                        },
+                      );
+                    }).toList(),
                   )
                 : ListTile(title: Text('No results found')),
           ),

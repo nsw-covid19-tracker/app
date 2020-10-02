@@ -37,8 +37,12 @@ class _HomePageState extends State<HomePage> {
             var locations = <Location>[];
 
             if (state is HomeSuccess) {
-              cases = state.cases;
               locations = state.locationsResult;
+              if (state.casesResult.isEmpty) {
+                cases = state.cases;
+              } else {
+                cases = state.casesResult;
+              }
             }
 
             return SlidingUpPanel(
@@ -59,7 +63,10 @@ class _HomePageState extends State<HomePage> {
                     panelController: _panelController,
                     markers: _mapCasesToMarkers(cases),
                   ),
-                  SearchBar(locations: locations),
+                  SearchBar(
+                    locations: locations,
+                    callback: () => _panelController.open(),
+                  ),
                 ],
               ),
             );
