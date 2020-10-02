@@ -30,50 +30,51 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: BlocBuilder<HomeBloc, HomeState>(
-          builder: (context, state) {
-            var cases = <Case>[];
-            var locations = <Location>[];
+      resizeToAvoidBottomInset: false,
+      body: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
+          var cases = <Case>[];
+          var locations = <Location>[];
 
-            if (state is HomeSuccess) {
-              locations = state.locationsResult;
-              if (state.casesResult.isEmpty) {
-                cases = state.cases;
-              } else {
-                cases = state.casesResult;
-              }
+          if (state is HomeSuccess) {
+            locations = state.locationsResult;
+            if (state.casesResult.isEmpty) {
+              cases = state.cases;
+            } else {
+              cases = state.casesResult;
             }
+          }
 
-            return SlidingUpPanel(
-              controller: _panelController,
-              minHeight: 80,
-              maxHeight: MediaQuery.of(context).size.height * 0.8,
-              collapsed: cases.isEmpty
-                  ? LoadingPanel()
-                  : CollapsedPanel(controller: _panelController),
-              panelBuilder: (sc) => Panel(
-                panelSc: sc,
-                panelController: _panelController,
-                cases: cases,
-              ),
-              body: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Map(
-                    panelController: _panelController,
-                    markers: _mapCasesToMarkers(cases),
-                  ),
-                  SearchBar(
-                    locations: locations,
-                    onSearchBarTap: () => _panelController.close(),
-                    onSearchResultTap: () => _panelController.open(),
-                  ),
-                ],
-              ),
-            );
-          },
-        ));
+          return SlidingUpPanel(
+            controller: _panelController,
+            minHeight: 80,
+            maxHeight: MediaQuery.of(context).size.height * 0.8,
+            collapsed: cases.isEmpty
+                ? LoadingPanel()
+                : CollapsedPanel(controller: _panelController),
+            panelBuilder: (sc) => Panel(
+              panelSc: sc,
+              panelController: _panelController,
+              cases: cases,
+            ),
+            body: Stack(
+              fit: StackFit.expand,
+              children: [
+                Map(
+                  panelController: _panelController,
+                  markers: _mapCasesToMarkers(cases),
+                ),
+                SearchBar(
+                  locations: locations,
+                  onSearchBarTap: () => _panelController.close(),
+                  onSearchResultTap: () => _panelController.open(),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Set<Marker> _mapCasesToMarkers(List<Case> cases) {
