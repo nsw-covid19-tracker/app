@@ -46,7 +46,7 @@ class _ModalFit extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           CheckboxListTile(
-            title: const Text('Show not expired cases only'),
+            title: const Text('Show Active cases only'),
             value: isShowActiveOnly,
             onChanged: (value) {
               expiryCallback(value);
