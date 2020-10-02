@@ -78,7 +78,7 @@ class _SearchBarState extends State<SearchBar> {
                     mainAxisSize: MainAxisSize.min,
                     children: widget.locations.map((location) {
                       return ListTile(
-                        title: Text(location.suburb),
+                        title: Text(location.name),
                         onTap: () {
                           controller.query = location.suburb;
                           controller.close();
