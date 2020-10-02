@@ -21,10 +21,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapFetchAllToState(event);
     } else if (event is SearchLocations) {
       yield* _mapSearchLocationsToState(event);
-    } else if (event is FilterCases) {
-      yield* _mapFilterCasesToState(event);
+    } else if (event is FilterCasesByPostcode) {
+      yield* _mapFilterCasesByPostcodeToState(event);
     } else if (event is ClearFilteredCases) {
       yield* _mapClearFilteredCasesToState(event);
+    } else if (event is FilterCasesByExpiry) {
+      yield* _mapFilterCasesByExpiryToState(event);
     }
   }
 
@@ -63,7 +65,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Stream<HomeState> _mapFilterCasesToState(FilterCases event) async* {
+  Stream<HomeState> _mapFilterCasesByPostcodeToState(
+      FilterCasesByPostcode event) async* {
     final currState = state;
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
@@ -79,6 +82,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeSuccess) {
       yield currState
           .copyWith(casesResult: <Case>[], locationsResult: <Location>[]);
+    }
+  }
+
+  Stream<HomeState> _mapFilterCasesByExpiryToState(
+      FilterCasesByExpiry event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      final cases = List<Case>.from(currState.cases);
+      var results = cases.where((myCase) {
+        return (event.isShowActiveOnly && !myCase.isExpired) ||
+            !event.isShowActiveOnly;
+      }).toList();
+      yield currState.copyWith(
+          casesResult: results, isShowActiveOnly: event.isShowActiveOnly);
     }
   }
 }
