@@ -2,6 +2,7 @@ import 'package:covid_tracing/home/bloc/home_bloc.dart';
 import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:covid_tracing/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,6 +14,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _panelController = PanelController();
   final _scrollController = ScrollController();
+  final _panelMinHeight = 80.0;
+  bool _isPanelClosed = true;
 
   @override
   void initState() {
@@ -46,7 +49,7 @@ class _HomePageState extends State<HomePage> {
 
           return SlidingUpPanel(
             controller: _panelController,
-            minHeight: 80,
+            minHeight: _panelMinHeight,
             maxHeight: MediaQuery.of(context).size.height * 0.8,
             collapsed: cases.isEmpty
                 ? LoadingPanel()
@@ -56,6 +59,8 @@ class _HomePageState extends State<HomePage> {
               panelController: _panelController,
               cases: cases,
             ),
+            onPanelClosed: () => setState(() => _isPanelClosed = true),
+            onPanelOpened: () => setState(() => _isPanelClosed = false),
             body: Stack(
               fit: StackFit.expand,
               children: [
@@ -74,6 +79,15 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
+      floatingActionButton: _isPanelClosed
+          ? Padding(
+              padding: EdgeInsets.only(bottom: _panelMinHeight),
+              child: FloatingActionButton(
+                onPressed: () {},
+                child: FaIcon(FontAwesomeIcons.filter, size: 20),
+              ),
+            )
+          : null,
     );
   }
 }
