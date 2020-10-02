@@ -16,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   final _scrollController = ScrollController();
   final _panelMinHeight = 80.0;
   bool _isPanelClosed = true;
+  bool _isShowNotExpiredOnly = false;
 
   @override
   void initState() {
@@ -83,11 +84,19 @@ class _HomePageState extends State<HomePage> {
           ? Padding(
               padding: EdgeInsets.only(bottom: _panelMinHeight),
               child: FloatingActionButton(
-                onPressed: () {},
+                onPressed: () => MyBottomSheet.show(
+                  context: context,
+                  isShowNotExpiredOnly: _isShowNotExpiredOnly,
+                  expiryCallback: _expiryCallback,
+                ),
                 child: FaIcon(FontAwesomeIcons.filter, size: 20),
               ),
             )
           : null,
     );
+  }
+
+  void _expiryCallback(bool value) {
+    setState(() => _isShowNotExpiredOnly = value);
   }
 }
