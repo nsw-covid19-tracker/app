@@ -4,19 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-class Map extends StatefulWidget {
+class Map extends StatelessWidget {
   final PanelController panelController;
   final Set<Marker> markers;
 
-  const Map({Key key, this.markers, @required this.panelController})
+  Map({Key key, this.markers, @required this.panelController})
       : assert(panelController != null),
         super(key: key);
 
-  @override
-  _MapState createState() => _MapState();
-}
-
-class _MapState extends State<Map> {
   final _controller = Completer<GoogleMapController>();
   final _kGooglePlex = CameraPosition(
     target: LatLng(-33.868800, 151.209300),
@@ -31,8 +26,8 @@ class _MapState extends State<Map> {
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
       },
-      markers: widget.markers,
-      onTap: (_) => widget.panelController.close(),
+      markers: markers,
+      onTap: (_) => panelController.close(),
     );
   }
 }
