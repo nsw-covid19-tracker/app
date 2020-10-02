@@ -38,16 +38,7 @@ class _HomePageState extends State<HomePage> {
           if (state is HomeSuccess &&
               state.isShowActiveOnly &&
               state.casesResult.isEmpty) {
-            AwesomeDialog(
-              context: context,
-              animType: AnimType.SCALE,
-              dialogType: DialogType.INFO,
-              title: 'No active cases found',
-              desc: 'Keep maintaining social distancing and '
-                  'wear a mask when physical distancing is not possible',
-              btnOkOnPress: () {},
-              btnOkText: 'Close',
-            )..show();
+            _showNoActiveCasesDialog();
           }
         },
         builder: (context, state) {
@@ -102,5 +93,18 @@ class _HomePageState extends State<HomePage> {
             )
           : null,
     );
+  }
+
+  void _showNoActiveCasesDialog() {
+    AwesomeDialog(
+      context: context,
+      animType: AnimType.SCALE,
+      dialogType: DialogType.INFO,
+      title: 'No active cases found',
+      desc: 'Keep maintaining social distancing and '
+          'wear a mask when physical distancing is not possible',
+      btnOkOnPress: () {},
+      btnOkText: 'Close',
+    )..show();
   }
 }
