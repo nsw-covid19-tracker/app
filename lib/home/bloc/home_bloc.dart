@@ -91,7 +91,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
       var results = cases.where((myCase) {
-        if (event.isShowExpiredOnly) {
+        if (event.isShowNotExpiredOnly) {
           return !myCase.isExpired;
         } else {
           return true;
