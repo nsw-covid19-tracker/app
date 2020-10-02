@@ -20,7 +20,7 @@ class Map extends StatelessWidget {
         assert(panelController != null),
         super(key: key);
 
-  final _controller = Completer<GoogleMapController>();
+  final _mapController = Completer<GoogleMapController>();
   final _kGooglePlex = CameraPosition(
     target: LatLng(-33.868800, 151.209300),
     zoom: 14.4746,
@@ -32,7 +32,7 @@ class Map extends StatelessWidget {
       mapType: MapType.normal,
       initialCameraPosition: _kGooglePlex,
       onMapCreated: (GoogleMapController controller) {
-        _controller.complete(controller);
+        _mapController.complete(controller);
       },
       markers: cases != null ? _mapCasesToMarkers(context, cases) : null,
       onTap: (_) => panelController.close(),
