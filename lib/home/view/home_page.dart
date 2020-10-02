@@ -48,6 +48,7 @@ class _HomePageState extends State<HomePage> {
             return SlidingUpPanel(
               controller: _panelController,
               minHeight: 80,
+              maxHeight: MediaQuery.of(context).size.height * 0.8,
               collapsed: cases.isEmpty
                   ? LoadingPanel()
                   : CollapsedPanel(controller: _panelController),
