@@ -18,13 +18,22 @@ class SearchLocations extends HomeEvent {
   List<Object> get props => [query];
 }
 
-class FilterCases extends HomeEvent {
+class FilterCasesByPostcode extends HomeEvent {
   final String postcode;
 
-  FilterCases(this.postcode);
+  FilterCasesByPostcode(this.postcode);
 
   @override
   List<Object> get props => [postcode];
 }
 
 class ClearFilteredCases extends HomeEvent {}
+
+class FilterCasesByExpiry extends HomeEvent {
+  final bool isShowExpiredOnly;
+
+  FilterCasesByExpiry(this.isShowExpiredOnly);
+
+  @override
+  List<Object> get props => [isShowExpiredOnly];
+}

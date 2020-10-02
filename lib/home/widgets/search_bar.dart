@@ -85,7 +85,7 @@ class _SearchBarState extends State<SearchBar> {
                           widget.onSearchResultTap();
                           context
                               .bloc<HomeBloc>()
-                              .add(FilterCases(location.postcode));
+                              .add(FilterCasesByPostcode(location.postcode));
                         },
                       );
                     }).toList(),
