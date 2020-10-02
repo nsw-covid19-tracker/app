@@ -6,11 +6,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SearchBar extends StatefulWidget {
   final List<Location> locations;
-  final Function callback;
+  final Function onSearchResultTap;
+  final Function onSearchBarTap;
 
-  const SearchBar({Key key, @required this.locations, @required this.callback})
-      : assert(locations != null),
-        assert(callback != null),
+  const SearchBar({
+    Key key,
+    @required this.locations,
+    @required this.onSearchResultTap,
+    @required this.onSearchBarTap,
+  })  : assert(locations != null),
+        assert(onSearchResultTap != null),
+        assert(onSearchBarTap != null),
         super(key: key);
 
   @override
@@ -49,6 +55,11 @@ class _SearchBarState extends State<SearchBar> {
           context.bloc<HomeBloc>().add(ClearFilteredCases());
         }
       },
+      onFocusChanged: (isFocused) {
+        if (isFocused) {
+          widget.onSearchBarTap();
+        }
+      },
       clearQueryOnClose: false,
       // Specify a custom transition to be used for
       // animating between opened and closed stated.
@@ -71,7 +82,7 @@ class _SearchBarState extends State<SearchBar> {
                         onTap: () {
                           controller.query = location.suburb;
                           controller.close();
-                          widget.callback();
+                          widget.onSearchResultTap();
                           context
                               .bloc<HomeBloc>()
                               .add(FilterCases(location.postcode));

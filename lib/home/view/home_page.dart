@@ -66,7 +66,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SearchBar(
                     locations: locations,
-                    callback: () => _panelController.open(),
+                    onSearchBarTap: () => _panelController.close(),
+                    onSearchResultTap: () => _panelController.open(),
                   ),
                 ],
               ),
