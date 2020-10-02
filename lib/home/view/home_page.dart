@@ -3,7 +3,6 @@ import 'package:covid_tracing/home/bloc/home_bloc.dart';
 import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:covid_tracing/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +16,6 @@ class _HomePageState extends State<HomePage> {
   final _scrollController = ScrollController();
   final _panelMinHeight = 80.0;
   bool _isPanelClosed = true;
-  bool _isShowActiveOnly = false;
 
   @override
   void initState() {
@@ -100,21 +98,9 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: _isPanelClosed
           ? Padding(
               padding: EdgeInsets.only(bottom: _panelMinHeight),
-              child: FloatingActionButton(
-                onPressed: () => MyBottomSheet.show(
-                  context: context,
-                  isShowActiveOnly: _isShowActiveOnly,
-                  expiryCallback: _expiryCallback,
-                ),
-                child: FaIcon(FontAwesomeIcons.filter, size: 20),
-              ),
+              child: FilterButton(),
             )
           : null,
     );
-  }
-
-  void _expiryCallback(bool value) {
-    setState(() => _isShowActiveOnly = value);
-    context.bloc<HomeBloc>().add(FilterCasesByExpiry(value));
   }
 }
