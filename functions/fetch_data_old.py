@@ -26,7 +26,7 @@ def main():
     base_url = "https://data.nsw.gov.au/data"
     url = (
         "https://data.nsw.gov.au/data/api/3/action/datastore_search?"
-        "resource_id=5200e552-0afb-4bde-b20f-f8dd4feff3d7&limit=50"
+        "resource_id=5200e552-0afb-4bde-b20f-f8dd4feff3d7&limit=100"
     )
     locations_ref = db.reference("locations")
     cases_ref = db.reference("cases")
