@@ -1,3 +1,4 @@
+import datetime as dt
 import firebase_admin
 import hashlib
 import re
@@ -67,13 +68,14 @@ def set_location(postcode, suburb):
 
 
 def set_case(postcode, suburb, case_loc, record):
+    datetimes = get_datetimes(case_loc, record)
     case_dict = {
         "postcode": postcode,
         "suburb": suburb,
         "location": case_loc,
         "latitude": float(record["Latitude"]),
         "longitude": float(record["Longitude"]),
-        "dates": record["Dates"],
+        "dateTimes": datetimes,
         "action": record["Action"],
         "isExpired": record["Status"].lower() == "expired",
     }
@@ -88,11 +90,73 @@ def set_case(postcode, suburb, case_loc, record):
 
     if snapshot is None:
         case_ref.set(case_dict)
-    elif (
-        snapshot["dates"] != case_dict["dates"]
-        or snapshot["isExpired"] != case_dict["isExpired"]
-    ):
-        case_ref.update(case_dict)
+    else:
+        old_datetimes = set((x["start"], x["end"]) for x in snapshot["dateTimes"])
+        new_datetimes = set((x["start"], x["end"]) for x in datetimes)
+        new_datetimes.update(old_datetimes)
+        case_ref.update(
+            {"dateTimes": [{"start": x[0], "end": x[1]} for x in new_datetimes]}
+        )
+
+
+def get_datetimes(case_loc, record):
+    datetimes = []
+    for i in range(1, 16):
+        if case_loc == "Mount Pritchard: Mounties, 101 Meadows Road" and (
+            i == 11 or i == 12 or i == 14 or i == 15
+        ):
+            continue
+
+        start_date = end_date = record.get(f"Date_{i}")
+        if start_date is not None:
+            start_datetime = parse_date(start_date)
+            end_datetime = parse_date(end_date)
+
+            if case_loc == "Mount Pritchard: Mounties, 101 Meadows Road" and i == 10:
+                start_time = record["Date_11"]
+                end_time = record["Date_12"]
+            elif case_loc == "Mount Pritchard: Mounties, 101 Meadows Road" and i == 13:
+                start_time = record["Date_14"]
+                end_time = record["Date_15"]
+            else:
+                start_time = record.get(f"Time_start_{i}")
+                end_time = record.get(f"Time_end_{i}")
+
+            if start_time is not None:
+                start_datetime = parse_datetime(start_datetime, start_time)
+
+            if end_time is not None:
+                end_datetime = parse_datetime(end_datetime, end_time)
+
+            datetimes.append(
+                {"start": start_datetime.isoformat(), "end": end_datetime.isoformat()}
+            )
+
+    return datetimes
+
+
+def parse_date(date):
+    datetime = None
+    try:
+        datetime = dt.datetime.strptime(date, "%A %d %B")
+    except ValueError:
+        try:
+            datetime = dt.datetime.strptime(date, "%d-%m")
+        except ValueError:
+            datetime = dt.datetime.strptime(date, "%d-%b")
+
+    return datetime.replace(year=2020)
+
+
+def parse_datetime(date, time):
+    datetime = date
+    try:
+        hour, minute = map(int, time.split(":"))
+        datetime = date.replace(hour=hour, minute=minute)
+    except ValueError:
+        pass
+
+    return datetime
 
 
 if __name__ == "__main__":
