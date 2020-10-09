@@ -10,22 +10,22 @@ class FilterButton extends StatefulWidget {
 }
 
 class _FilterButtonState extends State<FilterButton> {
-  bool _isShowActiveOnly = false;
+  bool _isShowAllCases = false;
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: () => MyBottomSheet.show(
         context: context,
-        isShowActiveOnly: _isShowActiveOnly,
-        expiryCallback: _expiryCallback,
+        isShowAllCases: _isShowAllCases,
+        showAllCallback: _expiryCallback,
       ),
       child: FaIcon(FontAwesomeIcons.filter, size: 20),
     );
   }
 
   void _expiryCallback(bool value) {
-    setState(() => _isShowActiveOnly = value);
+    setState(() => _isShowAllCases = value);
     context.bloc<HomeBloc>().add(FilterCasesByExpiry(value));
   }
 }
