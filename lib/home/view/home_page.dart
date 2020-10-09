@@ -15,7 +15,6 @@ class _HomePageState extends State<HomePage> {
   final _panelController = PanelController();
   final _scrollController = ScrollController();
   final _panelMinHeight = 80.0;
-  bool _isPanelClosed = true;
 
   @override
   void initState() {
@@ -66,8 +65,6 @@ class _HomePageState extends State<HomePage> {
               panelController: _panelController,
               cases: cases,
             ),
-            onPanelClosed: () => setState(() => _isPanelClosed = true),
-            onPanelOpened: () => setState(() => _isPanelClosed = false),
             body: Stack(
               fit: StackFit.expand,
               children: [
@@ -87,7 +84,7 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: _isPanelClosed ? _panelMinHeight : 0),
+        padding: EdgeInsets.only(bottom: _panelMinHeight),
         child: FilterButton(),
       ),
     );

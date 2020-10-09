@@ -37,3 +37,12 @@ class FilterCasesByExpiry extends HomeEvent {
   @override
   List<Object> get props => [isShowAllCases];
 }
+
+class FilterCasesByDates extends HomeEvent {
+  final DateTimeRange dates;
+
+  FilterCasesByDates(this.dates);
+
+  @override
+  List<Object> get props => [dates];
+}

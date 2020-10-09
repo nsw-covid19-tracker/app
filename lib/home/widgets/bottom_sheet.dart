@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 typedef ShowAllCallbackFunc = void Function(bool value);
-typedef FilterDateCallbackFunc = void Function(DateTime start, DateTime end);
+typedef FilterDateCallbackFunc = void Function(DateTimeRange dates);
 
 class MyBottomSheet {
   static void show({
@@ -68,13 +68,13 @@ class _DateListTile extends StatelessWidget {
 
     return InkWell(
       onTap: () async {
-        final dateTimeRange = await showDateRangePicker(
+        final dates = await showDateRangePicker(
           context: context,
           firstDate: DateTime(2020, 7, 1),
           lastDate: DateTime.now(),
         );
-        if (dateTimeRange != null) {
-          callback(dateTimeRange.start, dateTimeRange.end);
+        if (dates != null) {
+          callback(dates);
           Navigator.of(context).pop();
         }
       },
