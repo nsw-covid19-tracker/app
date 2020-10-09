@@ -18,6 +18,7 @@ class HomeSuccess extends HomeState {
   final List<Location> locationsResult;
   final List<Case> casesResult;
   final bool isShowAllCases;
+  final bool isEmptyActiveCases;
 
   HomeSuccess({
     this.locations,
@@ -25,11 +26,19 @@ class HomeSuccess extends HomeState {
     this.locationsResult = const <Location>[],
     this.casesResult = const <Case>[],
     this.isShowAllCases = false,
+    this.isEmptyActiveCases = false,
   });
 
   @override
   List<Object> get props {
-    return [locations, cases, locationsResult, casesResult, isShowAllCases];
+    return [
+      locations,
+      cases,
+      locationsResult,
+      casesResult,
+      isShowAllCases,
+      isEmptyActiveCases,
+    ];
   }
 
   @override
@@ -37,6 +46,7 @@ class HomeSuccess extends HomeState {
     return 'HomeSuccess: { locations: ${locations?.length}, '
         'cases: ${cases?.length}, locationsResult: ${locationsResult?.length}, '
         'casesResult: ${casesResult?.length}, '
-        'isShowAllCases: $isShowAllCases }';
+        'isShowAllCases: $isShowAllCases, '
+        'isEmptyActiveCases: $isEmptyActiveCases }';
   }
 }

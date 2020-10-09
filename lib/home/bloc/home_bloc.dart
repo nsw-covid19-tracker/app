@@ -30,6 +30,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapFilterCasesByExpiryToState(event);
     } else if (event is FilterCasesByDates) {
       yield* _mapFilterCasesByDatesToState(event);
+    } else if (event is EmptyActiveCasesHandled) {
+      yield* _mapEmptyActiveCasesHandledToState(event);
     }
   }
 
@@ -40,7 +42,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         final cases = await _homeRepo.fetchCases();
         final activeCases =
             cases.where((myCase) => (!myCase.isExpired)).toList();
-        final newState = HomeSuccess(cases: cases, casesResult: activeCases);
+        final newState = HomeSuccess(
+          cases: cases,
+          casesResult: activeCases,
+          isEmptyActiveCases: activeCases.isEmpty,
+        );
         yield newState;
         final locations = await _homeRepo.fetchLocations();
         yield newState.copyWith(locations: locations);
@@ -75,9 +81,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currState = state;
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
-      var results =
-          cases.where((element) => element.postcode == event.postcode).toList();
-      yield currState.copyWith(casesResult: results);
+      var results = cases.where((myCase) {
+        return _filterByStatus(myCase, currState.isShowAllCases) &&
+            myCase.postcode == event.postcode;
+      }).toList();
+      yield currState.copyWith(
+        casesResult: results,
+        isEmptyActiveCases: !currState.isShowAllCases && results.isEmpty,
+      );
     }
   }
 
@@ -96,11 +107,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
       final results = cases.where((myCase) {
-        return (!event.isShowAllCases && !myCase.isExpired) ||
-            event.isShowAllCases;
+        return _filterByStatus(myCase, event.isShowAllCases);
       }).toList();
       yield currState.copyWith(
-          casesResult: results, isShowAllCases: event.isShowAllCases);
+        casesResult: results,
+        isShowAllCases: event.isShowAllCases,
+        isEmptyActiveCases: !event.isShowAllCases && results.isEmpty,
+      );
     }
   }
 
@@ -110,10 +123,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
       final results = cases.where((myCase) {
-        return myCase.dateTimes.first.start.isBefore(event.dates.end) &&
+        return _filterByStatus(myCase, currState.isShowAllCases) &&
+            myCase.dateTimes.first.start.isBefore(event.dates.end) &&
             myCase.dateTimes.last.end.isAfter(event.dates.start);
       }).toList();
-      yield currState.copyWith(casesResult: results);
+      yield currState.copyWith(
+        casesResult: results,
+        isEmptyActiveCases: !currState.isShowAllCases && results.isEmpty,
+      );
     }
+  }
+
+  Stream<HomeState> _mapEmptyActiveCasesHandledToState(
+      EmptyActiveCasesHandled event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      yield currState.copyWith(isEmptyActiveCases: false);
+    }
+  }
+
+  bool _filterByStatus(Case myCase, bool isShowAllCases) {
+    return (!isShowAllCases && !myCase.isExpired) || isShowAllCases;
   }
 }

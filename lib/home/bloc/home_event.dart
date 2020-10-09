@@ -46,3 +46,5 @@ class FilterCasesByDates extends HomeEvent {
   @override
   List<Object> get props => [dates];
 }
+
+class EmptyActiveCasesHandled extends HomeEvent {}

@@ -15,11 +15,12 @@ class _HomePageState extends State<HomePage> {
   final _panelController = PanelController();
   final _scrollController = ScrollController();
   final _panelMinHeight = 80.0;
+  HomeBloc _homeBloc;
 
   @override
   void initState() {
     super.initState();
-    context.bloc<HomeBloc>()..add(FetchAll());
+    _homeBloc = context.bloc<HomeBloc>()..add(FetchAll());
   }
 
   @override
@@ -34,30 +35,27 @@ class _HomePageState extends State<HomePage> {
       resizeToAvoidBottomInset: false,
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
-          if (state is HomeSuccess &&
-              !state.isShowAllCases &&
-              state.casesResult.isEmpty) {
+          if (state is HomeSuccess && state.isEmptyActiveCases) {
             _showNoActiveCasesDialog();
+            _homeBloc.add(EmptyActiveCasesHandled());
           }
         },
         builder: (context, state) {
+          var isLoading = true;
           var cases = <Case>[];
           var locations = <Location>[];
 
           if (state is HomeSuccess) {
+            isLoading = false;
             locations = state.locationsResult;
-            if (state.casesResult.isEmpty) {
-              cases = state.cases;
-            } else {
-              cases = state.casesResult;
-            }
+            cases = state.casesResult;
           }
 
           return SlidingUpPanel(
             controller: _panelController,
             minHeight: _panelMinHeight,
             maxHeight: MediaQuery.of(context).size.height * 0.8,
-            collapsed: cases.isEmpty
+            collapsed: isLoading
                 ? LoadingPanel()
                 : CollapsedPanel(controller: _panelController),
             panelBuilder: (sc) => Panel(
