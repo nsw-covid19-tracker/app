@@ -151,20 +151,21 @@ class _CasesListView extends StatelessWidget {
       shrinkWrap: true,
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        if (index == 0 || index == activeCases.length + 1) {
+        if (index == 0 ||
+            (activeCases.isNotEmpty && index == activeCases.length + 1)) {
           return _buildTitle(context, activeCases, index);
         } else {
           return _buildTile(context, activeCases, expiredCases, index);
         }
       },
-      separatorBuilder: (context, index) =>
-          index == 0 || index == activeCases.length + 1
-              ? SizedBox.shrink()
-              : Divider(
-                  color: Colors.grey,
-                  indent: 16,
-                  endIndent: 16,
-                ),
+      separatorBuilder: (context, index) => index == 0 ||
+              (activeCases.isNotEmpty && index == activeCases.length + 1)
+          ? SizedBox.shrink()
+          : Divider(
+              color: Colors.grey,
+              indent: 16,
+              endIndent: 16,
+            ),
     );
   }
 
