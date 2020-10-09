@@ -41,23 +41,21 @@ class _HomePageState extends State<HomePage> {
           }
         },
         builder: (context, state) {
+          var isLoading = true;
           var cases = <Case>[];
           var locations = <Location>[];
 
           if (state is HomeSuccess) {
+            isLoading = false;
             locations = state.locationsResult;
-            if (state.casesResult.isEmpty) {
-              cases = state.cases;
-            } else {
-              cases = state.casesResult;
-            }
+            cases = state.casesResult;
           }
 
           return SlidingUpPanel(
             controller: _panelController,
             minHeight: _panelMinHeight,
             maxHeight: MediaQuery.of(context).size.height * 0.8,
-            collapsed: cases.isEmpty
+            collapsed: isLoading
                 ? LoadingPanel()
                 : CollapsedPanel(controller: _panelController),
             panelBuilder: (sc) => Panel(
