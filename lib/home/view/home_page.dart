@@ -86,12 +86,10 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
-      floatingActionButton: _isPanelClosed
-          ? Padding(
-              padding: EdgeInsets.only(bottom: _panelMinHeight),
-              child: FilterButton(),
-            )
-          : null,
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: _isPanelClosed ? _panelMinHeight : 0),
+        child: FilterButton(),
+      ),
     );
   }
 

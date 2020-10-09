@@ -13,8 +13,6 @@ class CaseDialog {
       animType: AnimType.SCALE,
       dialogType: myCase.isExpired ? DialogType.INFO : DialogType.WARNING,
       body: _CaseInfo(myCase: myCase, controller: controller),
-      btnOkOnPress: () {},
-      btnOkText: 'Close',
     )..show();
   }
 }
@@ -30,25 +28,34 @@ class _CaseInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height * 0.3;
-    final expiredText = myCase.isExpired ? ' (Expired)' : '';
-
     return Container(
-      height: height,
+      height: MediaQuery.of(context).size.height * 0.3,
       padding: kLayoutPadding,
       child: FadingEdgeScrollView.fromScrollView(
         child: ListView(
           controller: controller,
           children: [
             Text(
-              '${myCase.venue}$expiredText',
+              myCase.isExpired ? 'Expired' : 'Recent Case Location',
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .subtitle1
+                  .apply(fontWeightDelta: 3),
+            ),
+            WidgetPaddingSm(),
+            Text(
+              myCase.venue,
               style: Theme.of(context)
                   .textTheme
                   .subtitle1
                   .apply(fontWeightDelta: 1),
             ),
             WidgetPaddingSm(),
-            Text('Dates', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'Date and Time',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Text(myCase.formattedDateTimes),
             WidgetPaddingSm(),
             RichText(
