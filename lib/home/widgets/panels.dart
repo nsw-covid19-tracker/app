@@ -151,43 +151,9 @@ class _CasesListView extends StatelessWidget {
       itemCount: itemCount,
       itemBuilder: (context, index) {
         if (index == 0 || index == activeCases.length + 1) {
-          var title = 'Expired';
-          var topPadding = 16.0;
-          var bottomPadding = 16.0;
-
-          if (index == 0 && activeCases.isNotEmpty) {
-            title = 'Recent Case Locations';
-            topPadding = 0;
-          }
-
-          return Padding(
-            padding: EdgeInsets.only(top: topPadding, bottom: bottomPadding),
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .subtitle1
-                  .apply(fontWeightDelta: 3),
-            ),
-          );
+          return _buildTitle(context, activeCases, index);
         } else {
-          Case myCase;
-          if (index < activeCases.length + 1) {
-            myCase = activeCases[index - 1];
-          } else {
-            var offset = 1;
-            if (activeCases.isNotEmpty) offset = 2;
-            myCase = expiredCases[index - activeCases.length - offset];
-          }
-
-          return ListTile(
-            title: Text('${myCase.venue}'),
-            subtitle: Text(myCase.formattedDateTimes),
-            onTap: () {
-              CaseDialog.show(context, dialogSc, myCase);
-            },
-          );
+          return _buildTile(context, activeCases, expiredCases, index);
         }
       },
       separatorBuilder: (context, index) =>
@@ -198,6 +164,46 @@ class _CasesListView extends StatelessWidget {
                   indent: 16,
                   endIndent: 16,
                 ),
+    );
+  }
+
+  Widget _buildTitle(BuildContext context, List<Case> activeCases, int index) {
+    var title = 'Expired';
+    var topPadding = 16.0;
+    var bottomPadding = 16.0;
+
+    if (index == 0 && activeCases.isNotEmpty) {
+      title = 'Recent Case Locations';
+      topPadding = 0;
+    }
+
+    return Padding(
+      padding: EdgeInsets.only(top: topPadding, bottom: bottomPadding),
+      child: Text(
+        title,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.subtitle1.apply(fontWeightDelta: 3),
+      ),
+    );
+  }
+
+  Widget _buildTile(BuildContext context, List<Case> activeCases,
+      List<Case> expiredCases, int index) {
+    Case myCase;
+    if (index < activeCases.length + 1) {
+      myCase = activeCases[index - 1];
+    } else {
+      var offset = 1;
+      if (activeCases.isNotEmpty) offset = 2;
+      myCase = expiredCases[index - activeCases.length - offset];
+    }
+
+    return ListTile(
+      title: Text('${myCase.venue}'),
+      subtitle: Text(myCase.formattedDateTimes),
+      onTap: () {
+        CaseDialog.show(context, dialogSc, myCase);
+      },
     );
   }
 }
