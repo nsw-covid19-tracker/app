@@ -74,7 +74,9 @@ class _DateListTile extends StatelessWidget {
           lastDate: DateTime.now(),
         );
         if (dates != null) {
-          callback(dates);
+          final result = DateTimeRange(
+              start: dates.start, end: dates.end.add(Duration(days: 1)));
+          callback(result);
           Navigator.of(context).pop();
         }
       },
