@@ -58,6 +58,6 @@ class Case extends Equatable {
       result += '$formattedStart to $formattedEnd\n';
     }
 
-    return result;
+    return result.trim();
   }
 }

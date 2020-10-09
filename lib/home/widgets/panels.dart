@@ -1,3 +1,4 @@
+import 'package:covid_tracing/home/common/consts.dart';
 import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:covid_tracing/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -198,12 +199,25 @@ class _CasesListView extends StatelessWidget {
       myCase = expiredCases[index - activeCases.length - offset];
     }
 
-    return ListTile(
-      title: Text('${myCase.venue}'),
-      subtitle: Text(myCase.formattedDateTimes),
-      onTap: () {
-        CaseDialog.show(context, dialogSc, myCase);
-      },
+    return Ink(
+      padding: kLayoutPadding,
+      child: InkWell(
+        onTap: () => CaseDialog.show(context, dialogSc, myCase),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${myCase.venue}',
+              style: Theme.of(context)
+                  .textTheme
+                  .subtitle1
+                  .apply(fontWeightDelta: 1),
+            ),
+            WidgetPaddingSm(),
+            Text(myCase.formattedDateTimes),
+          ],
+        ),
+      ),
     );
   }
 }
