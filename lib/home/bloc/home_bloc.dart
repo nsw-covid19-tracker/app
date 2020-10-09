@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 part 'home_bloc.g.dart';
 
@@ -27,6 +28,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapClearFilteredCasesToState(event);
     } else if (event is FilterCasesByExpiry) {
       yield* _mapFilterCasesByExpiryToState(event);
+    } else if (event is FilterCasesByDates) {
+      yield* _mapFilterCasesByDatesToState(event);
     }
   }
 
@@ -98,6 +101,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }).toList();
       yield currState.copyWith(
           casesResult: results, isShowAllCases: event.isShowAllCases);
+    }
+  }
+
+  Stream<HomeState> _mapFilterCasesByDatesToState(
+      FilterCasesByDates event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      final cases = List<Case>.from(currState.cases);
+      final results = cases.where((myCase) {
+        return myCase.dateTimes.first.start.isBefore(event.dates.end) &&
+            myCase.dateTimes.last.end.isAfter(event.dates.start);
+      }).toList();
+      yield currState.copyWith(casesResult: results);
     }
   }
 }

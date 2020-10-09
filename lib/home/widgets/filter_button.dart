@@ -11,6 +11,15 @@ class FilterButton extends StatefulWidget {
 
 class _FilterButtonState extends State<FilterButton> {
   bool _isShowAllCases = false;
+  DateTime _startDate = DateTime(2020, 7, 1);
+  DateTime _endDate = DateTime.now();
+  HomeBloc _homeBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _homeBloc = context.bloc<HomeBloc>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +27,25 @@ class _FilterButtonState extends State<FilterButton> {
       onPressed: () => MyBottomSheet.show(
         context: context,
         isShowAllCases: _isShowAllCases,
-        showAllCallback: _expiryCallback,
+        showAllCallback: _setIsShowAllCases,
+        startDate: _startDate,
+        endDate: _endDate,
+        filterDateCallback: _setStartEndDates,
       ),
       child: FaIcon(FontAwesomeIcons.filter, size: 20),
     );
   }
 
-  void _expiryCallback(bool value) {
+  void _setIsShowAllCases(bool value) {
     setState(() => _isShowAllCases = value);
-    context.bloc<HomeBloc>().add(FilterCasesByExpiry(value));
+    _homeBloc.add(FilterCasesByExpiry(value));
+  }
+
+  void _setStartEndDates(DateTimeRange dates) {
+    setState(() {
+      _startDate = dates.start;
+      _endDate = dates.end;
+    });
+    _homeBloc.add(FilterCasesByDates(dates));
   }
 }
