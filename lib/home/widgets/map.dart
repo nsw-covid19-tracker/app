@@ -43,7 +43,7 @@ class Map extends StatelessWidget {
     final markers = <Marker>{};
     for (var myCase in cases) {
       markers.add(Marker(
-        markerId: MarkerId(myCase.location),
+        markerId: MarkerId(myCase.venue),
         position: myCase.latLng,
         onTap: () => CaseDialog.show(context, scrollController, myCase),
       ));
