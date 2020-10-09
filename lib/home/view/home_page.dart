@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is HomeSuccess &&
-              state.isShowActiveOnly &&
+              !state.isShowAllCases &&
               state.casesResult.isEmpty) {
             _showNoActiveCasesDialog();
           }
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
             body: Stack(
               fit: StackFit.expand,
               children: [
-                Map(
+                MapWidget(
                   scrollController: _scrollController,
                   panelController: _panelController,
                   cases: cases,

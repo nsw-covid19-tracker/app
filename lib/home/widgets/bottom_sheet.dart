@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-typedef ExpiryCallbackFunc = void Function(bool value);
+typedef ShowAllCallbackFunc = void Function(bool value);
 
 class MyBottomSheet {
   static void show({
     @required BuildContext context,
-    @required bool isShowActiveOnly,
-    @required ExpiryCallbackFunc expiryCallback,
+    @required bool isShowAllCases,
+    @required ShowAllCallbackFunc showAllCallback,
   }) {
     assert(context != null);
-    assert(isShowActiveOnly != null);
-    assert(expiryCallback != null);
+    assert(isShowAllCases != null);
+    assert(showAllCallback != null);
 
     showCustomModalBottomSheet(
       context: context,
       builder: (context, scrollController) => _ModalFit(
-        isShowActiveOnly: isShowActiveOnly,
-        expiryCallback: expiryCallback,
+        isShowAllCases: isShowAllCases,
+        showAllCallback: showAllCallback,
       ),
       containerWidget: (context, animation, child) {
         return _FloatingModal(child: child);
@@ -29,13 +29,13 @@ class MyBottomSheet {
 }
 
 class _ModalFit extends StatelessWidget {
-  final bool isShowActiveOnly;
-  final ExpiryCallbackFunc expiryCallback;
+  final bool isShowAllCases;
+  final ShowAllCallbackFunc showAllCallback;
 
   const _ModalFit({
     Key key,
-    @required this.isShowActiveOnly,
-    @required this.expiryCallback,
+    @required this.isShowAllCases,
+    @required this.showAllCallback,
   }) : super(key: key);
 
   @override
@@ -46,10 +46,10 @@ class _ModalFit extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           CheckboxListTile(
-            title: const Text('Show Active cases only'),
-            value: isShowActiveOnly,
+            title: const Text('Show all cases'),
+            value: isShowAllCases,
             onChanged: (value) {
-              expiryCallback(value);
+              showAllCallback(value);
               Navigator.of(context).pop();
             },
           )

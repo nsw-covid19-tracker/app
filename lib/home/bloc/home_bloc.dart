@@ -35,7 +35,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeInitial) {
       try {
         final cases = await _homeRepo.fetchCases();
-        final newState = HomeSuccess(cases: cases);
+        final activeCases =
+            cases.where((myCase) => (!myCase.isExpired)).toList();
+        final newState = HomeSuccess(cases: cases, casesResult: activeCases);
         yield newState;
         final locations = await _homeRepo.fetchLocations();
         yield newState.copyWith(locations: locations);
@@ -90,12 +92,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currState = state;
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
-      var results = cases.where((myCase) {
-        return (event.isShowActiveOnly && !myCase.isExpired) ||
-            !event.isShowActiveOnly;
+      final results = cases.where((myCase) {
+        return (!event.isShowAllCases && !myCase.isExpired) ||
+            event.isShowAllCases;
       }).toList();
       yield currState.copyWith(
-          casesResult: results, isShowActiveOnly: event.isShowActiveOnly);
+          casesResult: results, isShowAllCases: event.isShowAllCases);
     }
   }
 }

@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-class Map extends StatelessWidget {
+class MapWidget extends StatelessWidget {
   final ScrollController scrollController;
   final PanelController panelController;
   final List<Case> cases;
 
-  Map({
+  MapWidget({
     Key key,
     this.cases,
     @required this.scrollController,
@@ -23,7 +23,7 @@ class Map extends StatelessWidget {
   final _mapController = Completer<GoogleMapController>();
   final _kGooglePlex = CameraPosition(
     target: LatLng(-33.868800, 151.209300),
-    zoom: 14.4746,
+    zoom: 10,
   );
 
   @override
