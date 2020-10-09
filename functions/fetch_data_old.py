@@ -44,8 +44,8 @@ def main():
             if not record["Address"]:
                 continue
 
-            case_loc = record["Location"]
-            suburb = case_loc.split(":")[0]
+            venue = record["Location"]
+            suburb = venue.split(":")[0]
             postcode = re.search(r"\d{4}", record["Address"])
 
             if postcode is None:
@@ -53,7 +53,7 @@ def main():
 
             postcode = postcode[0]
             set_location(postcode, suburb)
-            set_case(postcode, suburb, case_loc, record)
+            set_case(postcode, suburb, venue, record)
 
         url = base_url + result["_links"]["next"]
         page += 1
@@ -67,12 +67,12 @@ def set_location(postcode, suburb):
         location_ref.set({"suburb": suburb})
 
 
-def set_case(postcode, suburb, case_loc, record):
-    datetimes = get_datetimes(case_loc, record)
+def set_case(postcode, suburb, venue, record):
+    datetimes = get_datetimes(venue, record)
     case_dict = {
         "postcode": postcode,
         "suburb": suburb,
-        "location": case_loc,
+        "venue": venue,
         "latitude": float(record["Latitude"]),
         "longitude": float(record["Longitude"]),
         "dateTimes": datetimes,
@@ -81,7 +81,7 @@ def set_case(postcode, suburb, case_loc, record):
     }
 
     m = hashlib.sha384()
-    m.update(case_loc.encode("utf-8"))
+    m.update(venue.encode("utf-8"))
     key = m.hexdigest()
 
     cases_ref = db.reference("cases")
