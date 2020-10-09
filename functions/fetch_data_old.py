@@ -1,12 +1,13 @@
 import datetime as dt
 import firebase_admin
-import hashlib
 import re
 import requests
 import sys
 
-from firebase_admin import credentials, db
+from firebase_admin import credentials
 from loguru import logger
+
+import utils
 
 cred = credentials.Certificate("keyfile.json")
 firebase_admin.initialize_app(
@@ -44,59 +45,22 @@ def main():
             if not record["Address"]:
                 continue
 
-            case_loc = record["Location"]
-            suburb = case_loc.split(":")[0]
+            venue = record["Location"]
+            suburb = venue.split(":")[0]
             postcode = re.search(r"\d{4}", record["Address"])
 
             if postcode is None:
+                logger.warning(f"Failed to find postcode in {record['Address']}")
                 continue
 
             postcode = postcode[0]
-            set_location(postcode, suburb)
-            set_case(postcode, suburb, case_loc, record)
+            utils.add_location(postcode, suburb)
+            datetimes = get_datetimes(venue, record)
+            case_dict = get_case_dict(postcode, suburb, venue, record, datetimes)
+            utils.add_case(venue, case_dict, datetimes)
 
         url = base_url + result["_links"]["next"]
         page += 1
-
-
-def set_location(postcode, suburb):
-    locations_ref = db.reference("locations")
-    location_ref = locations_ref.child(postcode)
-
-    if location_ref.get() is None:
-        location_ref.set({"suburb": suburb})
-
-
-def set_case(postcode, suburb, case_loc, record):
-    datetimes = get_datetimes(case_loc, record)
-    case_dict = {
-        "postcode": postcode,
-        "suburb": suburb,
-        "location": case_loc,
-        "latitude": float(record["Latitude"]),
-        "longitude": float(record["Longitude"]),
-        "dateTimes": datetimes,
-        "action": record["Action"],
-        "isExpired": record["Status"].lower() == "expired",
-    }
-
-    m = hashlib.sha384()
-    m.update(case_loc.encode("utf-8"))
-    key = m.hexdigest()
-
-    cases_ref = db.reference("cases")
-    case_ref = cases_ref.child(key)
-    snapshot = case_ref.get()
-
-    if snapshot is None:
-        case_ref.set(case_dict)
-    else:
-        old_datetimes = set((x["start"], x["end"]) for x in snapshot["dateTimes"])
-        new_datetimes = set((x["start"], x["end"]) for x in datetimes)
-        new_datetimes.update(old_datetimes)
-        case_ref.update(
-            {"dateTimes": [{"start": x[0], "end": x[1]} for x in new_datetimes]}
-        )
 
 
 def get_datetimes(case_loc, record):
@@ -157,6 +121,19 @@ def parse_datetime(date, time):
         pass
 
     return datetime
+
+
+def get_case_dict(postcode, suburb, venue, record, datetimes):
+    return {
+        "postcode": postcode,
+        "suburb": suburb,
+        "venue": venue,
+        "latitude": float(record["Latitude"]),
+        "longitude": float(record["Longitude"]),
+        "dateTimes": datetimes,
+        "action": record["Action"],
+        "isExpired": record["Status"].lower() == "expired",
+    }
 
 
 if __name__ == "__main__":
