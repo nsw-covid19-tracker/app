@@ -1,11 +1,10 @@
 import datetime as dt
 import firebase_admin
-import hashlib
 import re
 import requests
 import sys
 
-from firebase_admin import credentials, db
+from firebase_admin import credentials
 from loguru import logger
 
 import utils
@@ -55,43 +54,13 @@ def main():
                 continue
 
             postcode = postcode[0]
-            utils.set_location(postcode, suburb)
-            set_case(postcode, suburb, venue, record)
+            utils.add_location(postcode, suburb)
+            datetimes = get_datetimes(venue, record)
+            case_dict = get_case_dict(postcode, suburb, venue, record, datetimes)
+            utils.add_case(venue, case_dict, datetimes)
 
         url = base_url + result["_links"]["next"]
         page += 1
-
-
-def set_case(postcode, suburb, venue, record):
-    datetimes = get_datetimes(venue, record)
-    case_dict = {
-        "postcode": postcode,
-        "suburb": suburb,
-        "venue": venue,
-        "latitude": float(record["Latitude"]),
-        "longitude": float(record["Longitude"]),
-        "dateTimes": datetimes,
-        "action": record["Action"],
-        "isExpired": record["Status"].lower() == "expired",
-    }
-
-    m = hashlib.sha384()
-    m.update(venue.encode("utf-8"))
-    key = m.hexdigest()
-
-    cases_ref = db.reference("cases")
-    case_ref = cases_ref.child(key)
-    snapshot = case_ref.get()
-
-    if snapshot is None:
-        case_ref.set(case_dict)
-    else:
-        old_datetimes = set((x["start"], x["end"]) for x in snapshot["dateTimes"])
-        new_datetimes = set((x["start"], x["end"]) for x in datetimes)
-        new_datetimes.update(old_datetimes)
-        case_ref.update(
-            {"dateTimes": [{"start": x[0], "end": x[1]} for x in new_datetimes]}
-        )
 
 
 def get_datetimes(case_loc, record):
@@ -152,6 +121,19 @@ def parse_datetime(date, time):
         pass
 
     return datetime
+
+
+def get_case_dict(postcode, suburb, venue, record, datetimes):
+    return {
+        "postcode": postcode,
+        "suburb": suburb,
+        "venue": venue,
+        "latitude": float(record["Latitude"]),
+        "longitude": float(record["Longitude"]),
+        "dateTimes": datetimes,
+        "action": record["Action"],
+        "isExpired": record["Status"].lower() == "expired",
+    }
 
 
 if __name__ == "__main__":

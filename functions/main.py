@@ -1,11 +1,10 @@
 import datetime as dt
 import firebase_admin
-import hashlib
 import json
 import requests
 import sys
 
-from firebase_admin import credentials, db
+from firebase_admin import credentials
 from loguru import logger
 from requests_html import HTMLSession
 
@@ -59,10 +58,12 @@ def main():
                     logger.warning(f"Failed to find postcode for {suburb}")
                     continue
 
-            utils.set_location(postcode, suburb)
+            utils.add_location(postcode, suburb)
             venue += f", {suburb} NSW {postcode}"
             venue = venue.strip()
-            set_case(postcode, suburb, venue, result)
+            datetimes = [get_datetime(result)]
+            case_dict = get_case_dict(postcode, suburb, venue, result, datetimes)
+            utils.add_case(venue, case_dict, datetimes)
 
 
 def get_postcode(suburb):
@@ -87,38 +88,6 @@ def get_postcode(suburb):
     return postcode
 
 
-def set_case(postcode, suburb, venue, result):
-    datetimes = [get_datetime(result)]
-    case_dict = {
-        "postcode": postcode,
-        "suburb": suburb,
-        "venue": venue,
-        "latitude": float(result["Lat"]),
-        "longitude": float(result["Lon"]),
-        "dateTimes": datetimes,
-        "action": result["Alert"],
-        "isExpired": False,
-    }
-
-    m = hashlib.sha384()
-    m.update(venue.encode("utf-8"))
-    key = m.hexdigest()
-
-    cases_ref = db.reference("cases")
-    case_ref = cases_ref.child(key)
-    snapshot = case_ref.get()
-
-    if snapshot is None:
-        case_ref.set(case_dict)
-    else:
-        old_datetimes = set((x["start"], x["end"]) for x in snapshot["dateTimes"])
-        new_datetimes = set((x["start"], x["end"]) for x in datetimes)
-        new_datetimes.update(old_datetimes)
-        case_ref.update(
-            {"dateTimes": [{"start": x[0], "end": x[1]} for x in new_datetimes]}
-        )
-
-
 def get_datetime(result):
     date = result["Date"]
     start_time, end_time = result["Time"].split(" to ")
@@ -133,6 +102,19 @@ def parse_datetime(datetime):
         return dt.datetime.strptime(datetime, "%A %d %B %Y %I:%M%p").isoformat()
     except ValueError:
         return dt.datetime.strptime(datetime, "%A %d %B %Y %I.%M%p").isoformat()
+
+
+def get_case_dict(postcode, suburb, venue, result, datetimes):
+    return {
+        "postcode": postcode,
+        "suburb": suburb,
+        "venue": venue,
+        "latitude": float(result["Lat"]),
+        "longitude": float(result["Lon"]),
+        "dateTimes": datetimes,
+        "action": result["Alert"],
+        "isExpired": False,
+    }
 
 
 if __name__ == "__main__":
