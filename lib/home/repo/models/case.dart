@@ -52,10 +52,16 @@ class Case extends Equatable {
     }
 
     for (final dateTime in queue.toList()) {
-      final formattedStart =
-          DateFormat('E d MMM, y h:mma').format(dateTime['start']);
-      final formattedEnd = DateFormat('h:mma').format(dateTime['end']);
-      result += '$formattedStart to $formattedEnd\n';
+      if (dateTime['start'] != dateTime['end']) {
+        final formattedStart =
+            DateFormat('E d MMM, y h:mma').format(dateTime['start']);
+        final formattedEnd = DateFormat('h:mma').format(dateTime['end']);
+        result += '- $formattedStart to $formattedEnd\n';
+      } else {
+        final formattedDate =
+            DateFormat('E d MMM, y').format(dateTime['start']);
+        result += '- $formattedDate\n';
+      }
     }
 
     return result.trim();
