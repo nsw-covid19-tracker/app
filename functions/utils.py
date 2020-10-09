@@ -1,3 +1,4 @@
+import datetime as dt
 import hashlib
 
 from firebase_admin import db
@@ -26,6 +27,18 @@ def add_case(venue, case_dict, datetimes):
         old_datetimes = set((x["start"], x["end"]) for x in snapshot["dateTimes"])
         new_datetimes = set((x["start"], x["end"]) for x in datetimes)
         new_datetimes.update(old_datetimes)
+        result_datetimes = [{"start": x[0], "end": x[1]} for x in new_datetimes]
         case_ref.update(
-            {"dateTimes": [{"start": x[0], "end": x[1]} for x in new_datetimes]}
+            {
+                "dateTimes": result_datetimes,
+                "isExpired": is_case_expired(result_datetimes),
+            }
         )
+
+
+def is_case_expired(datetimes):
+    tmp_list = [dt.datetime.fromisoformat(x["end"]) for x in datetimes]
+    last_datetime = sorted(tmp_list)[-1] + dt.timedelta(days=14)
+    curr_datetime = dt.datetime.now()
+
+    return last_datetime < curr_datetime

@@ -113,7 +113,7 @@ def get_case_dict(postcode, suburb, venue, result, datetimes):
         "longitude": float(result["Lon"]),
         "dateTimes": datetimes,
         "action": result["Alert"],
-        "isExpired": False,
+        "isExpired": utils.is_case_expired(datetimes),
     }
 
 
