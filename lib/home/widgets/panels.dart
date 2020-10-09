@@ -87,27 +87,10 @@ class _PanelState extends State<Panel> {
         ),
         SizedBox(height: 16),
         Expanded(
-          child: ListView.separated(
-            controller: widget.panelSc,
-            shrinkWrap: true,
-            itemCount: widget.cases.length,
-            itemBuilder: (context, index) {
-              final myCase = widget.cases[index];
-              final expiredText = myCase.isExpired ? ' (Expired)' : '';
-
-              return ListTile(
-                title: Text('${myCase.venue}$expiredText'),
-                subtitle: Text(myCase.formattedDateTimes),
-                onTap: () {
-                  CaseDialog.show(context, _dialogSc, myCase);
-                },
-              );
-            },
-            separatorBuilder: (context, index) => Divider(
-              color: Colors.grey,
-              indent: 16,
-              endIndent: 16,
-            ),
+          child: _CasesListView(
+            panelSc: widget.panelSc,
+            dialogSc: _dialogSc,
+            cases: widget.cases,
           ),
         ),
       ],
@@ -126,6 +109,95 @@ class _SlidingBar extends StatelessWidget {
         color: Colors.grey,
         borderRadius: BorderRadius.circular(10),
       ),
+    );
+  }
+}
+
+class _CasesListView extends StatelessWidget {
+  final ScrollController panelSc;
+  final ScrollController dialogSc;
+  final List<Case> cases;
+
+  const _CasesListView({
+    Key key,
+    @required this.panelSc,
+    @required this.dialogSc,
+    @required this.cases,
+  })  : assert(panelSc != null),
+        assert(dialogSc != null),
+        assert(cases != null),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final activeCases = <Case>[];
+    final expiredCases = <Case>[];
+
+    for (final myCase in cases) {
+      if (myCase.isExpired) {
+        expiredCases.add(myCase);
+      } else {
+        activeCases.add(myCase);
+      }
+    }
+
+    var itemCount = cases.length;
+    if (activeCases.isNotEmpty) itemCount++;
+    if (expiredCases.isNotEmpty) itemCount++;
+
+    return ListView.separated(
+      controller: panelSc,
+      shrinkWrap: true,
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (index == 0 || index == activeCases.length + 1) {
+          var title = 'Expired';
+          var topPadding = 16.0;
+          var bottomPadding = 16.0;
+
+          if (index == 0 && activeCases.isNotEmpty) {
+            title = 'Recent Case Locations';
+            topPadding = 0;
+          }
+
+          return Padding(
+            padding: EdgeInsets.only(top: topPadding, bottom: bottomPadding),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .subtitle1
+                  .apply(fontWeightDelta: 3),
+            ),
+          );
+        } else {
+          Case myCase;
+          if (index < activeCases.length + 1) {
+            myCase = activeCases[index - 1];
+          } else {
+            var offset = 1;
+            if (activeCases.isNotEmpty) offset = 2;
+            myCase = expiredCases[index - activeCases.length - offset];
+          }
+
+          return ListTile(
+            title: Text('${myCase.venue}'),
+            subtitle: Text(myCase.formattedDateTimes),
+            onTap: () {
+              CaseDialog.show(context, dialogSc, myCase);
+            },
+          );
+        }
+      },
+      separatorBuilder: (context, index) =>
+          index == 0 || index == activeCases.length + 1
+              ? SizedBox.shrink()
+              : Divider(
+                  color: Colors.grey,
+                  indent: 16,
+                  endIndent: 16,
+                ),
     );
   }
 }
