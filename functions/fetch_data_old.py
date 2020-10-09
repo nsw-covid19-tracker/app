@@ -8,6 +8,8 @@ import sys
 from firebase_admin import credentials, db
 from loguru import logger
 
+import utils
+
 cred = credentials.Certificate("keyfile.json")
 firebase_admin.initialize_app(
     cred, {"databaseURL": f"https://{cred.project_id}.firebaseio.com"}
@@ -49,22 +51,15 @@ def main():
             postcode = re.search(r"\d{4}", record["Address"])
 
             if postcode is None:
+                logger.warning(f"Failed to find postcode in {record['Address']}")
                 continue
 
             postcode = postcode[0]
-            set_location(postcode, suburb)
+            utils.set_location(postcode, suburb)
             set_case(postcode, suburb, venue, record)
 
         url = base_url + result["_links"]["next"]
         page += 1
-
-
-def set_location(postcode, suburb):
-    locations_ref = db.reference("locations")
-    location_ref = locations_ref.child(postcode)
-
-    if location_ref.get() is None:
-        location_ref.set({"suburb": suburb})
 
 
 def set_case(postcode, suburb, venue, record):
