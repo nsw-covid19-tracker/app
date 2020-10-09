@@ -41,7 +41,7 @@ class _CaseInfo extends StatelessWidget {
           controller: controller,
           children: [
             Text(
-              '${myCase.location}$expiredText',
+              '${myCase.venue}$expiredText',
               style: Theme.of(context)
                   .textTheme
                   .subtitle1
@@ -49,7 +49,7 @@ class _CaseInfo extends StatelessWidget {
             ),
             WidgetPaddingSm(),
             Text('Dates', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(myCase.dates),
+            Text(myCase.formattedDateTimes),
             WidgetPaddingSm(),
             RichText(
               text: TextSpan(

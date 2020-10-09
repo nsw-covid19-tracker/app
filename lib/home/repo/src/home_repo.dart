@@ -25,7 +25,7 @@ class HomeRepo {
   Future<List<Case>> fetchCases() async {
     final snapshot = await _casesRef.once();
     final queue = PriorityQueue<Case>(
-      (Case a, Case b) => a.location.compareTo(b.location),
+      (Case a, Case b) => a.venue.compareTo(b.venue),
     );
 
     for (MapEntry entry in snapshot.value.entries) {

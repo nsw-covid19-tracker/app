@@ -103,8 +103,8 @@ class _PanelState extends State<Panel> {
               final expiredText = myCase.isExpired ? ' (Expired)' : '';
 
               return ListTile(
-                title: Text('${myCase.location}$expiredText'),
-                subtitle: Text(myCase.dates),
+                title: Text('${myCase.venue}$expiredText'),
+                subtitle: Text(myCase.formattedDateTimes),
                 onTap: () {
                   CaseDialog.show(context, _dialogSc, myCase);
                 },
