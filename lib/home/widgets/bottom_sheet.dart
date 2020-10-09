@@ -1,24 +1,43 @@
+import 'package:covid_tracing/home/common/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 typedef ShowAllCallbackFunc = void Function(bool value);
+typedef FilterDateCallbackFunc = void Function(DateTime start, DateTime end);
 
 class MyBottomSheet {
   static void show({
     @required BuildContext context,
     @required bool isShowAllCases,
     @required ShowAllCallbackFunc showAllCallback,
+    @required DateTime startDate,
+    @required DateTime endDate,
+    @required FilterDateCallbackFunc filterDateCallback,
   }) {
-    assert(context != null);
-    assert(isShowAllCases != null);
-    assert(showAllCallback != null);
-
     showCustomModalBottomSheet(
       context: context,
-      builder: (context, scrollController) => _ModalFit(
-        isShowAllCases: isShowAllCases,
-        showAllCallback: showAllCallback,
+      builder: (context, scrollController) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CheckboxListTile(
+              title: const Text('Show all cases'),
+              value: isShowAllCases,
+              onChanged: (value) {
+                showAllCallback(value);
+                Navigator.of(context).pop();
+              },
+            ),
+            Divider(indent: 16, endIndent: 16),
+            _DateListTile(
+              start: startDate,
+              end: endDate,
+              callback: filterDateCallback,
+            ),
+          ],
+        ),
       ),
       containerWidget: (context, animation, child) {
         return _FloatingModal(child: child);
@@ -28,32 +47,51 @@ class MyBottomSheet {
   }
 }
 
-class _ModalFit extends StatelessWidget {
-  final bool isShowAllCases;
-  final ShowAllCallbackFunc showAllCallback;
+class _DateListTile extends StatelessWidget {
+  final DateTime start;
+  final DateTime end;
+  final FilterDateCallbackFunc callback;
 
-  const _ModalFit({
+  const _DateListTile({
     Key key,
-    @required this.isShowAllCases,
-    @required this.showAllCallback,
-  }) : super(key: key);
+    @required this.start,
+    @required this.end,
+    @required this.callback,
+  })  : assert(start != null),
+        assert(end != null),
+        assert(callback != null),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CheckboxListTile(
-            title: const Text('Show all cases'),
-            value: isShowAllCases,
-            onChanged: (value) {
-              showAllCallback(value);
-              Navigator.of(context).pop();
-            },
-          )
-        ],
+    final dateFormat = DateFormat('E d MMM, y');
+
+    return InkWell(
+      onTap: () async {
+        final dateTimeRange = await showDateRangePicker(
+          context: context,
+          firstDate: DateTime(2020, 7, 1),
+          lastDate: DateTime.now(),
+        );
+        if (dateTimeRange != null) {
+          callback(dateTimeRange.start, dateTimeRange.end);
+          Navigator.of(context).pop();
+        }
+      },
+      child: Padding(
+        padding: kLayoutPadding,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Dates'),
+            Column(
+              children: [
+                Text(dateFormat.format(start)),
+                Text(dateFormat.format(end)),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
