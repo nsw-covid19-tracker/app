@@ -37,16 +37,9 @@ class CollapsedPanel extends StatelessWidget {
               child: _SlidingBar(),
             ),
             Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.list),
-                  SizedBox(width: 8),
-                  Text(
-                    'Show List',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
+              child: Text(
+                'Show list of locations',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             )
           ],
