@@ -69,7 +69,7 @@ def main():
                 "action": record["Action"],
                 "isExpired": record["Status"].lower() == "expired",
             }
-            utils.add_case(venue, case_dict, datetimes)
+            utils.add_case(case_dict, datetimes)
 
         url = base_url + result["_links"]["next"]
         page += 1

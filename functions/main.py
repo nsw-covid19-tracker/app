@@ -40,6 +40,10 @@ def main():
             suburb = result["Suburb"]
             venue = result["Venue"]
 
+            if isinstance(venue, list):
+                logger.warning(f"Skipped {', '.join(venue)}")
+                continue
+
             if suburb in postcodes:
                 postcode = postcodes[suburb]
             else:
@@ -47,33 +51,24 @@ def main():
                 postcodes[suburb] = postcode
 
             if postcode is None:
-                suburb, venue = venue, suburb
-                if suburb in postcodes:
-                    postcode = postcodes[suburb]
-                else:
-                    postcode = get_postcode(suburb)
-                    postcodes[suburb] = postcode
-
-                if postcode is None:
-                    logger.warning(f"Failed to find postcode for {suburb}")
-                    continue
+                logger.warning(f"Failed to find postcode for {suburb}")
+                continue
 
             utils.add_location(postcode, suburb)
-            venue = f"{suburb}: " + venue
-            venue = venue.strip()
             datetimes = [get_datetime(result)]
 
             case_dict = {
                 "postcode": postcode,
                 "suburb": suburb,
-                "venue": venue,
+                "venue": venue.replace("<br/>", ""),
+                "address": f"{result['Address']}, {suburb} NSW {postcode}",
                 "latitude": float(result["Lat"]),
                 "longitude": float(result["Lon"]),
                 "dateTimes": datetimes,
                 "action": result["Alert"],
                 "isExpired": utils.is_case_expired(datetimes),
             }
-            utils.add_case(venue, case_dict, datetimes)
+            utils.add_case(case_dict, datetimes)
 
 
 def get_postcode(suburb):
@@ -101,17 +96,14 @@ def get_postcode(suburb):
 def get_datetime(result):
     date = result["Date"]
     start_time, end_time = result["Time"].split(" to ")
-    start = f"{date} {start_time}"
-    end = f"{date} {end_time}"
+    start = f"{date} {start_time.strip()}"
+    end = f"{date} {end_time.strip()}"
 
     return {"start": parse_datetime(start), "end": parse_datetime(end)}
 
 
 def parse_datetime(datetime):
-    try:
-        return dt.datetime.strptime(datetime, "%A %d %B %Y %I:%M%p").isoformat()
-    except ValueError:
-        return dt.datetime.strptime(datetime, "%A %d %B %Y %I.%M%p").isoformat()
+    return dt.datetime.strptime(datetime, "%A, %d %B %Y %I:%M%p").isoformat()
 
 
 if __name__ == "__main__":
