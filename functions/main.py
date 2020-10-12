@@ -59,10 +59,20 @@ def main():
                     continue
 
             utils.add_location(postcode, suburb)
-            venue += f", {suburb} NSW {postcode}"
+            venue = f"{suburb}: " + venue
             venue = venue.strip()
             datetimes = [get_datetime(result)]
-            case_dict = get_case_dict(postcode, suburb, venue, result, datetimes)
+
+            case_dict = {
+                "postcode": postcode,
+                "suburb": suburb,
+                "venue": venue,
+                "latitude": float(result["Lat"]),
+                "longitude": float(result["Lon"]),
+                "dateTimes": datetimes,
+                "action": result["Alert"],
+                "isExpired": utils.is_case_expired(datetimes),
+            }
             utils.add_case(venue, case_dict, datetimes)
 
 
@@ -102,19 +112,6 @@ def parse_datetime(datetime):
         return dt.datetime.strptime(datetime, "%A %d %B %Y %I:%M%p").isoformat()
     except ValueError:
         return dt.datetime.strptime(datetime, "%A %d %B %Y %I.%M%p").isoformat()
-
-
-def get_case_dict(postcode, suburb, venue, result, datetimes):
-    return {
-        "postcode": postcode,
-        "suburb": suburb,
-        "venue": venue,
-        "latitude": float(result["Lat"]),
-        "longitude": float(result["Lon"]),
-        "dateTimes": datetimes,
-        "action": result["Alert"],
-        "isExpired": utils.is_case_expired(datetimes),
-    }
 
 
 if __name__ == "__main__":
