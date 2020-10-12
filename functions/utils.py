@@ -12,9 +12,10 @@ def add_location(postcode, suburb):
         location_ref.set({"suburb": suburb})
 
 
-def add_case(venue, case_dict, datetimes):
+def add_case(case_dict, datetimes):
     m = hashlib.sha384()
-    m.update(venue.encode("utf-8"))
+    m.update(str(case_dict["latitude"]).encode("utf-8"))
+    m.update(str(case_dict["longitude"]).encode("utf-8"))
     key = m.hexdigest()
 
     cases_ref = db.reference("cases")
