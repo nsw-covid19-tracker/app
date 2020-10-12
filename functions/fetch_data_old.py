@@ -42,21 +42,33 @@ def main():
             break
 
         for record in records:
-            if not record["Address"]:
+            address = record["Address"]
+            if not address:
                 continue
 
             venue = record["Location"]
             suburb = venue.split(":")[0]
-            postcode = re.search(r"\d{4}", record["Address"])
+            postcode = re.search(r"\d{4}", address)
 
             if postcode is None:
-                logger.warning(f"Failed to find postcode in {record['Address']}")
+                logger.warning(f"Failed to find postcode in {address}")
                 continue
 
             postcode = postcode[0]
             utils.add_location(postcode, suburb)
             datetimes = get_datetimes(venue, record)
-            case_dict = get_case_dict(postcode, suburb, venue, record, datetimes)
+
+            case_dict = {
+                "postcode": postcode,
+                "suburb": suburb,
+                "venue": venue,
+                "address": address,
+                "latitude": float(record["Latitude"]),
+                "longitude": float(record["Longitude"]),
+                "dateTimes": datetimes,
+                "action": record["Action"],
+                "isExpired": record["Status"].lower() == "expired",
+            }
             utils.add_case(venue, case_dict, datetimes)
 
         url = base_url + result["_links"]["next"]
@@ -121,19 +133,6 @@ def parse_datetime(date, time):
         pass
 
     return datetime
-
-
-def get_case_dict(postcode, suburb, venue, record, datetimes):
-    return {
-        "postcode": postcode,
-        "suburb": suburb,
-        "venue": venue,
-        "latitude": float(record["Latitude"]),
-        "longitude": float(record["Longitude"]),
-        "dateTimes": datetimes,
-        "action": record["Action"],
-        "isExpired": record["Status"].lower() == "expired",
-    }
 
 
 if __name__ == "__main__":
