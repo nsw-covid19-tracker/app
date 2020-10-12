@@ -29,7 +29,7 @@ class _CaseInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.3,
+      height: MediaQuery.of(context).size.height * 0.4,
       padding: kLayoutPadding,
       child: FadingEdgeScrollView.fromScrollView(
         child: ListView(
@@ -51,6 +51,12 @@ class _CaseInfo extends StatelessWidget {
                   .subtitle1
                   .apply(fontWeightDelta: 1),
             ),
+            WidgetPaddingSm(),
+            Text(
+              'Address',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(myCase.address),
             WidgetPaddingSm(),
             Text(
               'Date and Time',

@@ -22,8 +22,8 @@ class MapWidget extends StatelessWidget {
 
   final _mapController = Completer<GoogleMapController>();
   final _kGooglePlex = CameraPosition(
-    target: LatLng(-33.868800, 151.209300),
-    zoom: 10,
+    target: LatLng(-33.918200, 151.035000),
+    zoom: 9,
   );
 
   @override
