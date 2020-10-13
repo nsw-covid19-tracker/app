@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:covid_tracing/home/common/consts.dart';
 import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapFilterCasesByDatesToState(event);
     } else if (event is EmptyActiveCasesHandled) {
       yield* _mapEmptyActiveCasesHandledToState(event);
+    } else if (event is SortCases) {
+      yield* _mapSortCasesToState(event);
     }
   }
 
@@ -139,6 +142,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currState = state;
     if (currState is HomeSuccess) {
       yield currState.copyWith(isEmptyActiveCases: false);
+    }
+  }
+
+  Stream<HomeState> _mapSortCasesToState(SortCases event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      final cases = List<Case>.from(currState.casesResult);
+      if (event.sortBy == kAlphabetically) {
+        cases.sort((a, b) => a.venue.compareTo(b.venue));
+      } else if (event.sortBy == kMostRecent) {
+        cases.sort(
+            (a, b) => b.dateTimes.last.start.compareTo(a.dateTimes.last.start));
+      }
+
+      yield currState.copyWith(casesResult: cases);
     }
   }
 
