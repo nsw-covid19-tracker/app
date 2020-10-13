@@ -29,7 +29,7 @@ class _CaseInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.4,
+      height: MediaQuery.of(context).size.height * 0.3,
       padding: kLayoutPadding,
       child: FadingEdgeScrollView.fromScrollView(
         child: ListView(
@@ -63,24 +63,6 @@ class _CaseInfo extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(myCase.formattedDateTimes),
-            WidgetPaddingSm(),
-            RichText(
-              text: TextSpan(
-                text: 'Suggested Action ',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-                children: <TextSpan>[
-                  TextSpan(
-                    text: '(If you visited this location at the times above)',
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                ],
-              ),
-            ),
-            Text(myCase.action),
-            WidgetPaddingSm(),
           ],
         ),
       ),
