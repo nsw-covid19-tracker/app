@@ -23,6 +23,7 @@ class HomeRepo {
   }
 
   Future<List<Case>> fetchCases() async {
+    await _casesRef.keepSynced(true);
     final snapshot = await _casesRef.once();
     final queue = PriorityQueue<Case>(
       (Case a, Case b) => a.venue.compareTo(b.venue),
