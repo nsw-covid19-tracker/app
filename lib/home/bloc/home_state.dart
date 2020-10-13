@@ -11,7 +11,7 @@ class HomeInitial extends HomeState {}
 
 class HomeFailure extends HomeState {}
 
-@CopyWith()
+@CopyWith(generateCopyWithNull: true)
 class HomeSuccess extends HomeState {
   final List<Location> locations;
   final List<Case> cases;
@@ -20,6 +20,7 @@ class HomeSuccess extends HomeState {
   final bool isShowAllCases;
   final bool isEmptyActiveCases;
   final bool isSortCases;
+  final String filteredPostcode;
 
   HomeSuccess({
     this.locations,
@@ -29,6 +30,7 @@ class HomeSuccess extends HomeState {
     this.isShowAllCases = false,
     this.isEmptyActiveCases = false,
     this.isSortCases = false,
+    this.filteredPostcode,
   });
 
   @override
@@ -41,6 +43,7 @@ class HomeSuccess extends HomeState {
       isShowAllCases,
       isEmptyActiveCases,
       isSortCases,
+      filteredPostcode,
     ];
   }
 
@@ -50,6 +53,7 @@ class HomeSuccess extends HomeState {
         'cases: ${cases?.length}, locationsResult: ${locationsResult?.length}, '
         'casesResult: ${casesResult?.length}, '
         'isShowAllCases: $isShowAllCases, '
-        'isEmptyActiveCases: $isEmptyActiveCases, isSortCases: $isSortCases }';
+        'isEmptyActiveCases: $isEmptyActiveCases, isSortCases: $isSortCases,'
+        'filteredPostcode: $filteredPostcode }';
   }
 }

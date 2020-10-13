@@ -64,6 +64,7 @@ class _SearchBarState extends State<SearchBar> {
       // Specify a custom transition to be used for
       // animating between opened and closed stated.
       transition: CircularFloatingSearchBarTransition(),
+      showDrawerHamburger: false,
       actions: [
         FloatingSearchBarAction.searchToClear(showIfClosed: true),
       ],
