@@ -36,7 +36,10 @@ class _HomePageState extends State<HomePage> {
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is HomeSuccess) {
-            if (state.isEmptyActiveCases) {
+            if (state.isSearch && !state.isEmptyActiveCases) {
+              _panelController.open();
+              _homeBloc.add(SearchHandled());
+            } else if (state.isEmptyActiveCases) {
               _showNoActiveCasesDialog();
               _homeBloc.add(EmptyActiveCasesHandled());
             } else if (state.isSortCases) {
@@ -79,7 +82,6 @@ class _HomePageState extends State<HomePage> {
                 SearchBar(
                   locations: locations,
                   onSearchBarTap: () => _panelController.close(),
-                  onSearchResultTap: () => _panelController.open(),
                 ),
               ],
             ),
