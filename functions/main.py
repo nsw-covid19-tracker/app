@@ -1,6 +1,7 @@
 import datetime as dt
 import firebase_admin
 import json
+import re
 import requests
 import sys
 
@@ -39,10 +40,17 @@ def main():
         for result in data[key]:
             suburb = result["Suburb"]
             venue = result["Venue"]
+            address = result["Address"]
+            action = result["Alert"]
 
-            if isinstance(venue, list):
-                logger.warning(f"Skipped {', '.join(venue)}")
-                continue
+            if isinstance(suburb, list):
+                suburb = suburb[0]
+                venue = ', '.join(venue)
+                address = re.sub(r"^.*\d+/", "", address[0])
+                action = action[0]
+                datetimes = get_datetimes(result)
+            else:
+                datetimes = [get_datetime(result)]
 
             if suburb in postcodes:
                 postcode = postcodes[suburb]
@@ -55,17 +63,15 @@ def main():
                 continue
 
             utils.add_location(postcode, suburb)
-            datetimes = [get_datetime(result)]
-
             case_dict = {
                 "postcode": postcode,
                 "suburb": suburb,
-                "venue": venue.replace("<br/>", ""),
-                "address": f"{result['Address']}, {suburb} NSW {postcode}",
+                "venue": f"{suburb}: {venue.replace('<br/>', '')}",
+                "address": f"{address}, {suburb} NSW {postcode}",
                 "latitude": float(result["Lat"]),
                 "longitude": float(result["Lon"]),
                 "dateTimes": datetimes,
-                "action": result["Alert"],
+                "action": action,
                 "isExpired": utils.is_case_expired(datetimes),
             }
             utils.add_case(case_dict, datetimes)
@@ -100,6 +106,18 @@ def get_datetime(result):
     end = f"{date} {end_time.strip()}"
 
     return {"start": parse_datetime(start), "end": parse_datetime(end)}
+
+
+def get_datetimes(result):
+    datetimes = []
+    for i in range(len(result["Date"])):
+        date = result["Date"][i]
+        start_time, end_time = result["Time"][i].split(" to ")
+        start = f"{date} {start_time.strip()}"
+        end = f"{date} {end_time.strip()}"
+        datetimes.append({"start": parse_datetime(start), "end": parse_datetime(end)})
+
+    return datetimes
 
 
 def parse_datetime(datetime):
