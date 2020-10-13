@@ -88,11 +88,18 @@ class _PanelState extends State<Panel> {
         ),
         SizedBox(height: 16),
         Expanded(
-          child: _CasesListView(
-            panelSc: widget.panelSc,
-            dialogSc: _dialogSc,
-            cases: widget.cases,
-          ),
+          child: widget.cases.isNotEmpty
+              ? _CasesListView(
+                  panelSc: widget.panelSc,
+                  dialogSc: _dialogSc,
+                  cases: widget.cases,
+                )
+              : Center(
+                  child: Text(
+                    'No cases found',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
         ),
       ],
     );
