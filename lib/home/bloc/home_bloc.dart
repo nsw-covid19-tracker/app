@@ -90,11 +90,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currState = state;
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
-      var results = cases.where((myCase) {
-        return _filterByStatus(myCase, currState.isShowAllCases) &&
-            _filterByPostcode(myCase, event.postcode) &&
-            _filterByDates(myCase, currState.filteredDates);
-      }).toList();
+      final results = _filterCases(cases, currState.isShowAllCases,
+          event.postcode, currState.filteredDates);
       yield currState.copyWith(
         casesResult: results,
         isEmptyActiveCases: !currState.isShowAllCases && results.isEmpty,
@@ -132,11 +129,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currState = state;
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
-      final results = cases.where((myCase) {
-        return _filterByStatus(myCase, event.isShowAllCases) &&
-            _filterByPostcode(myCase, currState.filteredPostcode) &&
-            _filterByDates(myCase, currState.filteredDates);
-      }).toList();
+      final results = _filterCases(cases, event.isShowAllCases,
+          currState.filteredPostcode, currState.filteredDates);
       yield currState.copyWith(
         casesResult: results,
         isShowAllCases: event.isShowAllCases,
@@ -150,11 +144,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currState = state;
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
-      final results = cases.where((myCase) {
-        return _filterByStatus(myCase, currState.isShowAllCases) &&
-            _filterByPostcode(myCase, currState.filteredPostcode) &&
-            _filterByDates(myCase, event.dates);
-      }).toList();
+      final results = _filterCases(cases, currState.isShowAllCases,
+          currState.filteredPostcode, event.dates);
       yield currState.copyWith(
         casesResult: results,
         isEmptyActiveCases: !currState.isShowAllCases && results.isEmpty,
@@ -197,6 +188,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeSuccess) {
       yield currState.copyWith(isSortCases: false);
     }
+  }
+
+  List<Case> _filterCases(List<Case> cases, bool isShowAllCases,
+      String postcode, DateTimeRange dates) {
+    return cases.where((myCase) {
+      return _filterByStatus(myCase, isShowAllCases) &&
+          _filterByPostcode(myCase, postcode) &&
+          _filterByDates(myCase, dates);
+    }).toList();
   }
 
   bool _filterByStatus(Case myCase, bool isShowAllCases) {
