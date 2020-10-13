@@ -12,6 +12,8 @@ part 'home_bloc.g.dart';
 part 'home_event.dart';
 part 'home_state.dart';
 
+typedef CasesComparator = int Function(Case a, Case b);
+
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final HomeRepo _homeRepo;
 
@@ -150,15 +152,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _mapSortCasesToState(SortCases event) async* {
     final currState = state;
     if (currState is HomeSuccess) {
-      final cases = List<Case>.from(currState.casesResult);
+      final cases = List<Case>.from(currState.cases);
+      final casesResult = List<Case>.from(currState.casesResult);
+      CasesComparator comparator;
+
       if (event.sortBy == kAlphabetically) {
-        cases.sort((a, b) => a.venue.compareTo(b.venue));
+        comparator = (a, b) => a.venue.compareTo(b.venue);
       } else if (event.sortBy == kMostRecent) {
-        cases.sort(
-            (a, b) => b.dateTimes.last.start.compareTo(a.dateTimes.last.start));
+        comparator =
+            (a, b) => b.dateTimes.last.end.compareTo(a.dateTimes.last.end);
       }
 
-      yield currState.copyWith(casesResult: cases, isSortCases: true);
+      cases.sort(comparator);
+      casesResult.sort(comparator);
+      yield currState.copyWith(
+          cases: cases, casesResult: casesResult, isSortCases: true);
     }
   }
 
