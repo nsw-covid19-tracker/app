@@ -6,16 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SearchBar extends StatefulWidget {
   final List<Location> locations;
-  final Function onSearchResultTap;
   final Function onSearchBarTap;
 
   const SearchBar({
     Key key,
     @required this.locations,
-    @required this.onSearchResultTap,
     @required this.onSearchBarTap,
   })  : assert(locations != null),
-        assert(onSearchResultTap != null),
         assert(onSearchBarTap != null),
         super(key: key);
 
@@ -83,7 +80,6 @@ class _SearchBarState extends State<SearchBar> {
                         onTap: () {
                           controller.query = location.suburb;
                           controller.close();
-                          widget.onSearchResultTap();
                           context
                               .bloc<HomeBloc>()
                               .add(FilterCasesByPostcode(location.postcode));

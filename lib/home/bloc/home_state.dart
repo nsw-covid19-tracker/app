@@ -20,6 +20,7 @@ class HomeSuccess extends HomeState {
   final bool isShowAllCases;
   final bool isEmptyActiveCases;
   final bool isSortCases;
+  final bool isSearch;
   final String filteredPostcode;
   final DateTimeRange filteredDates;
 
@@ -31,6 +32,7 @@ class HomeSuccess extends HomeState {
     this.isShowAllCases = false,
     this.isEmptyActiveCases = false,
     this.isSortCases = false,
+    this.isSearch = false,
     this.filteredPostcode,
     this.filteredDates,
   });
@@ -55,7 +57,7 @@ class HomeSuccess extends HomeState {
     return 'HomeSuccess: { locations: ${locations?.length}, '
         'cases: ${cases?.length}, locationsResult: ${locationsResult?.length}, '
         'casesResult: ${casesResult?.length}, '
-        'isShowAllCases: $isShowAllCases, '
+        'isShowAllCases: $isShowAllCases, isSearch: $isSearch, '
         'isEmptyActiveCases: $isEmptyActiveCases, isSortCases: $isSortCases, '
         'filteredPostcode: $filteredPostcode, filteredDates: $filteredDates }';
   }

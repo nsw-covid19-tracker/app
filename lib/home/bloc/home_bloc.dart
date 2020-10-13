@@ -27,6 +27,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapSearchLocationsToState(event);
     } else if (event is FilterCasesByPostcode) {
       yield* _mapFilterCasesByPostcodeToState(event);
+    } else if (event is SearchHandled) {
+      yield* _mapSearchHandledToState(event);
     } else if (event is ClearFilteredCases) {
       yield* _mapClearFilteredCasesToState(event);
     } else if (event is FilterCasesByExpiry) {
@@ -97,7 +99,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         casesResult: results,
         isEmptyActiveCases: !currState.isShowAllCases && results.isEmpty,
         filteredPostcode: event.postcode,
+        isSearch: true,
       );
+    }
+  }
+
+  Stream<HomeState> _mapSearchHandledToState(SearchHandled event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      yield currState.copyWith(isSearch: false);
     }
   }
 
@@ -157,7 +167,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       EmptyActiveCasesHandled event) async* {
     final currState = state;
     if (currState is HomeSuccess) {
-      yield currState.copyWith(isEmptyActiveCases: false);
+      yield currState.copyWith(isEmptyActiveCases: false, isSearch: false);
     }
   }
 

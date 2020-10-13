@@ -27,6 +27,8 @@ class FilterCasesByPostcode extends HomeEvent {
   List<Object> get props => [postcode];
 }
 
+class SearchHandled extends HomeEvent {}
+
 class ClearFilteredCases extends HomeEvent {}
 
 class FilterCasesByExpiry extends HomeEvent {
