@@ -21,6 +21,7 @@ class HomeSuccess extends HomeState {
   final bool isEmptyActiveCases;
   final bool isSortCases;
   final String filteredPostcode;
+  final DateTimeRange filteredDates;
 
   HomeSuccess({
     this.locations,
@@ -31,6 +32,7 @@ class HomeSuccess extends HomeState {
     this.isEmptyActiveCases = false,
     this.isSortCases = false,
     this.filteredPostcode,
+    this.filteredDates,
   });
 
   @override
@@ -44,6 +46,7 @@ class HomeSuccess extends HomeState {
       isEmptyActiveCases,
       isSortCases,
       filteredPostcode,
+      filteredDates,
     ];
   }
 
@@ -53,7 +56,7 @@ class HomeSuccess extends HomeState {
         'cases: ${cases?.length}, locationsResult: ${locationsResult?.length}, '
         'casesResult: ${casesResult?.length}, '
         'isShowAllCases: $isShowAllCases, '
-        'isEmptyActiveCases: $isEmptyActiveCases, isSortCases: $isSortCases,'
-        'filteredPostcode: $filteredPostcode }';
+        'isEmptyActiveCases: $isEmptyActiveCases, isSortCases: $isSortCases, '
+        'filteredPostcode: $filteredPostcode, filteredDates: $filteredDates }';
   }
 }
