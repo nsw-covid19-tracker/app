@@ -6,6 +6,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 typedef ShowAllCallbackFunc = void Function(bool value);
 typedef FilterDateCallbackFunc = void Function(DateTimeRange dates);
+typedef SortCallbackFunc = void Function(String value);
 
 class MyBottomSheet {
   static void show({
@@ -15,6 +16,8 @@ class MyBottomSheet {
     @required DateTime startDate,
     @required DateTime endDate,
     @required FilterDateCallbackFunc filterDateCallback,
+    @required String sortBy,
+    @required SortCallbackFunc sortCallbackFunc,
   }) {
     showCustomModalBottomSheet(
       context: context,
@@ -36,6 +39,7 @@ class MyBottomSheet {
               end: endDate,
               callback: filterDateCallback,
             ),
+            _SortListTile(sortBy: sortBy, callback: sortCallbackFunc),
           ],
         ),
       ),
@@ -85,7 +89,7 @@ class _DateListTile extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Dates'),
+            Text('Dates', style: Theme.of(context).textTheme.subtitle1),
             Column(
               children: [
                 Text(dateFormat.format(start)),
@@ -94,6 +98,49 @@ class _DateListTile extends StatelessWidget {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SortListTile extends StatelessWidget {
+  final String sortBy;
+  final SortCallbackFunc callback;
+
+  const _SortListTile({Key key, @required this.sortBy, @required this.callback})
+      : assert(sortBy != null),
+        assert(callback != null),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: kLayoutPadding,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Sort By', style: Theme.of(context).textTheme.subtitle1),
+          DropdownButton<String>(
+            value: sortBy,
+            icon: Icon(Icons.arrow_drop_down),
+            iconSize: 24,
+            elevation: 16,
+            underline: Container(
+              height: 2,
+              color: Theme.of(context).primaryColor,
+            ),
+            onChanged: (value) {
+              callback(value);
+              Navigator.of(context).pop();
+            },
+            items: kSortOptions.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }

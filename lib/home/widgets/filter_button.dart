@@ -1,4 +1,5 @@
 import 'package:covid_tracing/home/bloc/home_bloc.dart';
+import 'package:covid_tracing/home/common/consts.dart';
 import 'package:covid_tracing/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,6 +14,7 @@ class _FilterButtonState extends State<FilterButton> {
   bool _isShowAllCases = false;
   DateTime _startDate = DateTime(2020, 7, 1);
   DateTime _endDate = DateTime.now();
+  String _sortBy = kAlphabetically;
   HomeBloc _homeBloc;
 
   @override
@@ -31,6 +33,8 @@ class _FilterButtonState extends State<FilterButton> {
         startDate: _startDate,
         endDate: _endDate,
         filterDateCallback: _setStartEndDates,
+        sortBy: _sortBy,
+        sortCallbackFunc: _setSortBy,
       ),
       child: FaIcon(FontAwesomeIcons.filter, size: 20),
     );
@@ -47,5 +51,10 @@ class _FilterButtonState extends State<FilterButton> {
       _endDate = dates.end;
     });
     _homeBloc.add(FilterCasesByDates(dates));
+  }
+
+  void _setSortBy(String value) {
+    setState(() => _sortBy = value);
+    _homeBloc.add(SortCases(value));
   }
 }

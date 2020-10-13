@@ -48,3 +48,14 @@ class FilterCasesByDates extends HomeEvent {
 }
 
 class EmptyActiveCasesHandled extends HomeEvent {}
+
+class SortCases extends HomeEvent {
+  final String sortBy;
+
+  SortCases(this.sortBy);
+
+  @override
+  List<Object> get props => [sortBy];
+}
+
+class SortCasesHandled extends HomeEvent {}
