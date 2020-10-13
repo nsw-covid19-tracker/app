@@ -35,6 +35,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapEmptyActiveCasesHandledToState(event);
     } else if (event is SortCases) {
       yield* _mapSortCasesToState(event);
+    } else if (event is SortCasesHandled) {
+      yield* _mapSortCasesHandledToState(event);
     }
   }
 
@@ -156,7 +158,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             (a, b) => b.dateTimes.last.start.compareTo(a.dateTimes.last.start));
       }
 
-      yield currState.copyWith(casesResult: cases);
+      yield currState.copyWith(casesResult: cases, isSortCases: true);
+    }
+  }
+
+  Stream<HomeState> _mapSortCasesHandledToState(SortCasesHandled event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      yield currState.copyWith(isSortCases: false);
     }
   }
 

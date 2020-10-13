@@ -55,5 +55,6 @@ class _FilterButtonState extends State<FilterButton> {
 
   void _setSortBy(String value) {
     setState(() => _sortBy = value);
+    _homeBloc.add(SortCases(value));
   }
 }

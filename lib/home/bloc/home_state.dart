@@ -19,6 +19,7 @@ class HomeSuccess extends HomeState {
   final List<Case> casesResult;
   final bool isShowAllCases;
   final bool isEmptyActiveCases;
+  final bool isSortCases;
 
   HomeSuccess({
     this.locations,
@@ -27,6 +28,7 @@ class HomeSuccess extends HomeState {
     this.casesResult = const <Case>[],
     this.isShowAllCases = false,
     this.isEmptyActiveCases = false,
+    this.isSortCases = false,
   });
 
   @override
@@ -38,6 +40,7 @@ class HomeSuccess extends HomeState {
       casesResult,
       isShowAllCases,
       isEmptyActiveCases,
+      isSortCases,
     ];
   }
 
@@ -47,6 +50,6 @@ class HomeSuccess extends HomeState {
         'cases: ${cases?.length}, locationsResult: ${locationsResult?.length}, '
         'casesResult: ${casesResult?.length}, '
         'isShowAllCases: $isShowAllCases, '
-        'isEmptyActiveCases: $isEmptyActiveCases }';
+        'isEmptyActiveCases: $isEmptyActiveCases, isSortCases: $isSortCases }';
   }
 }

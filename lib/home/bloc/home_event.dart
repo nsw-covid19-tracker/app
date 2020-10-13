@@ -57,3 +57,5 @@ class SortCases extends HomeEvent {
   @override
   List<Object> get props => [sortBy];
 }
+
+class SortCasesHandled extends HomeEvent {}

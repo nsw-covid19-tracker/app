@@ -35,9 +35,14 @@ class _HomePageState extends State<HomePage> {
       resizeToAvoidBottomInset: false,
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
-          if (state is HomeSuccess && state.isEmptyActiveCases) {
-            _showNoActiveCasesDialog();
-            _homeBloc.add(EmptyActiveCasesHandled());
+          if (state is HomeSuccess) {
+            if (state.isEmptyActiveCases) {
+              _showNoActiveCasesDialog();
+              _homeBloc.add(EmptyActiveCasesHandled());
+            } else if (state.isSortCases) {
+              _panelController.open();
+              _homeBloc.add(SortCasesHandled());
+            }
           }
         },
         builder: (context, state) {
