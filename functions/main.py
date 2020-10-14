@@ -6,7 +6,7 @@ import re
 import requests
 import sys
 
-from firebase_admin import credentials
+from firebase_admin import credentials, db
 from loguru import logger
 
 import utils
@@ -60,6 +60,9 @@ def main():
                 "isExpired": utils.is_case_expired(datetimes),
             }
             utils.add_case(case_dict, datetimes)
+
+    logs_ref = db.reference("logs")
+    logs_ref.update({"casesUpdatedAt": int(dt.datetime.now().timestamp() * 1000)})
 
 
 def get_datetimes(result):
