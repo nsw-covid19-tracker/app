@@ -52,12 +52,11 @@ def main():
 
             if postcode is None:
                 logger.warning(f"Failed to find postcode in {address}")
-                continue
+            else:
+                postcode = postcode[0]
+                utils.add_location(postcode, suburb)
 
-            postcode = postcode[0]
-            utils.add_location(postcode, suburb)
             datetimes = get_datetimes(venue, record)
-
             case_dict = {
                 "postcode": postcode,
                 "suburb": suburb,
