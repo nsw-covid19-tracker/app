@@ -52,12 +52,11 @@ def main():
 
             if postcode is None:
                 logger.warning(f"Failed to find postcode in {address}")
-                continue
+            else:
+                postcode = postcode[0]
+                utils.add_location(postcode, suburb)
 
-            postcode = postcode[0]
-            utils.add_location(postcode, suburb)
             datetimes = get_datetimes(venue, record)
-
             case_dict = {
                 "postcode": postcode,
                 "suburb": suburb,
@@ -105,7 +104,10 @@ def get_datetimes(case_loc, record):
                 end_datetime = parse_datetime(end_datetime, end_time)
 
             datetimes.append(
-                {"start": start_datetime.isoformat(), "end": end_datetime.isoformat()}
+                {
+                    "start": start_datetime.timestamp() * 1000,
+                    "end": end_datetime.timestamp() * 1000,
+                }
             )
 
     return datetimes

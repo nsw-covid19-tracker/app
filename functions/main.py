@@ -1,3 +1,4 @@
+import arrow
 import datetime as dt
 import firebase_admin
 import json
@@ -7,7 +8,6 @@ import sys
 
 from firebase_admin import credentials
 from loguru import logger
-from requests_html import HTMLSession
 
 import utils
 
@@ -34,94 +34,92 @@ def main():
     )
     json_str = r.text.replace("var venue_data =", "")
     data = json.loads(json_str)["data"]
-    postcodes = {}
 
     for key in data:
         for result in data[key]:
-            suburb = result["Suburb"]
-            venue = result["Venue"]
             address = result["Address"]
-            action = result["Alert"]
-
-            if isinstance(suburb, list):
-                suburb = suburb[0]
-                venue = ', '.join(venue)
-                address = re.sub(r"^.*\d+/", "", address[0])
-                action = action[0]
-                datetimes = get_datetimes(result)
-            else:
-                datetimes = [get_datetime(result)]
-
-            if suburb in postcodes:
-                postcode = postcodes[suburb]
-            else:
-                postcode = get_postcode(suburb)
-                postcodes[suburb] = postcode
+            suburb = result["Suburb"]
+            postcode = re.search(r"\d{4}", address.split(", ")[-1])
 
             if postcode is None:
-                logger.warning(f"Failed to find postcode for {suburb}")
-                continue
+                logger.warning(f"Failed to find postcode in {address}")
+            else:
+                postcode = postcode[0]
+                utils.add_location(postcode, suburb)
 
-            utils.add_location(postcode, suburb)
+            datetimes = get_datetimes(result)
             case_dict = {
                 "postcode": postcode,
                 "suburb": suburb,
-                "venue": f"{suburb}: {venue.replace('<br/>', '')}",
-                "address": f"{address}, {suburb} NSW {postcode}",
+                "venue": f"{suburb}: {result['Venue']}",
+                "address": address,
                 "latitude": float(result["Lat"]),
                 "longitude": float(result["Lon"]),
                 "dateTimes": datetimes,
-                "action": action,
+                "action": result["Alert"],
                 "isExpired": utils.is_case_expired(datetimes),
             }
             utils.add_case(case_dict, datetimes)
 
 
-def get_postcode(suburb):
-    postcode = None
-    session = HTMLSession()
-    query = suburb.replace("'", "")
-    r = session.get(
-        f"http://www.geonames.org/postalcode-search.html?q={query}&country=AU"
-    )
-    r.html.render()
-    table = r.html.find("table.restable", first=True)
-
-    if table is not None:
-        trs = table.find("tr")
-
-        for tr in trs[1:-1]:
-            tds = tr.find("td")
-            if len(tds) == 7 and tds[2].text.startswith("2"):
-                postcode = tds[2].text
-                break
-
-    return postcode
-
-
-def get_datetime(result):
-    date = result["Date"]
-    start_time, end_time = result["Time"].split(" to ")
-    start = f"{date} {start_time.strip()}"
-    end = f"{date} {end_time.strip()}"
-
-    return {"start": parse_datetime(start), "end": parse_datetime(end)}
-
-
 def get_datetimes(result):
     datetimes = []
-    for i in range(len(result["Date"])):
-        date = result["Date"][i]
-        start_time, end_time = result["Time"][i].split(" to ")
-        start = f"{date} {start_time.strip()}"
-        end = f"{date} {end_time.strip()}"
-        datetimes.append({"start": parse_datetime(start), "end": parse_datetime(end)})
+    dates = result["Date"].replace(", ", "; ").replace(" and ", "; ").split("; ")
+    times = result["Time"].replace(", ", "; ").replace(" and ", "; ").split("; ")
+
+    for i in range(len(dates)):
+        date = dates[i].replace(" - ", " to ").strip()
+        if i < len(times):
+            time = times[i]
+        else:
+            time = times[0]
+
+        time = time.replace(" - ", " to ").strip()
+
+        if " to " in date:
+            start_date, end_date = date.split(" to ")
+        else:
+            start_date = end_date = date
+
+        if time.lower() == "all day":
+            date_format = "dddd D MMMM"
+            start = arrow.get(start_date, date_format).replace(year=2020)
+            end = arrow.get(end_date, date_format).replace(year=2020).ceil("day")
+            datetimes.append(
+                {"start": start.timestamp * 1000, "end": end.timestamp * 1000}
+            )
+        else:
+            start_time, end_time = [x.strip() for x in time.split(" to ")]
+            start = f"{start_date} {start_time}"
+            end = f"{end_date} {end_time}"
+
+            datetimes.append(
+                {"start": parse_datetime(start), "end": parse_datetime(end)}
+            )
 
     return datetimes
 
 
-def parse_datetime(datetime):
-    return dt.datetime.strptime(datetime, "%A, %d %B %Y %I:%M%p").isoformat()
+def parse_datetime(datetime_str):
+    formats = [
+        "%A %d %B %Y %I:%M%p",
+        "%A %d %B %I:%M%p",
+        "%A %d %B %Y %I%p",
+        "%A %d %B %Y %I.%M%p",
+        "%A %d %B %I%p",
+    ]
+    datetime = None
+
+    for datetime_format in formats:
+        try:
+            datetime = dt.datetime.strptime(datetime_str, datetime_format)
+        except ValueError:
+            continue
+
+    if datetime is None:
+        raise ValueError(f"Failed to parse {datetime_str}")
+
+    return datetime.replace(year=2020).timestamp() * 1000
 
 
 if __name__ == "__main__":

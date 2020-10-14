@@ -38,7 +38,7 @@ def add_case(case_dict, datetimes):
 
 
 def is_case_expired(datetimes):
-    tmp_list = [dt.datetime.fromisoformat(x["end"]) for x in datetimes]
+    tmp_list = [dt.datetime.fromtimestamp(x["end"] / 1000) for x in datetimes]
     last_datetime = sorted(tmp_list)[-1] + dt.timedelta(days=14)
     curr_datetime = dt.datetime.now()
 
