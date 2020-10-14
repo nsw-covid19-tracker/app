@@ -1,19 +1,15 @@
 import 'package:covid_tracing/home/bloc/home_bloc.dart';
-import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SearchBar extends StatefulWidget {
-  final List<Location> locations;
   final Function onSearchBarTap;
 
   const SearchBar({
     Key key,
-    @required this.locations,
     @required this.onSearchBarTap,
-  })  : assert(locations != null),
-        assert(onSearchBarTap != null),
+  })  : assert(onSearchBarTap != null),
         super(key: key);
 
   @override
@@ -47,7 +43,7 @@ class _SearchBarState extends State<SearchBar> {
       debounceDelay: const Duration(milliseconds: 500),
       onQueryChanged: (query) {
         if (query.isNotEmpty) {
-          context.bloc<HomeBloc>().add(SearchLocations(query));
+          context.bloc<HomeBloc>().add(Search(query));
         } else {
           context.bloc<HomeBloc>().add(ClearFilteredCases());
         }
@@ -71,23 +67,61 @@ class _SearchBarState extends State<SearchBar> {
           child: Material(
             color: Colors.white,
             elevation: 4.0,
-            child: widget.locations.isNotEmpty
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: widget.locations.map((location) {
-                      return ListTile(
-                        title: Text(location.name),
-                        onTap: () {
-                          controller.query = location.suburb;
-                          controller.close();
-                          context
-                              .bloc<HomeBloc>()
-                              .add(FilterCasesByPostcode(location.postcode));
-                        },
-                      );
-                    }).toList(),
-                  )
-                : ListTile(title: Text('No results found')),
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                if (state is HomeSuccess &&
+                    (state.locationsResult.isNotEmpty ||
+                        state.searchCases.isNotEmpty)) {
+                  return ListView(
+                    shrinkWrap: true,
+                    children: [
+                      if (state.locationsResult.isNotEmpty)
+                        Text(
+                          'Suburbs',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .subtitle1
+                              .apply(fontWeightDelta: 1),
+                        ),
+                      ...state.locationsResult.map((location) {
+                        return ListTile(
+                          title: Text(location.name),
+                          onTap: () {
+                            controller.query = location.suburb;
+                            controller.close();
+                            context
+                                .bloc<HomeBloc>()
+                                .add(FilterCasesByPostcode(location.postcode));
+                          },
+                        );
+                      }),
+                      if (state.searchCases.isNotEmpty)
+                        Text(
+                          'Case Locations',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .subtitle1
+                              .apply(fontWeightDelta: 1),
+                        ),
+                      ...state.searchCases.map((myCase) {
+                        return ListTile(
+                          title: Text(myCase.venue),
+                          onTap: () {
+                            controller.query = myCase.venue;
+                            controller.close();
+                            context.bloc<HomeBloc>().add(ShowCase(myCase));
+                          },
+                        );
+                      }),
+                    ],
+                  );
+                }
+
+                return ListTile(title: Text('No results found'));
+              },
+            ),
           ),
         );
       },

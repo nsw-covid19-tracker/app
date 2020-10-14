@@ -23,8 +23,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
     if (event is FetchAll) {
       yield* _mapFetchAllToState(event);
-    } else if (event is SearchLocations) {
-      yield* _mapSearchLocationsToState(event);
+    } else if (event is Search) {
+      yield* _mapSearchToState(event);
     } else if (event is FilterCasesByPostcode) {
       yield* _mapFilterCasesByPostcodeToState(event);
     } else if (event is SearchHandled) {
@@ -43,6 +43,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapSortCasesHandledToState(event);
     } else if (event is DisclaimerHandled) {
       yield* _mapDisclaimerHandledToState(event);
+    } else if (event is ShowCase) {
+      yield* _mapShowCaseToState(event);
+    } else if (event is ShowCaseHandled) {
+      yield* _mapShowCaseHandledToState(event);
     }
   }
 
@@ -68,23 +72,30 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Stream<HomeState> _mapSearchLocationsToState(SearchLocations event) async* {
+  Stream<HomeState> _mapSearchToState(Search event) async* {
     final currState = state;
     if (currState is HomeSuccess) {
-      final locations = List<Location>.from(currState.locations);
       final query = event.query.toLowerCase();
-      var results = <Location>[];
+      var locationsResult = <Location>[];
+      var searchCases = <Case>[];
 
       if (query.isNotEmpty) {
-        results = locations
-            .where((element) =>
-                element.postcode.contains(query) ||
-                element.suburb.toLowerCase().contains(query))
+        locationsResult = currState.locations
+            .where((location) =>
+                location.postcode.contains(query) ||
+                location.suburb.toLowerCase().contains(query))
             .take(5)
+            .toList();
+        final cases = List<Case>.from(currState.cases)
+          ..sort((a, b) => a.venue.compareTo(b.venue));
+        searchCases = cases
+            .where((myCase) => myCase.venue.toLowerCase().contains(query))
+            .take(3)
             .toList();
       }
 
-      yield currState.copyWith(locationsResult: results);
+      yield currState.copyWith(
+          locationsResult: locationsResult, searchCases: searchCases);
     }
   }
 
@@ -123,6 +134,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield currState.copyWith(
         casesResult: results,
         locationsResult: <Location>[],
+        searchCases: <Case>[],
       ).copyWithNull(filteredPostcode: true);
     }
   }
@@ -201,6 +213,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       await _homeRepo.setIsShowDisclaimer(false);
       yield currState.copyWith(
           isEmptyActiveCases: false, isShowDisclaimer: false);
+    }
+  }
+
+  Stream<HomeState> _mapShowCaseToState(ShowCase event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      yield currState.copyWith(selectedCase: event.myCase);
+    }
+  }
+
+  Stream<HomeState> _mapShowCaseHandledToState(ShowCaseHandled event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      yield currState.copyWithNull(selectedCase: true);
     }
   }
 
