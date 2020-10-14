@@ -41,6 +41,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapSortCasesToState(event);
     } else if (event is SortCasesHandled) {
       yield* _mapSortCasesHandledToState(event);
+    } else if (event is DisclaimerHandled) {
+      yield* _mapDisclaimerHandledToState(event);
     }
   }
 
@@ -48,17 +50,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currState = state;
     if (currState is HomeInitial) {
       try {
+        final isShowDisclaimer = await _homeRepo.getIsShowDisclaimer();
+        final locations = await _homeRepo.fetchLocations();
         final cases = await _homeRepo.fetchCases();
         final activeCases =
             cases.where((myCase) => (!myCase.isExpired)).toList();
-        final newState = HomeSuccess(
+        yield HomeSuccess(
+          locations: locations,
           cases: cases,
           casesResult: activeCases,
           isEmptyActiveCases: activeCases.isEmpty,
+          isShowDisclaimer: isShowDisclaimer,
         );
-        yield newState;
-        final locations = await _homeRepo.fetchLocations();
-        yield newState.copyWith(locations: locations);
       } catch (_) {
         yield HomeFailure();
       }
@@ -158,7 +161,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       EmptyActiveCasesHandled event) async* {
     final currState = state;
     if (currState is HomeSuccess) {
-      yield currState.copyWith(isEmptyActiveCases: false, isSearch: false);
+      yield currState.copyWith(
+          isEmptyActiveCases: false, isSearch: false, isShowDisclaimer: false);
     }
   }
 
@@ -187,6 +191,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currState = state;
     if (currState is HomeSuccess) {
       yield currState.copyWith(isSortCases: false);
+    }
+  }
+
+  Stream<HomeState> _mapDisclaimerHandledToState(
+      DisclaimerHandled event) async* {
+    final currState = state;
+    if (currState is HomeSuccess) {
+      await _homeRepo.setIsShowDisclaimer(false);
+      yield currState.copyWith(
+          isEmptyActiveCases: false, isShowDisclaimer: false);
     }
   }
 

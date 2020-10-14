@@ -40,7 +40,9 @@ dependencies:
   material_floating_search_bar: ^0.2.0-dev+1
   modal_bottom_sheet: ^0.2.2
   pedantic: ^1.9.0
+  shared_preferences: ^0.5.12
   sliding_up_panel: ^1.0.2
+  url_launcher: ^5.7.2
 
 dev_dependencies:
   flutter_test:
