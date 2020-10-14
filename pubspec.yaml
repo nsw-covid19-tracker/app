@@ -37,7 +37,10 @@ dependencies:
   google_maps_flutter: ^0.5.32
   intl: ^0.16.1
   json_annotation: ^3.0.1
-  material_floating_search_bar: ^0.2.0-dev+1
+  material_floating_search_bar:
+    git:
+      url: https://github.com/zeshuaro/material_floating_search_bar.git
+      ref: feature/hide-back-button
   modal_bottom_sheet: ^0.2.2
   pedantic: ^1.9.0
   shared_preferences: ^0.5.12
