@@ -1,10 +1,13 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:covid_tracing/home/bloc/home_bloc.dart';
+import 'package:covid_tracing/home/common/consts.dart';
 import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:covid_tracing/home/widgets/widgets.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -116,8 +119,63 @@ class _HomePageState extends State<HomePage> {
       context: context,
       animType: AnimType.SCALE,
       dialogType: DialogType.INFO,
-      title: 'Disclaimer',
-      desc: 'This is a disclaimer',
+      body: Padding(
+        padding: kLayoutPadding,
+        child: _DisclaimerBody(),
+      ),
     )..show();
+  }
+}
+
+class _DisclaimerBody extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text('Disclaimer', style: Theme.of(context).textTheme.headline6),
+        WidgetPaddingSm(),
+        RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            text: 'The NSW COVID-19 case locations are processed from ',
+            style: Theme.of(context).textTheme.bodyText1,
+            children: <TextSpan>[
+              TextSpan(
+                text: 'Data.NSW',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  decoration: TextDecoration.underline,
+                ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => _launchURL('https://data.nsw.gov.au/'),
+              ),
+              TextSpan(
+                text: ' and presented as is.\n\nFor official news and updates '
+                    'on NSW COVID-19, please refer to the ',
+              ),
+              TextSpan(
+                text: 'NSW Government website',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  decoration: TextDecoration.underline,
+                ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => _launchURL('https://www.nsw.gov.au/covid-19/'
+                      'latest-news-and-updates'),
+              ),
+              TextSpan(text: '.')
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Future<void> _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
