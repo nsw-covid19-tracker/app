@@ -7,9 +7,14 @@ class HomeRepo {
   static final _rootRef = FirebaseDatabase.instance.reference();
   final _locationsRef = _rootRef.child('locations');
   final _casesRef = _rootRef.child('cases');
+  final _logsRef = _rootRef.child('logs');
+  final _locationsKey = 'locationsUpdatedAt';
+  final _casesKey = 'casesUpdatedAt';
   final _disclaimerKey = 'disclaimer';
 
   Future<List<Location>> fetchLocations() async {
+    final isKeepSynced = await _getIsKeepSynced(_locationsKey);
+    if (isKeepSynced) await _locationsRef.keepSynced(true);
     final snapshot = await _locationsRef.once();
     final queue = PriorityQueue<Location>(
       (Location a, Location b) => a.suburb.compareTo(b.suburb),
@@ -25,6 +30,8 @@ class HomeRepo {
   }
 
   Future<List<Case>> fetchCases() async {
+    final isKeepSynced = await _getIsKeepSynced(_casesKey);
+    if (isKeepSynced) await _casesRef.keepSynced(true);
     await _casesRef.keepSynced(true);
     final snapshot = await _casesRef.once();
     final queue = PriorityQueue<Case>(
@@ -40,7 +47,7 @@ class HomeRepo {
   }
 
   Future<bool> getIsShowDisclaimer() async {
-    var prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     final result = prefs.getBool(_disclaimerKey) ?? true;
 
     return result;
@@ -49,5 +56,25 @@ class HomeRepo {
   Future<void> setIsShowDisclaimer(bool value) async {
     var prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_disclaimerKey, value);
+  }
+
+  Future<bool> _getIsKeepSynced(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    final epoch = prefs.getInt(key);
+    DateTime localUpdatedAt, serverUpdatedAt;
+
+    if (epoch != null) {
+      localUpdatedAt = DateTime.fromMillisecondsSinceEpoch(epoch);
+      final query = _logsRef.child(key);
+      await query.keepSynced(true);
+      final snapshot = await query.once();
+      serverUpdatedAt = DateTime.fromMillisecondsSinceEpoch(snapshot.value);
+    }
+
+    final result = localUpdatedAt == null ||
+        (serverUpdatedAt != null && localUpdatedAt.isBefore(serverUpdatedAt));
+    if (result) await prefs.setInt(key, DateTime.now().millisecondsSinceEpoch);
+
+    return result;
   }
 }
