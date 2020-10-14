@@ -1,4 +1,5 @@
 import 'package:covid_tracing/home/bloc/home_bloc.dart';
+import 'package:covid_tracing/home/repo/repo.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,11 +18,18 @@ class SearchBar extends StatefulWidget {
 }
 
 class _SearchBarState extends State<SearchBar> {
-  final controller = FloatingSearchBarController();
+  final _controller = FloatingSearchBarController();
+  HomeBloc _homeBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _homeBloc = context.bloc<HomeBloc>();
+  }
 
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -31,7 +39,7 @@ class _SearchBarState extends State<SearchBar> {
         MediaQuery.of(context).orientation == Orientation.portrait;
 
     return FloatingSearchBar(
-      controller: controller,
+      controller: _controller,
       hint: 'Postcode or Suburb',
       scrollPadding: const EdgeInsets.only(top: 16, bottom: 56),
       transitionDuration: const Duration(milliseconds: 800),
@@ -43,9 +51,9 @@ class _SearchBarState extends State<SearchBar> {
       debounceDelay: const Duration(milliseconds: 500),
       onQueryChanged: (query) {
         if (query.isNotEmpty) {
-          context.bloc<HomeBloc>().add(Search(query));
+          _homeBloc.add(Search(query));
         } else {
-          context.bloc<HomeBloc>().add(ClearFilteredCases());
+          _homeBloc.add(ClearFilteredCases());
         }
       },
       onFocusChanged: (isFocused) {
@@ -68,54 +76,20 @@ class _SearchBarState extends State<SearchBar> {
             color: Colors.white,
             elevation: 4.0,
             child: BlocBuilder<HomeBloc, HomeState>(
+              buildWhen: (previous, current) {
+                return previous is HomeSuccess &&
+                    current is HomeSuccess &&
+                    (previous.locationsResult != current.locationsResult ||
+                        previous.searchCases != current.searchCases);
+              },
               builder: (context, state) {
                 if (state is HomeSuccess &&
                     (state.locationsResult.isNotEmpty ||
                         state.searchCases.isNotEmpty)) {
-                  return ListView(
-                    shrinkWrap: true,
-                    children: [
-                      if (state.locationsResult.isNotEmpty)
-                        Text(
-                          'Suburbs',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle1
-                              .apply(fontWeightDelta: 1),
-                        ),
-                      ...state.locationsResult.map((location) {
-                        return ListTile(
-                          title: Text(location.name),
-                          onTap: () {
-                            controller.query = location.suburb;
-                            controller.close();
-                            context
-                                .bloc<HomeBloc>()
-                                .add(FilterCasesByPostcode(location.postcode));
-                          },
-                        );
-                      }),
-                      if (state.searchCases.isNotEmpty)
-                        Text(
-                          'Case Locations',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle1
-                              .apply(fontWeightDelta: 1),
-                        ),
-                      ...state.searchCases.map((myCase) {
-                        return ListTile(
-                          title: Text(myCase.venue),
-                          onTap: () {
-                            controller.query = myCase.venue;
-                            controller.close();
-                            context.bloc<HomeBloc>().add(ShowCase(myCase));
-                          },
-                        );
-                      }),
-                    ],
+                  return _SearchResults(
+                    controller: _controller,
+                    locations: state.locationsResult,
+                    cases: state.searchCases,
                   );
                 }
 
@@ -125,6 +99,67 @@ class _SearchBarState extends State<SearchBar> {
           ),
         );
       },
+    );
+  }
+}
+
+class _SearchResults extends StatelessWidget {
+  final FloatingSearchBarController controller;
+  final List<Location> locations;
+  final List<Case> cases;
+
+  const _SearchResults({
+    Key key,
+    @required this.controller,
+    @required this.locations,
+    @required this.cases,
+  })  : assert(controller != null),
+        assert(locations != null),
+        assert(cases != null),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        if (locations.isNotEmpty)
+          Text(
+            'Suburbs',
+            textAlign: TextAlign.center,
+            style:
+                Theme.of(context).textTheme.subtitle1.apply(fontWeightDelta: 1),
+          ),
+        ...locations.map((location) {
+          return ListTile(
+            title: Text(location.name),
+            onTap: () {
+              controller.query = location.suburb;
+              controller.close();
+              context
+                  .bloc<HomeBloc>()
+                  .add(FilterCasesByPostcode(location.postcode));
+            },
+          );
+        }),
+        if (cases.isNotEmpty)
+          Text(
+            'Case Locations',
+            textAlign: TextAlign.center,
+            style:
+                Theme.of(context).textTheme.subtitle1.apply(fontWeightDelta: 1),
+          ),
+        ...cases.map((myCase) {
+          return ListTile(
+            title: Text(myCase.venue),
+            onTap: () {
+              controller.query = myCase.venue;
+              controller.close();
+              context.bloc<HomeBloc>().add(ShowCase(myCase));
+            },
+          );
+        }),
+      ],
     );
   }
 }
