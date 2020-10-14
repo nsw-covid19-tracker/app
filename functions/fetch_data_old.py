@@ -105,7 +105,10 @@ def get_datetimes(case_loc, record):
                 end_datetime = parse_datetime(end_datetime, end_time)
 
             datetimes.append(
-                {"start": start_datetime.isoformat(), "end": end_datetime.isoformat()}
+                {
+                    "start": start_datetime.timestamp() * 1000,
+                    "end": end_datetime.timestamp() * 1000,
+                }
             )
 
     return datetimes
