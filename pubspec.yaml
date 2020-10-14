@@ -23,6 +23,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  material_floating_search_bar:
+    git:
+      url: https://github.com/zeshuaro/material_floating_search_bar.git
+      ref: feature/hide-back-button
   awesome_dialog: ^1.2.0
   bloc: ^6.0.3
   copy_with_extension: ^1.2.0
@@ -37,10 +41,6 @@ dependencies:
   google_maps_flutter: ^0.5.32
   intl: ^0.16.1
   json_annotation: ^3.0.1
-  material_floating_search_bar:
-    git:
-      url: https://github.com/zeshuaro/material_floating_search_bar.git
-      ref: feature/hide-back-button
   modal_bottom_sheet: ^0.2.2
   pedantic: ^1.9.0
   shared_preferences: ^0.5.12
@@ -52,7 +52,13 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^1.10.1
   copy_with_extension_gen: ^1.2.0
+  flutter_launcher_icons: ^0.8.1
   json_serializable: ^3.4.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
