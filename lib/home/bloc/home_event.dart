@@ -9,10 +9,10 @@ abstract class HomeEvent extends Equatable {
 
 class FetchAll extends HomeEvent {}
 
-class SearchLocations extends HomeEvent {
+class Search extends HomeEvent {
   final String query;
 
-  SearchLocations(this.query);
+  Search(this.query);
 
   @override
   List<Object> get props => [query];
@@ -63,3 +63,14 @@ class SortCases extends HomeEvent {
 class SortCasesHandled extends HomeEvent {}
 
 class DisclaimerHandled extends HomeEvent {}
+
+class ShowCase extends HomeEvent {
+  final Case myCase;
+
+  ShowCase(this.myCase);
+
+  @override
+  List<Object> get props => [myCase];
+}
+
+class ShowCaseHandled extends HomeEvent {}

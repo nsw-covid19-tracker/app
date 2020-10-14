@@ -48,6 +48,9 @@ class _HomePageState extends State<HomePage> {
             } else if (state.isSortCases) {
               _panelController.open();
               _homeBloc.add(SortCasesHandled());
+            } else if (state.selectedCase != null) {
+              CaseDialog.show(context, _scrollController, state.selectedCase);
+              _homeBloc.add(ShowCaseHandled());
             }
 
             if (state.isShowDisclaimer) {
@@ -59,11 +62,9 @@ class _HomePageState extends State<HomePage> {
         builder: (context, state) {
           var isLoading = true;
           var cases = <Case>[];
-          var locations = <Location>[];
 
           if (state is HomeSuccess) {
             isLoading = false;
-            locations = state.locationsResult;
             cases = state.casesResult;
           }
 
@@ -88,7 +89,6 @@ class _HomePageState extends State<HomePage> {
                   cases: cases,
                 ),
                 SearchBar(
-                  locations: locations,
                   onSearchBarTap: () => _panelController.close(),
                 ),
               ],

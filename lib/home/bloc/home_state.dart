@@ -17,6 +17,7 @@ class HomeSuccess extends HomeState {
   final List<Case> cases;
   final List<Location> locationsResult;
   final List<Case> casesResult;
+  final List<Case> searchCases;
   final bool isShowAllCases;
   final bool isEmptyActiveCases;
   final bool isSortCases;
@@ -24,12 +25,14 @@ class HomeSuccess extends HomeState {
   final String filteredPostcode;
   final DateTimeRange filteredDates;
   final bool isShowDisclaimer;
+  final Case selectedCase;
 
   HomeSuccess({
     this.locations,
     this.cases,
     this.locationsResult = const <Location>[],
     this.casesResult = const <Case>[],
+    this.searchCases = const <Case>[],
     this.isShowAllCases = false,
     this.isEmptyActiveCases = false,
     this.isSortCases = false,
@@ -37,6 +40,7 @@ class HomeSuccess extends HomeState {
     this.filteredPostcode,
     this.filteredDates,
     this.isShowDisclaimer = true,
+    this.selectedCase,
   });
 
   @override
@@ -46,12 +50,14 @@ class HomeSuccess extends HomeState {
       cases,
       locationsResult,
       casesResult,
+      searchCases,
       isShowAllCases,
       isEmptyActiveCases,
       isSortCases,
       filteredPostcode,
       filteredDates,
       isShowDisclaimer,
+      selectedCase,
     ];
   }
 
@@ -60,9 +66,11 @@ class HomeSuccess extends HomeState {
     return 'HomeSuccess: { locations: ${locations?.length}, '
         'cases: ${cases?.length}, locationsResult: ${locationsResult?.length}, '
         'casesResult: ${casesResult?.length}, '
+        'searchCases: ${searchCases?.length}, '
         'isShowAllCases: $isShowAllCases, isSearch: $isSearch, '
         'isEmptyActiveCases: $isEmptyActiveCases, isSortCases: $isSortCases, '
         'filteredPostcode: $filteredPostcode, filteredDates: $filteredDates, '
-        'isShowDisclaimer: $isShowDisclaimer }';
+        'isShowDisclaimer: $isShowDisclaimer, '
+        'selectedCase: ${selectedCase != null} }';
   }
 }
