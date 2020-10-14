@@ -46,6 +46,11 @@ class _HomePageState extends State<HomePage> {
               _panelController.open();
               _homeBloc.add(SortCasesHandled());
             }
+
+            if (state.isShowDisclaimer) {
+              _showDisclaimerDialog();
+              _homeBloc.add(DisclaimerHandled());
+            }
           }
         },
         builder: (context, state) {
@@ -103,8 +108,16 @@ class _HomePageState extends State<HomePage> {
       title: 'No active cases found',
       desc: 'Keep maintaining social distancing and '
           'wear a mask when physical distancing is not possible',
-      btnOkOnPress: () {},
-      btnOkText: 'Close',
+    )..show();
+  }
+
+  void _showDisclaimerDialog() {
+    AwesomeDialog(
+      context: context,
+      animType: AnimType.SCALE,
+      dialogType: DialogType.INFO,
+      title: 'Disclaimer',
+      desc: 'This is a disclaimer',
     )..show();
   }
 }

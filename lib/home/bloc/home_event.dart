@@ -61,3 +61,5 @@ class SortCases extends HomeEvent {
 }
 
 class SortCasesHandled extends HomeEvent {}
+
+class DisclaimerHandled extends HomeEvent {}
