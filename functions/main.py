@@ -86,8 +86,17 @@ def get_datetimes(result):
 
         if time.lower() == "all day":
             date_format = "dddd D MMMM"
-            start = arrow.get(start_date, date_format).replace(year=2020).floor("day")
-            end = arrow.get(end_date, date_format).replace(year=2020).ceil("day")
+            timezone = "Australia/Sydney"
+            start = (
+                arrow.get(start_date, date_format, tzinfo=timezone)
+                .replace(year=2020)
+                .floor("day")
+            )
+            end = (
+                arrow.get(end_date, date_format, tzinfo=timezone)
+                .replace(year=2020)
+                .ceil("day")
+            )
             datetimes.append(
                 {"start": int(start.timestamp * 1000), "end": int(end.timestamp * 1000)}
             )
