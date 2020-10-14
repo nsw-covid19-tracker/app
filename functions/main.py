@@ -1,5 +1,4 @@
 import arrow
-import datetime as dt
 import firebase_admin
 import json
 import re
@@ -17,7 +16,7 @@ firebase_admin.initialize_app(
 )
 
 
-def main():
+def main(data, context):
     logger.remove()
     logger.add(
         sys.stdout,
@@ -62,7 +61,7 @@ def main():
             utils.add_case(case_dict, datetimes)
 
     logs_ref = db.reference("logs")
-    logs_ref.update({"casesUpdatedAt": int(dt.datetime.now().timestamp() * 1000)})
+    logs_ref.update({"casesUpdatedAt": int(arrow.utcnow().timestamp * 1000)})
 
 
 def get_datetimes(result):
@@ -86,17 +85,8 @@ def get_datetimes(result):
 
         if time.lower() == "all day":
             date_format = "dddd D MMMM"
-            timezone = "Australia/Sydney"
-            start = (
-                arrow.get(start_date, date_format, tzinfo=timezone)
-                .replace(year=2020)
-                .floor("day")
-            )
-            end = (
-                arrow.get(end_date, date_format, tzinfo=timezone)
-                .replace(year=2020)
-                .ceil("day")
-            )
+            start = arrow.get(start_date, date_format).replace(year=2020).floor("day")
+            end = arrow.get(end_date, date_format).replace(year=2020).ceil("day")
             datetimes.append(
                 {"start": int(start.timestamp * 1000), "end": int(end.timestamp * 1000)}
             )
@@ -114,25 +104,25 @@ def get_datetimes(result):
 
 def parse_datetime(datetime_str):
     formats = [
-        "%A %d %B %Y %I:%M%p",
-        "%A %d %B %I:%M%p",
-        "%A %d %B %Y %I%p",
-        "%A %d %B %Y %I.%M%p",
-        "%A %d %B %I%p",
+        "dddd D MMMM YYYY h:mmA",
+        "dddd D MMMM YYYY h.mmA",
+        "dddd D MMMM YYYY hA",
+        "dddd D MMMM h:mmA",
+        "dddd D MMMM hA",
     ]
     datetime = None
 
     for datetime_format in formats:
         try:
-            datetime = dt.datetime.strptime(datetime_str, datetime_format)
+            datetime = arrow.get(datetime_str, datetime_format)
         except ValueError:
             continue
 
     if datetime is None:
         raise ValueError(f"Failed to parse {datetime_str}")
 
-    return int(datetime.replace(year=2020).timestamp() * 1000)
+    return int(datetime.replace(year=2020).timestamp * 1000)
 
 
 if __name__ == "__main__":
-    main()
+    main("data", "context")

@@ -77,8 +77,8 @@ class _Converters {
     return dateTimes
         .map(
           (e) => DateTimeRange(
-            start: DateTime.fromMillisecondsSinceEpoch(e['start']),
-            end: DateTime.fromMillisecondsSinceEpoch(e['end']),
+            start: DateTime.fromMillisecondsSinceEpoch(e['start'], isUtc: true),
+            end: DateTime.fromMillisecondsSinceEpoch(e['end'], isUtc: true),
           ),
         )
         .toList()
