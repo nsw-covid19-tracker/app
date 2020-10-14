@@ -10,10 +10,15 @@ def add_location(postcode, suburb):
 
     if location_ref.get() is None:
         location_ref.set({"suburb": suburb})
+        logs_ref = db.reference("logs")
+        logs_ref.update(
+            {"locationsUpdatedAt": int(dt.datetime.now().timestamp() * 1000)}
+        )
 
 
 def add_case(case_dict, datetimes):
     m = hashlib.sha384()
+    m.update(str(case_dict["venue"]).encode("utf-8"))
     m.update(str(case_dict["latitude"]).encode("utf-8"))
     m.update(str(case_dict["longitude"]).encode("utf-8"))
     key = m.hexdigest()
