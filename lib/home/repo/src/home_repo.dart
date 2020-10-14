@@ -68,7 +68,8 @@ class HomeRepo {
       final query = _logsRef.child(key);
       await query.keepSynced(true);
       final snapshot = await query.once();
-      serverUpdatedAt = DateTime.fromMillisecondsSinceEpoch(snapshot.value);
+      serverUpdatedAt =
+          DateTime.fromMillisecondsSinceEpoch(snapshot.value, isUtc: true);
     }
 
     final result = localUpdatedAt == null ||

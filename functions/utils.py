@@ -1,4 +1,4 @@
-import datetime as dt
+import arrow
 import hashlib
 
 from firebase_admin import db
@@ -11,9 +11,7 @@ def add_location(postcode, suburb):
     if location_ref.get() is None:
         location_ref.set({"suburb": suburb})
         logs_ref = db.reference("logs")
-        logs_ref.update(
-            {"locationsUpdatedAt": int(dt.datetime.now().timestamp() * 1000)}
-        )
+        logs_ref.update({"locationsUpdatedAt": int(arrow.utcnow().timestamp * 1000)})
 
 
 def add_case(case_dict, datetimes):
@@ -43,8 +41,8 @@ def add_case(case_dict, datetimes):
 
 
 def is_case_expired(datetimes):
-    tmp_list = [dt.datetime.fromtimestamp(x["end"] / 1000) for x in datetimes]
-    last_datetime = sorted(tmp_list)[-1] + dt.timedelta(days=14)
-    curr_datetime = dt.datetime.now()
+    tmp_list = [arrow.get(x["end"] / 1000) for x in datetimes]
+    last_datetime = sorted(tmp_list)[-1].shift(days=14)
+    curr_datetime = arrow.utcnow()
 
     return last_datetime < curr_datetime
