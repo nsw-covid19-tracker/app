@@ -52,7 +52,15 @@ class Case extends Equatable {
       if (dateTime.start != dateTime.end) {
         final formattedStart =
             DateFormat('E d MMM, y h:mma').format(dateTime.start);
-        final formattedEnd = DateFormat('h:mma').format(dateTime.end);
+        String formattedEnd;
+        if (dateTime.start.year != dateTime.end.year ||
+            dateTime.start.month != dateTime.end.month ||
+            dateTime.start.day != dateTime.end.day) {
+          formattedEnd = DateFormat('E d MMM, h:mma').format(dateTime.end);
+        } else {
+          formattedEnd = DateFormat('h:mma').format(dateTime.end);
+        }
+
         result += '- $formattedStart to $formattedEnd\n';
       } else {
         final formattedDate = DateFormat('E d MMM, y').format(dateTime.end);
@@ -69,8 +77,8 @@ class _Converters {
     return dateTimes
         .map(
           (e) => DateTimeRange(
-            start: DateTime.parse(e['start']),
-            end: DateTime.parse(e['end']),
+            start: DateTime.fromMillisecondsSinceEpoch(e['start'], isUtc: true),
+            end: DateTime.fromMillisecondsSinceEpoch(e['end'], isUtc: true),
           ),
         )
         .toList()
@@ -81,8 +89,8 @@ class _Converters {
     return dateTimes
         .map(
           (e) => {
-            'start': e.start.toIso8601String(),
-            'end': e.end.toIso8601String(),
+            'start': e.start.millisecondsSinceEpoch,
+            'end': e.end.millisecondsSinceEpoch,
           },
         )
         .toList();

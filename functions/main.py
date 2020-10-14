@@ -83,10 +83,10 @@ def get_datetimes(result):
 
         if time.lower() == "all day":
             date_format = "dddd D MMMM"
-            start = arrow.get(start_date, date_format).replace(year=2020)
+            start = arrow.get(start_date, date_format).replace(year=2020).floor("day")
             end = arrow.get(end_date, date_format).replace(year=2020).ceil("day")
             datetimes.append(
-                {"start": start.timestamp * 1000, "end": end.timestamp * 1000}
+                {"start": int(start.timestamp * 1000), "end": int(end.timestamp * 1000)}
             )
         else:
             start_time, end_time = [x.strip() for x in time.split(" to ")]
@@ -119,7 +119,7 @@ def parse_datetime(datetime_str):
     if datetime is None:
         raise ValueError(f"Failed to parse {datetime_str}")
 
-    return datetime.replace(year=2020).timestamp() * 1000
+    return int(datetime.replace(year=2020).timestamp() * 1000)
 
 
 if __name__ == "__main__":

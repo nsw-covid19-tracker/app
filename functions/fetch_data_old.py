@@ -105,8 +105,8 @@ def get_datetimes(case_loc, record):
 
             datetimes.append(
                 {
-                    "start": start_datetime.timestamp() * 1000,
-                    "end": end_datetime.timestamp() * 1000,
+                    "start": int(start_datetime.timestamp() * 1000),
+                    "end": int(end_datetime.timestamp() * 1000),
                 }
             )
 
