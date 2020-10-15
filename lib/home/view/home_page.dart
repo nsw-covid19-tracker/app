@@ -60,9 +60,9 @@ class _HomePageState extends State<HomePage> {
             controller: _panelController,
             minHeight: _panelMinHeight,
             maxHeight: MediaQuery.of(context).size.height * 0.8,
-            collapsed: state is! HomeSuccess
-                ? LoadingPanel()
-                : CollapsedPanel(controller: _panelController),
+            collapsed: state is HomeSuccess
+                ? CollapsedPanel(controller: _panelController)
+                : LoadingPanel(),
             panelBuilder: (sc) => Panel(panelSc: sc),
             body: Stack(
               fit: StackFit.expand,
