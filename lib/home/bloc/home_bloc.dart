@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nsw_covid_tracker/home/common/consts.dart';
 import 'package:nsw_covid_tracker/home/repo/repo.dart';
 import 'package:equatable/equatable.dart';
@@ -106,11 +107,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final cases = List<Case>.from(currState.cases);
       final results = _filterCases(cases, currState.isShowAllCases,
           event.postcode, currState.filteredDates);
-      yield currState.copyWith(
+      HomeSuccess newState;
+
+      if (results.isEmpty) {
+        newState = currState.copyWithNull(targetLatLng: true);
+      } else {
+        newState = currState.copyWith(targetLatLng: results.first.latLng);
+      }
+
+      yield newState.copyWith(
         casesResult: results,
         isEmptyActiveCases: !currState.isShowAllCases && results.isEmpty,
         filteredPostcode: event.postcode,
-        isSearch: true,
       );
     }
   }
@@ -118,7 +126,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _mapSearchHandledToState(SearchHandled event) async* {
     final currState = state;
     if (currState is HomeSuccess) {
-      yield currState.copyWith(isSearch: false);
+      yield currState.copyWithNull(targetLatLng: true);
     }
   }
 
@@ -173,8 +181,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       EmptyActiveCasesHandled event) async* {
     final currState = state;
     if (currState is HomeSuccess) {
-      yield currState.copyWith(
-          isEmptyActiveCases: false, isSearch: false, isShowDisclaimer: false);
+      yield currState
+          .copyWith(isEmptyActiveCases: false, isShowDisclaimer: false)
+          .copyWithNull(targetLatLng: true);
     }
   }
 

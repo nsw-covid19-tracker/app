@@ -39,10 +39,7 @@ class _HomePageState extends State<HomePage> {
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is HomeSuccess) {
-            if (state.isSearch && !state.isEmptyActiveCases) {
-              _panelController.open();
-              _homeBloc.add(SearchHandled());
-            } else if (state.isEmptyActiveCases) {
+            if (state.isEmptyActiveCases) {
               _showNoActiveCasesDialog();
               _homeBloc.add(EmptyActiveCasesHandled());
             } else if (state.isSortCases) {
