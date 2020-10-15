@@ -82,8 +82,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 MapWidget(
                   scrollController: _scrollController,
-                  panelController: _panelController,
-                  cases: cases,
+                  onMapTap: () => _panelController.close(),
                 ),
                 SearchBar(
                   onSearchBarTap: () => _panelController.close(),
