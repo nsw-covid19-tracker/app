@@ -1,7 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:nsw_covid_tracker/home/bloc/home_bloc.dart';
 import 'package:nsw_covid_tracker/home/common/consts.dart';
-import 'package:nsw_covid_tracker/home/repo/repo.dart';
 import 'package:nsw_covid_tracker/home/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -57,33 +56,20 @@ class _HomePageState extends State<HomePage> {
           }
         },
         builder: (context, state) {
-          var isLoading = true;
-          var cases = <Case>[];
-
-          if (state is HomeSuccess) {
-            isLoading = false;
-            cases = state.casesResult;
-          }
-
           return SlidingUpPanel(
             controller: _panelController,
             minHeight: _panelMinHeight,
             maxHeight: MediaQuery.of(context).size.height * 0.8,
-            collapsed: isLoading
-                ? LoadingPanel()
-                : CollapsedPanel(controller: _panelController),
-            panelBuilder: (sc) => Panel(
-              panelSc: sc,
-              panelController: _panelController,
-              cases: cases,
-            ),
+            collapsed: state is HomeSuccess
+                ? CollapsedPanel(controller: _panelController)
+                : LoadingPanel(),
+            panelBuilder: (sc) => Panel(panelSc: sc),
             body: Stack(
               fit: StackFit.expand,
               children: [
                 MapWidget(
                   scrollController: _scrollController,
-                  panelController: _panelController,
-                  cases: cases,
+                  onMapTap: () => _panelController.close(),
                 ),
                 SearchBar(
                   onSearchBarTap: () => _panelController.close(),

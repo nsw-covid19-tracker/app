@@ -1,3 +1,5 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nsw_covid_tracker/home/bloc/home_bloc.dart';
 import 'package:nsw_covid_tracker/home/common/consts.dart';
 import 'package:nsw_covid_tracker/home/repo/repo.dart';
 import 'package:nsw_covid_tracker/home/widgets/widgets.dart';
@@ -52,17 +54,11 @@ class CollapsedPanel extends StatelessWidget {
 
 class Panel extends StatefulWidget {
   final ScrollController panelSc;
-  final PanelController panelController;
-  final List<Case> cases;
 
   const Panel({
     Key key,
-    @required this.cases,
-    @required this.panelController,
     @required this.panelSc,
-  })  : assert(cases != null),
-        assert(panelController != null),
-        assert(panelSc != null),
+  })  : assert(panelSc != null),
         super(key: key);
 
   @override
@@ -82,24 +78,34 @@ class _PanelState extends State<Panel> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        GestureDetector(
-          onTap: () => widget.panelController.close(),
-          child: _SlidingBar(),
-        ),
+        _SlidingBar(),
         SizedBox(height: 16),
-        Expanded(
-          child: widget.cases.isNotEmpty
-              ? _CasesListView(
-                  panelSc: widget.panelSc,
-                  dialogSc: _dialogSc,
-                  cases: widget.cases,
-                )
-              : Center(
-                  child: Text(
-                    'No cases found',
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                ),
+        BlocBuilder<HomeBloc, HomeState>(
+          buildWhen: (previous, current) {
+            return previous is HomeInitial ||
+                (previous is HomeSuccess &&
+                    current is HomeSuccess &&
+                    previous.casesResult != current.casesResult);
+          },
+          builder: (context, state) {
+            var cases = <Case>[];
+            if (state is HomeSuccess) cases = state.casesResult;
+
+            return Expanded(
+              child: cases.isNotEmpty
+                  ? _CasesListView(
+                      panelSc: widget.panelSc,
+                      dialogSc: _dialogSc,
+                      cases: cases,
+                    )
+                  : Center(
+                      child: Text(
+                        'No cases found',
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                    ),
+            );
+          },
         ),
       ],
     );

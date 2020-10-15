@@ -3,23 +3,20 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nsw_covid_tracker/home/bloc/home_bloc.dart';
 import 'package:nsw_covid_tracker/home/repo/repo.dart';
-import 'package:nsw_covid_tracker/home/widgets/case_dialog.dart';
+import 'package:nsw_covid_tracker/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class MapWidget extends StatefulWidget {
   final ScrollController scrollController;
-  final PanelController panelController;
-  final List<Case> cases;
+  final Function onMapTap;
 
   MapWidget({
     Key key,
-    this.cases,
     @required this.scrollController,
-    @required this.panelController,
+    @required this.onMapTap,
   })  : assert(scrollController != null),
-        assert(panelController != null),
+        assert(onMapTap != null),
         super(key: key);
 
   @override
@@ -28,7 +25,6 @@ class MapWidget extends StatefulWidget {
 
 class _MapWidgetState extends State<MapWidget> {
   final _completer = Completer<GoogleMapController>();
-
   final _kGooglePlex = CameraPosition(
     target: LatLng(-33.918200, 151.035000),
     zoom: 9,
@@ -37,6 +33,11 @@ class _MapWidgetState extends State<MapWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
+      listenWhen: (previous, current) {
+        return previous is HomeSuccess &&
+            current is HomeSuccess &&
+            previous.targetLatLng != current.targetLatLng;
+      },
       listener: (context, state) async {
         if (state is HomeSuccess && state.targetLatLng != null) {
           final controller = await _completer.future;
@@ -45,7 +46,16 @@ class _MapWidgetState extends State<MapWidget> {
           context.bloc<HomeBloc>().add(SearchHandled());
         }
       },
+      buildWhen: (previous, current) {
+        return previous is HomeInitial ||
+            (previous is HomeSuccess &&
+                current is HomeSuccess &&
+                previous.casesResult != current.casesResult);
+      },
       builder: (context, state) {
+        var cases = <Case>[];
+        if (state is HomeSuccess) cases = state.casesResult;
+
         return GoogleMap(
           mapType: MapType.normal,
           initialCameraPosition: _kGooglePlex,
@@ -55,10 +65,8 @@ class _MapWidgetState extends State<MapWidget> {
           onMapCreated: (GoogleMapController controller) {
             _completer.complete(controller);
           },
-          markers: widget.cases != null
-              ? _mapCasesToMarkers(context, widget.cases)
-              : null,
-          onTap: (_) => widget.panelController.close(),
+          markers: cases.isNotEmpty ? _mapCasesToMarkers(context, cases) : null,
+          onTap: (_) => widget.onMapTap(),
         );
       },
     );
