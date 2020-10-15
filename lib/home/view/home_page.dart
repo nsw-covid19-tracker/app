@@ -63,10 +63,7 @@ class _HomePageState extends State<HomePage> {
             collapsed: state is! HomeSuccess
                 ? LoadingPanel()
                 : CollapsedPanel(controller: _panelController),
-            panelBuilder: (sc) => Panel(
-              panelSc: sc,
-              panelController: _panelController,
-            ),
+            panelBuilder: (sc) => Panel(panelSc: sc),
             body: Stack(
               fit: StackFit.expand,
               children: [

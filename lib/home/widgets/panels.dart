@@ -54,14 +54,11 @@ class CollapsedPanel extends StatelessWidget {
 
 class Panel extends StatefulWidget {
   final ScrollController panelSc;
-  final PanelController panelController;
 
   const Panel({
     Key key,
-    @required this.panelController,
     @required this.panelSc,
-  })  : assert(panelController != null),
-        assert(panelSc != null),
+  })  : assert(panelSc != null),
         super(key: key);
 
   @override
@@ -81,10 +78,7 @@ class _PanelState extends State<Panel> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        GestureDetector(
-          onTap: () => widget.panelController.close(),
-          child: _SlidingBar(),
-        ),
+        _SlidingBar(),
         SizedBox(height: 16),
         BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) {
