@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:covid_tracing/home/repo/models/models.dart';
+import 'package:nsw_covid_tracker/home/repo/models/models.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
