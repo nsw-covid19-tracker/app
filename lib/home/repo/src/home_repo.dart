@@ -20,10 +20,12 @@ class HomeRepo {
       (Location a, Location b) => a.suburb.compareTo(b.suburb),
     );
 
-    for (MapEntry entry in snapshot.value.entries) {
-      final data = Map<String, dynamic>.from(entry.value);
-      data['postcode'] = entry.key;
-      queue.add(Location.fromJson(data));
+    if (snapshot.value != null) {
+      for (MapEntry entry in snapshot.value.entries) {
+        final data = Map<String, dynamic>.from(entry.value);
+        data['postcode'] = entry.key;
+        queue.add(Location.fromJson(data));
+      }
     }
 
     return queue.toList();
@@ -38,9 +40,11 @@ class HomeRepo {
       (Case a, Case b) => a.venue.compareTo(b.venue),
     );
 
-    for (MapEntry entry in snapshot.value.entries) {
-      final data = Map<String, dynamic>.from(entry.value);
-      queue.add(Case.fromJson(data));
+    if (snapshot.value != null) {
+      for (MapEntry entry in snapshot.value.entries) {
+        final data = Map<String, dynamic>.from(entry.value);
+        queue.add(Case.fromJson(data));
+      }
     }
 
     return queue.toList();
@@ -68,8 +72,11 @@ class HomeRepo {
       final query = _logsRef.child(key);
       await query.keepSynced(true);
       final snapshot = await query.once();
-      serverUpdatedAt =
-          DateTime.fromMillisecondsSinceEpoch(snapshot.value, isUtc: true);
+
+      if (snapshot.value != null) {
+        serverUpdatedAt =
+            DateTime.fromMillisecondsSinceEpoch(snapshot.value, isUtc: true);
+      }
     }
 
     final result = localUpdatedAt == null ||
