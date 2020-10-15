@@ -53,7 +53,7 @@ class _MapWidgetState extends State<MapWidget> {
                 previous.casesResult != current.casesResult);
       },
       builder: (context, state) {
-        List<Case> cases;
+        var cases = <Case>[];
         if (state is HomeSuccess) cases = state.casesResult;
 
         return GoogleMap(
@@ -65,7 +65,7 @@ class _MapWidgetState extends State<MapWidget> {
           onMapCreated: (GoogleMapController controller) {
             _completer.complete(controller);
           },
-          markers: cases != null ? _mapCasesToMarkers(context, cases) : null,
+          markers: cases.isNotEmpty ? _mapCasesToMarkers(context, cases) : null,
           onTap: (_) => widget.onMapTap(),
         );
       },
