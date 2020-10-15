@@ -1,4 +1,4 @@
-import 'package:covid_tracing/home/common/consts.dart';
+import 'package:nsw_covid_tracker/home/common/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:intl/intl.dart';

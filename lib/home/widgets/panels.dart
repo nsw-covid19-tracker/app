@@ -1,6 +1,6 @@
-import 'package:covid_tracing/home/common/consts.dart';
-import 'package:covid_tracing/home/repo/repo.dart';
-import 'package:covid_tracing/home/widgets/widgets.dart';
+import 'package:nsw_covid_tracker/home/common/consts.dart';
+import 'package:nsw_covid_tracker/home/repo/repo.dart';
+import 'package:nsw_covid_tracker/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 

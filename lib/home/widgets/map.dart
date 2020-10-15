@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:covid_tracing/home/repo/repo.dart';
-import 'package:covid_tracing/home/widgets/case_dialog.dart';
+import 'package:nsw_covid_tracker/home/repo/repo.dart';
+import 'package:nsw_covid_tracker/home/widgets/case_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';

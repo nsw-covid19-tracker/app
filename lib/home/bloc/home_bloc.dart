@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:covid_tracing/home/common/consts.dart';
-import 'package:covid_tracing/home/repo/repo.dart';
+import 'package:nsw_covid_tracker/home/common/consts.dart';
+import 'package:nsw_covid_tracker/home/repo/repo.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 

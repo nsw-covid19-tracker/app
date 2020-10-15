@@ -1,7 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:covid_tracing/home/common/common.dart';
-import 'package:covid_tracing/home/repo/repo.dart';
-import 'package:covid_tracing/home/widgets/widgets.dart';
+import 'package:nsw_covid_tracker/home/common/common.dart';
+import 'package:nsw_covid_tracker/home/repo/repo.dart';
+import 'package:nsw_covid_tracker/home/widgets/widgets.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
 
