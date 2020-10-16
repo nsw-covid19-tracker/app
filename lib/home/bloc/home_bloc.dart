@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nsw_covid_tracker/home/common/consts.dart';
 import 'package:nsw_covid_tracker/home/repo/repo.dart';
@@ -17,6 +18,7 @@ typedef CasesComparator = int Function(Case a, Case b);
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final HomeRepo _homeRepo;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   HomeBloc(this._homeRepo) : super(HomeInitial());
 
@@ -55,11 +57,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currState = state;
     if (currState is HomeInitial) {
       try {
+        final user = _firebaseAuth.currentUser;
+        if (user == null) await _firebaseAuth.signInAnonymously();
+
         final isShowDisclaimer = await _homeRepo.getIsShowDisclaimer();
         final locations = await _homeRepo.fetchLocations();
         final cases = await _homeRepo.fetchCases();
         final activeCases =
             cases.where((myCase) => (!myCase.isExpired)).toList();
+
         yield HomeSuccess(
           locations: locations,
           cases: cases,
