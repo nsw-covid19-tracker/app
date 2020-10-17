@@ -66,8 +66,8 @@ def main(data, context):
 
 def get_datetimes(result):
     datetimes = []
-    dates = result["Date"].replace(", ", "; ").replace(" and ", "; ").split("; ")
-    times = result["Time"].replace(", ", "; ").replace(" and ", "; ").split("; ")
+    dates = split_datetimes(result["Date"])
+    times = split_datetimes(result["Time"])
 
     for i in range(len(dates)):
         date = dates[i].replace(" - ", " to ").strip()
@@ -76,53 +76,64 @@ def get_datetimes(result):
         else:
             time = times[0]
 
-        time = time.replace(" - ", " to ").strip()
-
         if " to " in date:
             start_date, end_date = date.split(" to ")
         else:
             start_date = end_date = date
 
+        time = time.replace(" - ", " to ").strip()
         if time.lower() == "all day":
-            date_format = "dddd D MMMM"
-            start = arrow.get(start_date, date_format).replace(year=2020).floor("day")
-            end = arrow.get(end_date, date_format).replace(year=2020).ceil("day")
-            datetimes.append(
-                {"start": int(start.timestamp * 1000), "end": int(end.timestamp * 1000)}
-            )
+            start = parse_datetime(start_date).floor("day")
+            end = parse_datetime(end_date).ceil("day")
         else:
             start_time, end_time = [x.strip() for x in time.split(" to ")]
-            start = f"{start_date} {start_time}"
-            end = f"{end_date} {end_time}"
+            start = parse_datetime(f"{start_date} {start_time}")
+            end = parse_datetime(f"{end_date} {end_time}")
 
-            datetimes.append(
-                {"start": parse_datetime(start), "end": parse_datetime(end)}
-            )
+        datetimes.append(
+            {
+                "start": datetime_milliseconds(start),
+                "end": datetime_milliseconds(end),
+            }
+        )
 
     return datetimes
 
 
+def split_datetimes(datetimes):
+    return [
+        x.strip() for x in datetimes.replace(",", ";").replace("and", ";").split(";")
+    ]
+
+
 def parse_datetime(datetime_str):
     datetime = None
-    datetime_str = datetime_str.replace('Setpember', 'September')
+    datetime_str = datetime_str.replace("Setpember", "September")
     formats = [
         "dddd D MMMM YYYY h:mmA",
         "dddd D MMMM YYYY h.mmA",
         "dddd D MMMM YYYY hA",
         "dddd D MMMM h:mmA",
         "dddd D MMMM hA",
+        "dddd D MMMM",
+        "D MMMM",
     ]
 
     for datetime_format in formats:
         try:
             datetime = arrow.get(datetime_str, datetime_format)
+            break
         except ValueError:
             continue
 
     if datetime is None:
         raise ValueError(f"Failed to parse {datetime_str}")
 
-    return int(datetime.replace(year=2020).timestamp * 1000)
+    return datetime.replace(year=2020)
+
+
+def datetime_milliseconds(datetime):
+    return int(datetime.timestamp * 1000)
 
 
 if __name__ == "__main__":
