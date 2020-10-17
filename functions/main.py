@@ -103,6 +103,8 @@ def get_datetimes(result):
 
 
 def parse_datetime(datetime_str):
+    datetime = None
+    datetime_str = datetime_str.replace('Setpember', 'September')
     formats = [
         "dddd D MMMM YYYY h:mmA",
         "dddd D MMMM YYYY h.mmA",
@@ -110,7 +112,6 @@ def parse_datetime(datetime_str):
         "dddd D MMMM h:mmA",
         "dddd D MMMM hA",
     ]
-    datetime = None
 
     for datetime_format in formats:
         try:
