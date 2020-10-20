@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:firebase/firebase.dart' as fb;
 import 'package:nsw_covid_tracker/app.dart';
 import 'package:nsw_covid_tracker/bloc_observer.dart';
 import 'package:nsw_covid_tracker/home/repo/repo.dart';
@@ -11,8 +12,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await FirebaseDatabase.instance.setPersistenceEnabled(true);
+  if (kIsWeb) {
+    fb.initializeApp(
+      apiKey: 'AIzaSyDwLVOdCNmfUPSCumSmVD5DRs7vEgAl3ro',
+      authDomain: 'nsw-covid-tracker.firebaseapp.com',
+      databaseURL: 'https://nsw-covid-tracker.firebaseio.com',
+      projectId: 'nsw-covid-tracker',
+      storageBucket: 'nsw-covid-tracker.appspot.com',
+    );
+  } else {
+    await Firebase.initializeApp();
+    await FirebaseDatabase.instance.setPersistenceEnabled(true);
+  }
+
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = MyBlocObserver();
   runApp(App(HomeRepo()));
