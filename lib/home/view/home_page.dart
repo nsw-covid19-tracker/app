@@ -91,6 +91,9 @@ class _HomePageState extends State<HomePage> {
       context: context,
       animType: AnimType.SCALE,
       dialogType: DialogType.INFO,
+      width: MediaQuery.of(context).size.width >= kPhoneWidth
+          ? kDialogWebWidth
+          : null,
       title: 'No active cases found',
       desc: 'Keep maintaining social distancing and '
           'wear a mask when physical distancing is not possible',
@@ -102,6 +105,9 @@ class _HomePageState extends State<HomePage> {
       context: context,
       animType: AnimType.SCALE,
       dialogType: DialogType.INFO,
+      width: MediaQuery.of(context).size.width >= kPhoneWidth
+          ? kDialogWebWidth
+          : null,
       body: Padding(
         padding: kLayoutPadding,
         child: _DisclaimerBody(),
