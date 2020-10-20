@@ -104,7 +104,10 @@ class _HomePageState extends State<HomePage> {
         Expanded(
           flex: 1,
           child: state is HomeSuccess
-              ? CasesListView(dialogSc: _scrollController)
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: CasesListView(dialogSc: _scrollController),
+                )
               : Center(child: LoadingWidget()),
         ),
         Expanded(

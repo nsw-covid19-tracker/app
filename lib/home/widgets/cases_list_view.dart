@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nsw_covid_tracker/home/bloc/home_bloc.dart';
@@ -68,6 +69,7 @@ class CasesListView extends StatelessWidget {
                         color: Colors.grey,
                         indent: 16,
                         endIndent: 16,
+                        thickness: kIsWeb ? 0.5 : null,
                       ),
               )
             : Center(
@@ -111,10 +113,10 @@ class CasesListView extends StatelessWidget {
       myCase = expiredCases[index - activeCases.length - offset];
     }
 
-    return Ink(
-      padding: kLayoutPadding,
-      child: InkWell(
-        onTap: () => CaseDialog.show(context, dialogSc, myCase),
+    return InkWell(
+      onTap: () => CaseDialog.show(context, dialogSc, myCase),
+      child: Padding(
+        padding: kLayoutPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
