@@ -7,11 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SearchBar extends StatefulWidget {
   final Function onSearchBarTap;
 
-  const SearchBar({
-    Key key,
-    @required this.onSearchBarTap,
-  })  : assert(onSearchBarTap != null),
-        super(key: key);
+  const SearchBar({Key key, this.onSearchBarTap}) : super(key: key);
 
   @override
   _SearchBarState createState() => _SearchBarState();
@@ -58,7 +54,7 @@ class _SearchBarState extends State<SearchBar> {
       },
       onFocusChanged: (isFocused) {
         if (isFocused) {
-          widget.onSearchBarTap();
+          widget.onSearchBarTap?.call();
         }
       },
       clearQueryOnClose: false,

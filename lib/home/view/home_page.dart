@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
             if (state.isEmptyActiveCases) {
               _showNoActiveCasesDialog();
               _homeBloc.add(EmptyActiveCasesHandled());
-            } else if (state.isSortCases) {
+            } else if (state.isSortCases && _panelController.isAttached) {
               _panelController.open();
               _homeBloc.add(SortCasesHandled());
             } else if (state.selectedCase != null) {
@@ -56,33 +56,76 @@ class _HomePageState extends State<HomePage> {
           }
         },
         builder: (context, state) {
-          return SlidingUpPanel(
-            controller: _panelController,
-            minHeight: _panelMinHeight,
-            maxHeight: MediaQuery.of(context).size.height * 0.8,
-            collapsed: state is HomeSuccess
-                ? CollapsedPanel(controller: _panelController)
-                : LoadingPanel(),
-            panelBuilder: (sc) => Panel(panelSc: sc),
-            body: Stack(
-              fit: StackFit.expand,
-              children: [
-                MapWidget(
-                  scrollController: _scrollController,
-                  onMapTap: () => _panelController.close(),
-                ),
-                SearchBar(
-                  onSearchBarTap: () => _panelController.close(),
-                ),
-              ],
-            ),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < kPhoneWidth) {
+                return _buildMobileLayout(state);
+              } else {
+                return _buildWebLayout(state);
+              }
+            },
           );
         },
       ),
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: _panelMinHeight),
-        child: FilterButton(),
+      floatingActionButton: LayoutBuilder(builder: (context, constraints) {
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: constraints.maxWidth < kPhoneWidth ? _panelMinHeight : 0),
+          child: FilterButton(),
+        );
+      }),
+    );
+  }
+
+  Widget _buildMobileLayout(HomeState state) {
+    return SlidingUpPanel(
+      controller: _panelController,
+      minHeight: _panelMinHeight,
+      maxHeight: MediaQuery.of(context).size.height * 0.8,
+      collapsed: state is HomeSuccess
+          ? CollapsedPanel(controller: _panelController)
+          : LoadingPanel(),
+      panelBuilder: (sc) => Panel(panelSc: sc),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          MapWidget(
+            scrollController: _scrollController,
+            onMapTap: () => _panelController.close(),
+          ),
+          SearchBar(
+            onSearchBarTap: () => _panelController.close(),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildWebLayout(HomeState state) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: state is HomeSuccess
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: CasesListView(dialogSc: _scrollController),
+                )
+              : Center(child: LoadingWidget()),
+        ),
+        Expanded(
+          flex: 3,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              MapWidget(
+                scrollController: _scrollController,
+              ),
+              SearchBar(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
