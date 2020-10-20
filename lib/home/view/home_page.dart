@@ -67,10 +67,13 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: _panelMinHeight),
-        child: FilterButton(),
-      ),
+      floatingActionButton: LayoutBuilder(builder: (context, constraints) {
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: constraints.maxWidth < kPhoneWidth ? _panelMinHeight : 0),
+          child: FilterButton(),
+        );
+      }),
     );
   }
 
