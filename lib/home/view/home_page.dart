@@ -56,26 +56,14 @@ class _HomePageState extends State<HomePage> {
           }
         },
         builder: (context, state) {
-          return SlidingUpPanel(
-            controller: _panelController,
-            minHeight: _panelMinHeight,
-            maxHeight: MediaQuery.of(context).size.height * 0.8,
-            collapsed: state is HomeSuccess
-                ? CollapsedPanel(controller: _panelController)
-                : LoadingPanel(),
-            panelBuilder: (sc) => Panel(panelSc: sc),
-            body: Stack(
-              fit: StackFit.expand,
-              children: [
-                MapWidget(
-                  scrollController: _scrollController,
-                  onMapTap: () => _panelController.close(),
-                ),
-                SearchBar(
-                  onSearchBarTap: () => _panelController.close(),
-                ),
-              ],
-            ),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < kPhoneWidth) {
+                return _buildMobileLayout(state);
+              } else {
+                return _buildWebLayout(state);
+              }
+            },
           );
         },
       ),
@@ -83,6 +71,55 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.only(bottom: _panelMinHeight),
         child: FilterButton(),
       ),
+    );
+  }
+
+  Widget _buildMobileLayout(HomeState state) {
+    return SlidingUpPanel(
+      controller: _panelController,
+      minHeight: _panelMinHeight,
+      maxHeight: MediaQuery.of(context).size.height * 0.8,
+      collapsed: state is HomeSuccess
+          ? CollapsedPanel(controller: _panelController)
+          : LoadingPanel(),
+      panelBuilder: (sc) => Panel(panelSc: sc),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          MapWidget(
+            scrollController: _scrollController,
+            onMapTap: () => _panelController.close(),
+          ),
+          SearchBar(
+            onSearchBarTap: () => _panelController.close(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWebLayout(HomeState state) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: state is HomeSuccess
+              ? CasesListView(dialogSc: _scrollController)
+              : Center(child: LoadingWidget()),
+        ),
+        Expanded(
+          flex: 3,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              MapWidget(
+                scrollController: _scrollController,
+              ),
+              SearchBar(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

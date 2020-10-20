@@ -1,22 +1,12 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:nsw_covid_tracker/home/bloc/home_bloc.dart';
-import 'package:nsw_covid_tracker/home/common/consts.dart';
-import 'package:nsw_covid_tracker/home/repo/repo.dart';
-import 'package:nsw_covid_tracker/home/widgets/widgets.dart';
+import 'package:nsw_covid_tracker/home/widgets/cases_list_view.dart';
 import 'package:flutter/material.dart';
+import 'package:nsw_covid_tracker/home/widgets/loading.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class LoadingPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircularProgressIndicator(),
-        SizedBox(width: 16),
-        Text('Fetching locations'),
-      ],
-    );
+    return Container(color: Colors.white, child: LoadingWidget());
   }
 }
 
@@ -80,33 +70,12 @@ class _PanelState extends State<Panel> {
       children: [
         _SlidingBar(),
         SizedBox(height: 16),
-        BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (previous, current) {
-            return previous is HomeInitial ||
-                (previous is HomeSuccess &&
-                    current is HomeSuccess &&
-                    previous.casesResult != current.casesResult);
-          },
-          builder: (context, state) {
-            var cases = <Case>[];
-            if (state is HomeSuccess) cases = state.casesResult;
-
-            return Expanded(
-              child: cases.isNotEmpty
-                  ? _CasesListView(
-                      panelSc: widget.panelSc,
-                      dialogSc: _dialogSc,
-                      cases: cases,
-                    )
-                  : Center(
-                      child: Text(
-                        'No cases found',
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                    ),
-            );
-          },
-        ),
+        Expanded(
+          child: CasesListView(
+            panelSc: widget.panelSc,
+            dialogSc: _dialogSc,
+          ),
+        )
       ],
     );
   }
@@ -122,115 +91,6 @@ class _SlidingBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.grey,
         borderRadius: BorderRadius.circular(10),
-      ),
-    );
-  }
-}
-
-class _CasesListView extends StatelessWidget {
-  final ScrollController panelSc;
-  final ScrollController dialogSc;
-  final List<Case> cases;
-
-  const _CasesListView({
-    Key key,
-    @required this.panelSc,
-    @required this.dialogSc,
-    @required this.cases,
-  })  : assert(panelSc != null),
-        assert(dialogSc != null),
-        assert(cases != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final activeCases = <Case>[];
-    final expiredCases = <Case>[];
-
-    for (final myCase in cases) {
-      if (myCase.isExpired) {
-        expiredCases.add(myCase);
-      } else {
-        activeCases.add(myCase);
-      }
-    }
-
-    var itemCount = cases.length;
-    if (activeCases.isNotEmpty) itemCount++;
-    if (expiredCases.isNotEmpty) itemCount++;
-
-    return ListView.separated(
-      controller: panelSc,
-      shrinkWrap: true,
-      itemCount: itemCount,
-      itemBuilder: (context, index) {
-        if (index == 0 ||
-            (activeCases.isNotEmpty && index == activeCases.length + 1)) {
-          return _buildTitle(context, activeCases, index);
-        } else {
-          return _buildTile(context, activeCases, expiredCases, index);
-        }
-      },
-      separatorBuilder: (context, index) => index == 0 ||
-              (activeCases.isNotEmpty && index == activeCases.length + 1)
-          ? SizedBox.shrink()
-          : Divider(
-              color: Colors.grey,
-              indent: 16,
-              endIndent: 16,
-            ),
-    );
-  }
-
-  Widget _buildTitle(BuildContext context, List<Case> activeCases, int index) {
-    var title = 'Expired';
-    var topPadding = 16.0;
-    var bottomPadding = 16.0;
-
-    if (index == 0 && activeCases.isNotEmpty) {
-      title = 'Recent Case Locations';
-      topPadding = 0;
-    }
-
-    return Padding(
-      padding: EdgeInsets.only(top: topPadding, bottom: bottomPadding),
-      child: Text(
-        title,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.subtitle1.apply(fontWeightDelta: 3),
-      ),
-    );
-  }
-
-  Widget _buildTile(BuildContext context, List<Case> activeCases,
-      List<Case> expiredCases, int index) {
-    Case myCase;
-    if (index < activeCases.length + 1) {
-      myCase = activeCases[index - 1];
-    } else {
-      var offset = 1;
-      if (activeCases.isNotEmpty) offset = 2;
-      myCase = expiredCases[index - activeCases.length - offset];
-    }
-
-    return Ink(
-      padding: kLayoutPadding,
-      child: InkWell(
-        onTap: () => CaseDialog.show(context, dialogSc, myCase),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${myCase.venue}',
-              style: Theme.of(context)
-                  .textTheme
-                  .subtitle1
-                  .apply(fontWeightDelta: 1),
-            ),
-            WidgetPaddingSm(),
-            Text(myCase.formattedDateTimes),
-          ],
-        ),
       ),
     );
   }

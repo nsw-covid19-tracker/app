@@ -11,12 +11,8 @@ class MapWidget extends StatefulWidget {
   final ScrollController scrollController;
   final Function onMapTap;
 
-  MapWidget({
-    Key key,
-    @required this.scrollController,
-    @required this.onMapTap,
-  })  : assert(scrollController != null),
-        assert(onMapTap != null),
+  MapWidget({Key key, @required this.scrollController, this.onMapTap})
+      : assert(scrollController != null),
         super(key: key);
 
   @override
@@ -66,7 +62,7 @@ class _MapWidgetState extends State<MapWidget> {
             _completer.complete(controller);
           },
           markers: cases.isNotEmpty ? _mapCasesToMarkers(context, cases) : null,
-          onTap: (_) => widget.onMapTap(),
+          onTap: (_) => widget.onMapTap?.call(),
         );
       },
     );
