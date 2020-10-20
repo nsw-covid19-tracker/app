@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:nsw_covid_tracker/home/common/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
@@ -39,6 +40,7 @@ class MyBottomSheet {
               end: endDate,
               callback: filterDateCallback,
             ),
+            Divider(indent: 16, endIndent: 16),
             _SortListTile(sortBy: sortBy, callback: sortCallbackFunc),
           ],
         ),
@@ -153,7 +155,12 @@ class _FloatingModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = Device.get().isIphoneX ? 0.0 : 20.0;
+    var bottomPadding = 0.0;
+    if (kIsWeb) {
+      bottomPadding = 48;
+    } else if (Device.get().isIphoneX) {
+      bottomPadding = 24;
+    }
 
     return SafeArea(
       child: Padding(
