@@ -41,8 +41,7 @@ class _HomePageState extends State<HomePage> {
             if (state.isEmptyActiveCases) {
               _showNoActiveCasesDialog();
               _homeBloc.add(EmptyActiveCasesHandled());
-            } else if (state.isSortCases &&
-                MediaQuery.of(context).size.width < kPhoneWidth) {
+            } else if (state.isSortCases && _panelController.isAttached) {
               _panelController.open();
               _homeBloc.add(SortCasesHandled());
             } else if (state.selectedCase != null) {
