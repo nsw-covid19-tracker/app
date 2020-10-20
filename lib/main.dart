@@ -13,5 +13,5 @@ void main() async {
   await FirebaseConfig.instance.init();
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = MyBlocObserver();
-  runApp(App(HomeRepo()));
+  runApp(App(HomeRepo.instance));
 }
