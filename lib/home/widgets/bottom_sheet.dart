@@ -156,15 +156,22 @@ class _FloatingModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var bottomPadding = 0.0;
+    var horizontal = 24.0;
+
     if (kIsWeb) {
       bottomPadding = 48;
     } else if (Device.get().isIphoneX) {
       bottomPadding = 24;
     }
 
+    final width = MediaQuery.of(context).size.width;
+    if (width >= kPhoneWidth) {
+      horizontal = (width - kDialogWebWidth) / 2;
+    }
+
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, bottomPadding),
+        padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, bottomPadding),
         child: Material(
           clipBehavior: Clip.antiAlias,
           borderRadius: BorderRadius.circular(12),
