@@ -70,18 +70,18 @@ def get_datetimes(result):
     times = split_datetimes(result["Time"])
 
     for i in range(len(dates)):
-        date = dates[i].replace(" - ", " to ").strip()
         if i < len(times):
             time = times[i]
         else:
             time = times[0]
 
+        date = dates[i].replace("-", "to").strip()
         if " to " in date:
-            start_date, end_date = date.split(" to ")
+            start_date, end_date = [x.strip() for x in date.split(" to ")]
         else:
             start_date = end_date = date
 
-        time = time.replace(" - ", " to ").strip()
+        time = time.replace("-", " - ").replace("-", "to").strip()
         if time.lower() == "all day":
             start = parse_datetime(start_date).floor("day")
             end = parse_datetime(end_date).ceil("day")

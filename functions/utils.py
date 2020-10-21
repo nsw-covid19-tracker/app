@@ -16,7 +16,7 @@ def add_location(postcode, suburb):
 
 def add_case(case_dict, datetimes):
     m = hashlib.sha384()
-    m.update(str(case_dict["venue"]).encode("utf-8"))
+    m.update(case_dict["venue"].encode("utf-8"))
     m.update(str(case_dict["latitude"]).encode("utf-8"))
     m.update(str(case_dict["longitude"]).encode("utf-8"))
     key = m.hexdigest()
