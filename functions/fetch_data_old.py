@@ -25,6 +25,7 @@ def main():
         ),
     )
 
+    suburbs_dict = utils.load_suburbs_dict()
     base_url = "https://data.nsw.gov.au/data"
     url = (
         "https://data.nsw.gov.au/data/api/3/action/datastore_search?"
@@ -54,7 +55,7 @@ def main():
                 logger.warning(f"Failed to find postcode in {address}")
             else:
                 postcode = postcode[0]
-                utils.add_location(postcode, suburb)
+                postcode = utils.add_suburb(suburbs_dict, postcode, suburb)
 
             datetimes = get_datetimes(venue, record)
             case_dict = {
