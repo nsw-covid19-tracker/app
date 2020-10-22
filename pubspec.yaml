@@ -1,5 +1,5 @@
 name: nsw_covid_tracker
-description: A project for tracking NSW COVID-19 case locations.
+description: Before you visit a suburb, search if there have been any active cases in those public locations.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
