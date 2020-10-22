@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
           return LayoutBuilder(
             builder: (context, constraints) {
               if (constraints.maxWidth < kPhoneWidth) {
-                return _buildMobileLayout(state);
+                return _buildMobileLayout(state, _panelMinHeight);
               } else {
                 return _buildWebLayout(state);
               }
@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildMobileLayout(HomeState state) {
+  Widget _buildMobileLayout(HomeState state, double panelMinHeight) {
     return SlidingUpPanel(
       controller: _panelController,
       minHeight: _panelMinHeight,
@@ -96,6 +96,25 @@ class _HomePageState extends State<HomePage> {
           SearchBar(
             onSearchBarTap: () => _panelController.close(),
           ),
+          if (state is HomeSuccess)
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Container(
+                margin: EdgeInsets.only(left: 8, bottom: panelMinHeight + 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black26,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  'Last Updated: ${state.formattedUpdatedAt}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .caption
+                      .apply(color: Colors.white),
+                ),
+              ),
+            ),
         ],
       ),
     );

@@ -23,6 +23,21 @@ class HomeRepoMobile extends HomeRepo {
   }
 
   @override
+  Future<DateTime> getDataUpdatedAt() async {
+    DateTime updatedAt;
+    final query = _logsRef.child('dataUpdatedAt');
+    await query.keepSynced(true);
+    final snapshot = await query.once();
+
+    if (snapshot.value != null) {
+      updatedAt =
+          DateTime.fromMillisecondsSinceEpoch(snapshot.value, isUtc: true);
+    }
+
+    return updatedAt;
+  }
+
+  @override
   Future<List<Suburb>> fetchSuburbs() async {
     final isKeepSynced = await _getIsKeepSynced(_suburbsKey);
     if (isKeepSynced) await _suburbsRef.keepSynced(true);

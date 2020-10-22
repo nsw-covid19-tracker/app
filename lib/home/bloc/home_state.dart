@@ -13,6 +13,7 @@ class HomeFailure extends HomeState {}
 
 @CopyWith(generateCopyWithNull: true)
 class HomeSuccess extends HomeState {
+  final DateTime updatedAt;
   final List<Suburb> suburbs;
   final List<Case> cases;
   final List<Suburb> suburbsResult;
@@ -28,6 +29,7 @@ class HomeSuccess extends HomeState {
   final Case selectedCase;
 
   HomeSuccess({
+    this.updatedAt,
     this.suburbs,
     this.cases,
     this.suburbsResult = const <Suburb>[],
@@ -46,6 +48,7 @@ class HomeSuccess extends HomeState {
   @override
   List<Object> get props {
     return [
+      updatedAt,
       suburbs,
       cases,
       suburbsResult,
@@ -63,7 +66,7 @@ class HomeSuccess extends HomeState {
 
   @override
   String toString() {
-    return 'HomeSuccess: { suburbs: ${suburbs?.length}, '
+    return 'HomeSuccess: { updatedAt: $updatedAt, suburbs: ${suburbs?.length}, '
         'cases: ${cases?.length}, suburbsResult: ${suburbsResult?.length}, '
         'casesResult: ${casesResult?.length}, '
         'searchCases: ${searchCases?.length}, '
@@ -72,5 +75,11 @@ class HomeSuccess extends HomeState {
         'filteredSuburb: $filteredSuburb, filteredDates: $filteredDates, '
         'isShowDisclaimer: $isShowDisclaimer, '
         'selectedCase: ${selectedCase != null} }';
+  }
+
+  String get formattedUpdatedAt {
+    final dateFormat = DateFormat('d MMM, yyyy');
+
+    return updatedAt != null ? dateFormat.format(updatedAt) : 'Unknown';
   }
 }
