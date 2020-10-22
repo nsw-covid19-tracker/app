@@ -49,7 +49,6 @@ class CasesListView extends StatelessWidget {
         return itemCount != 0
             ? ListView.separated(
                 controller: panelSc,
-                shrinkWrap: true,
                 itemCount: itemCount,
                 itemBuilder: (context, index) {
                   if (index == 0 ||
