@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   final _scrollController = ScrollController();
   final _panelMinHeight = 80.0;
   HomeBloc _homeBloc;
+  bool _isShowMap = true;
 
   @override
   void initState() {
@@ -59,7 +60,7 @@ class _HomePageState extends State<HomePage> {
           return LayoutBuilder(
             builder: (context, constraints) {
               if (constraints.maxWidth < kPhoneWidth) {
-                return _buildMobileLayout(state, _panelMinHeight);
+                return _buildMobileLayout(state);
               } else {
                 return _buildWebLayout(state);
               }
@@ -78,7 +79,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildMobileLayout(HomeState state, double panelMinHeight) {
+  Widget _buildMobileLayout(HomeState state) {
     return SlidingUpPanel(
       controller: _panelController,
       minHeight: _panelMinHeight,
@@ -87,12 +88,15 @@ class _HomePageState extends State<HomePage> {
           ? CollapsedPanel(controller: _panelController)
           : LoadingPanel(),
       panelBuilder: (sc) => Panel(panelSc: sc),
+      onPanelOpened: () => setState(() => _isShowMap = false),
+      onPanelClosed: () => setState(() => _isShowMap = true),
       body: Stack(
         fit: StackFit.expand,
         children: [
           MapWidget(
             scrollController: _scrollController,
             onMapTap: () => _panelController.close(),
+            isShowMap: _isShowMap,
           ),
           SearchBar(
             onSearchBarTap: () => _panelController.close(),
@@ -102,7 +106,7 @@ class _HomePageState extends State<HomePage> {
               alignment: Alignment.bottomLeft,
               child: _buildDataUpdatedAt(
                 state.formattedUpdatedAt,
-                bottomPadding: panelMinHeight,
+                bottomPadding: _panelMinHeight,
               ),
             ),
         ],
