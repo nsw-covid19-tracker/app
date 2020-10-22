@@ -148,7 +148,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildDataUpdatedAt(String updatedAt,
-      {leftPadding = 8, bottomPadding = 0}) {
+      {leftPadding = 8.0, bottomPadding = 0.0}) {
     return Container(
       margin: EdgeInsets.only(left: leftPadding, bottom: bottomPadding + 8),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -229,7 +229,10 @@ class _DisclaimerBody extends StatelessWidget {
                   ..onTap = () => _launchURL('https://www.nsw.gov.au/covid-19/'
                       'latest-news-and-updates'),
               ),
-              TextSpan(text: '.')
+              TextSpan(
+                text: '.\n\nThis app is not affiliated with '
+                    'the NSW Government in any way.',
+              )
             ],
           ),
         )
