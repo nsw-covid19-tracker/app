@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:nsw_covid_tracker/home/common/consts.dart';
 import 'package:nsw_covid_tracker/home/repo/repo.dart';
 import 'package:equatable/equatable.dart';
@@ -56,6 +57,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeInitial) {
       try {
         await _homeRepo.signInAnonymously();
+        final updatedAt = await _homeRepo.getDataUpdatedAt();
         final suburbs = await _homeRepo.fetchSuburbs();
         final cases = await _homeRepo.fetchCases();
         final isShowDisclaimer = await _homeRepo.getIsShowDisclaimer();
@@ -63,6 +65,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             cases.where((myCase) => (!myCase.isExpired)).toList();
 
         yield HomeSuccess(
+          updatedAt: updatedAt,
           suburbs: suburbs,
           cases: cases,
           casesResult: activeCases,

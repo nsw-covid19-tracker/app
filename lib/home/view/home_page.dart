@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
           return LayoutBuilder(
             builder: (context, constraints) {
               if (constraints.maxWidth < kPhoneWidth) {
-                return _buildMobileLayout(state);
+                return _buildMobileLayout(state, _panelMinHeight);
               } else {
                 return _buildWebLayout(state);
               }
@@ -70,14 +70,15 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: LayoutBuilder(builder: (context, constraints) {
         return Padding(
           padding: EdgeInsets.only(
-              bottom: constraints.maxWidth < kPhoneWidth ? _panelMinHeight : 0),
+            bottom: constraints.maxWidth < kPhoneWidth ? _panelMinHeight : 0,
+          ),
           child: FilterButton(),
         );
       }),
     );
   }
 
-  Widget _buildMobileLayout(HomeState state) {
+  Widget _buildMobileLayout(HomeState state, double panelMinHeight) {
     return SlidingUpPanel(
       controller: _panelController,
       minHeight: _panelMinHeight,
@@ -96,6 +97,14 @@ class _HomePageState extends State<HomePage> {
           SearchBar(
             onSearchBarTap: () => _panelController.close(),
           ),
+          if (state is HomeSuccess)
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: _buildDataUpdatedAt(
+                state.formattedUpdatedAt,
+                bottomPadding: panelMinHeight,
+              ),
+            ),
         ],
       ),
     );
@@ -122,10 +131,35 @@ class _HomePageState extends State<HomePage> {
                 scrollController: _scrollController,
               ),
               SearchBar(),
+              if (state is HomeSuccess)
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: _buildDataUpdatedAt(
+                    state.formattedUpdatedAt,
+                    leftPadding: 4,
+                    bottomPadding: 24,
+                  ),
+                ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDataUpdatedAt(String updatedAt,
+      {leftPadding = 8, bottomPadding = 0}) {
+    return Container(
+      margin: EdgeInsets.only(left: leftPadding, bottom: bottomPadding + 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        'Last Updated: $updatedAt',
+        style: Theme.of(context).textTheme.caption.apply(color: Colors.white),
+      ),
     );
   }
 
@@ -139,7 +173,7 @@ class _HomePageState extends State<HomePage> {
           : null,
       title: 'No active cases found',
       desc: 'Keep maintaining social distancing and '
-          'wear a mask when physical distancing is not possible',
+          'wear a mask when physical distancing is not possible.',
     )..show();
   }
 

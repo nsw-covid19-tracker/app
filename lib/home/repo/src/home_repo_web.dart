@@ -16,6 +16,19 @@ class HomeRepoWeb extends HomeRepo {
   }
 
   @override
+  Future<DateTime> getDataUpdatedAt() async {
+    DateTime updatedAt;
+    final event = await _db.ref('logs/dataUpdatedAt').once('value');
+    final value = event.snapshot.val();
+
+    if (value != null) {
+      updatedAt = DateTime.fromMillisecondsSinceEpoch(value, isUtc: true);
+    }
+
+    return updatedAt;
+  }
+
+  @override
   Future<List<Suburb>> fetchSuburbs() async {
     final event = await _db.ref('suburbs').once('value');
     final value = event.snapshot.val();

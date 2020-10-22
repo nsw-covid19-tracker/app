@@ -1,6 +1,5 @@
 import arrow
 import firebase_admin
-import json
 import re
 import requests
 import sys
@@ -32,8 +31,9 @@ def main(data, context):
         "0a52e6c1-bc0b-48af-8b45-d791a6d8e289/resource/"
         "f3a28eed-8c2a-437b-8ac1-2dab3cf760f9/download/venue-data.json"
     )
-    json_str = r.text.replace("var venue_data =", "")
-    data = json.loads(json_str)["data"]
+    json = r.json()
+    data = json["data"]
+    data_updated_at = arrow.get(json["date"], "YYYY-MM-DD")
 
     for key in data:
         for result in data[key]:
@@ -62,7 +62,12 @@ def main(data, context):
             utils.add_case(case_dict, datetimes)
 
     logs_ref = db.reference("logs")
-    logs_ref.update({"casesUpdatedAt": int(arrow.utcnow().timestamp * 1000)})
+    logs_ref.update(
+        {
+            "dataUpdatedAt": datetime_milliseconds(data_updated_at),
+            "casesUpdatedAt": datetime_milliseconds(arrow.utcnow()),
+        }
+    )
 
 
 def get_datetimes(result):
