@@ -133,9 +133,7 @@ class _SearchResults extends StatelessWidget {
             onTap: () {
               controller.query = suburb.name;
               controller.close();
-              context
-                  .bloc<HomeBloc>()
-                  .add(FilterCasesByPostcode(suburb.postcode));
+              context.bloc<HomeBloc>().add(FilterCasesBySuburb(suburb));
             },
           );
         }),

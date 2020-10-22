@@ -18,13 +18,13 @@ class Search extends HomeEvent {
   List<Object> get props => [query];
 }
 
-class FilterCasesByPostcode extends HomeEvent {
-  final String postcode;
+class FilterCasesBySuburb extends HomeEvent {
+  final Suburb suburb;
 
-  FilterCasesByPostcode(this.postcode);
+  FilterCasesBySuburb(this.suburb);
 
   @override
-  List<Object> get props => [postcode];
+  List<Object> get props => [suburb];
 }
 
 class SearchHandled extends HomeEvent {}
