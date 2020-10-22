@@ -1,2 +1,2 @@
-export 'location.dart';
+export 'suburb.dart';
 export 'case.dart';

@@ -56,14 +56,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeInitial) {
       try {
         await _homeRepo.signInAnonymously();
-        final locations = await _homeRepo.fetchLocations();
+        final suburbs = await _homeRepo.fetchSuburbs();
         final cases = await _homeRepo.fetchCases();
         final isShowDisclaimer = await _homeRepo.getIsShowDisclaimer();
         final activeCases =
             cases.where((myCase) => (!myCase.isExpired)).toList();
 
         yield HomeSuccess(
-          locations: locations,
+          suburbs: suburbs,
           cases: cases,
           casesResult: activeCases,
           isEmptyActiveCases: activeCases.isEmpty,
@@ -79,14 +79,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currState = state;
     if (currState is HomeSuccess) {
       final query = event.query.toLowerCase();
-      var locationsResult = <Location>[];
+      var suburbsResult = <Suburb>[];
       var searchCases = <Case>[];
 
       if (query.isNotEmpty) {
-        locationsResult = currState.locations
-            .where((location) =>
-                location.postcode.contains(query) ||
-                location.suburb.toLowerCase().contains(query))
+        suburbsResult = currState.suburbs
+            .where((suburb) =>
+                suburb.postcode.contains(query) ||
+                suburb.name.toLowerCase().contains(query))
             .take(5)
             .toList();
         final cases = List<Case>.from(currState.cases)
@@ -98,7 +98,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
 
       yield currState.copyWith(
-          locationsResult: locationsResult, searchCases: searchCases);
+          suburbsResult: suburbsResult, searchCases: searchCases);
     }
   }
 
@@ -143,7 +143,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }).toList();
       yield currState.copyWith(
         casesResult: results,
-        locationsResult: <Location>[],
+        suburbsResult: <Suburb>[],
         searchCases: <Case>[],
       ).copyWithNull(filteredPostcode: true);
     }

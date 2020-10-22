@@ -76,16 +76,16 @@ class _SearchBarState extends State<SearchBar> {
               buildWhen: (previous, current) {
                 return previous is HomeSuccess &&
                     current is HomeSuccess &&
-                    (previous.locationsResult != current.locationsResult ||
+                    (previous.suburbsResult != current.suburbsResult ||
                         previous.searchCases != current.searchCases);
               },
               builder: (context, state) {
                 if (state is HomeSuccess &&
-                    (state.locationsResult.isNotEmpty ||
+                    (state.suburbsResult.isNotEmpty ||
                         state.searchCases.isNotEmpty)) {
                   return _SearchResults(
                     controller: _controller,
-                    locations: state.locationsResult,
+                    suburbs: state.suburbsResult,
                     cases: state.searchCases,
                   );
                 }
@@ -102,16 +102,16 @@ class _SearchBarState extends State<SearchBar> {
 
 class _SearchResults extends StatelessWidget {
   final FloatingSearchBarController controller;
-  final List<Location> locations;
+  final List<Suburb> suburbs;
   final List<Case> cases;
 
   const _SearchResults({
     Key key,
     @required this.controller,
-    @required this.locations,
+    @required this.suburbs,
     @required this.cases,
   })  : assert(controller != null),
-        assert(locations != null),
+        assert(suburbs != null),
         assert(cases != null),
         super(key: key);
 
@@ -120,22 +120,22 @@ class _SearchResults extends StatelessWidget {
     return ListView(
       shrinkWrap: true,
       children: [
-        if (locations.isNotEmpty)
+        if (suburbs.isNotEmpty)
           Text(
             'Suburbs',
             textAlign: TextAlign.center,
             style:
                 Theme.of(context).textTheme.subtitle1.apply(fontWeightDelta: 1),
           ),
-        ...locations.map((location) {
+        ...suburbs.map((suburb) {
           return ListTile(
-            title: Text(location.name),
+            title: Text(suburb.displayName),
             onTap: () {
-              controller.query = location.suburb;
+              controller.query = suburb.name;
               controller.close();
               context
                   .bloc<HomeBloc>()
-                  .add(FilterCasesByPostcode(location.postcode));
+                  .add(FilterCasesByPostcode(suburb.postcode));
             },
           );
         }),

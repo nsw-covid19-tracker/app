@@ -37,7 +37,7 @@ def add_suburb(suburbs_dict, postcode, suburb):
         suburb_ref.set(
             {
                 "postcode": postcode,
-                "suburb": suburb,
+                "name": suburb,
                 "latitude": lat_lng[0],
                 "longitude": lat_lng[1],
             }

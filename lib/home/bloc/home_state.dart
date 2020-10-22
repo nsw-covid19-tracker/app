@@ -13,9 +13,9 @@ class HomeFailure extends HomeState {}
 
 @CopyWith(generateCopyWithNull: true)
 class HomeSuccess extends HomeState {
-  final List<Location> locations;
+  final List<Suburb> suburbs;
   final List<Case> cases;
-  final List<Location> locationsResult;
+  final List<Suburb> suburbsResult;
   final List<Case> casesResult;
   final List<Case> searchCases;
   final bool isShowAllCases;
@@ -28,9 +28,9 @@ class HomeSuccess extends HomeState {
   final Case selectedCase;
 
   HomeSuccess({
-    this.locations,
+    this.suburbs,
     this.cases,
-    this.locationsResult = const <Location>[],
+    this.suburbsResult = const <Suburb>[],
     this.casesResult = const <Case>[],
     this.searchCases = const <Case>[],
     this.isShowAllCases = false,
@@ -46,9 +46,9 @@ class HomeSuccess extends HomeState {
   @override
   List<Object> get props {
     return [
-      locations,
+      suburbs,
       cases,
-      locationsResult,
+      suburbsResult,
       casesResult,
       searchCases,
       isShowAllCases,
@@ -63,8 +63,8 @@ class HomeSuccess extends HomeState {
 
   @override
   String toString() {
-    return 'HomeSuccess: { locations: ${locations?.length}, '
-        'cases: ${cases?.length}, locationsResult: ${locationsResult?.length}, '
+    return 'HomeSuccess: { suburbs: ${suburbs?.length}, '
+        'cases: ${cases?.length}, suburbsResult: ${suburbsResult?.length}, '
         'casesResult: ${casesResult?.length}, '
         'searchCases: ${searchCases?.length}, '
         'isShowAllCases: $isShowAllCases, targetLatLng: $targetLatLng, '

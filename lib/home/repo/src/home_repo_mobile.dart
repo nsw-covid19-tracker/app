@@ -10,10 +10,10 @@ HomeRepo getHomeRepo() => HomeRepoMobile();
 class HomeRepoMobile extends HomeRepo {
   static final _rootRef = FirebaseDatabase.instance.reference();
   final _auth = FirebaseAuth.instance;
-  final _locationsRef = _rootRef.child('locations');
+  final _suburbsRef = _rootRef.child('suburbs');
   final _casesRef = _rootRef.child('cases');
   final _logsRef = _rootRef.child('logs');
-  final _locationsKey = 'locationsUpdatedAt';
+  final _suburbsKey = 'suburbsUpdatedAt';
   final _casesKey = 'casesUpdatedAt';
 
   @override
@@ -23,19 +23,18 @@ class HomeRepoMobile extends HomeRepo {
   }
 
   @override
-  Future<List<Location>> fetchLocations() async {
-    final isKeepSynced = await _getIsKeepSynced(_locationsKey);
-    if (isKeepSynced) await _locationsRef.keepSynced(true);
-    final snapshot = await _locationsRef.once();
-    final queue = PriorityQueue<Location>(
-      (Location a, Location b) => a.suburb.compareTo(b.suburb),
+  Future<List<Suburb>> fetchSuburbs() async {
+    final isKeepSynced = await _getIsKeepSynced(_suburbsKey);
+    if (isKeepSynced) await _suburbsRef.keepSynced(true);
+    final snapshot = await _suburbsRef.once();
+    final queue = PriorityQueue<Suburb>(
+      (Suburb a, Suburb b) => a.name.compareTo(b.name),
     );
 
     if (snapshot.value != null) {
       for (MapEntry entry in snapshot.value.entries) {
         final data = Map<String, dynamic>.from(entry.value);
-        data['postcode'] = entry.key;
-        queue.add(Location.fromJson(data));
+        queue.add(Suburb.fromJson(data));
       }
     }
 

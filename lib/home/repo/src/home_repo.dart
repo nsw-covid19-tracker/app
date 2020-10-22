@@ -16,7 +16,7 @@ abstract class HomeRepo {
 
   Future<void> signInAnonymously();
 
-  Future<List<Location>> fetchLocations();
+  Future<List<Suburb>> fetchSuburbs();
 
   Future<List<Case>> fetchCases();
 
