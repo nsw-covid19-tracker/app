@@ -131,7 +131,7 @@ class _SearchResults extends StatelessWidget {
           return ListTile(
             title: Text(suburb.displayName),
             onTap: () {
-              controller.query = suburb.name;
+              controller.query = suburb.displayName;
               controller.close();
               context.bloc<HomeBloc>().add(FilterCasesBySuburb(suburb));
             },

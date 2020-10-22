@@ -27,7 +27,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } else if (event is Search) {
       yield* _mapSearchToState(event);
     } else if (event is FilterCasesBySuburb) {
-      yield* _mapFilterCasesByPostcodeToState(event);
+      yield* _mapFilterCasesBySuburbToState(event);
     } else if (event is SearchHandled) {
       yield* _mapSearchHandledToState(event);
     } else if (event is ClearFilteredCases) {
@@ -102,7 +102,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Stream<HomeState> _mapFilterCasesByPostcodeToState(
+  Stream<HomeState> _mapFilterCasesBySuburbToState(
       FilterCasesBySuburb event) async* {
     final currState = state;
     if (currState is HomeSuccess) {
@@ -114,7 +114,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (results.isEmpty) {
         newState = currState.copyWithNull(targetLatLng: true);
       } else {
-        newState = currState.copyWith(targetLatLng: results.first.latLng);
+        newState = currState.copyWith(targetLatLng: event.suburb.latLng);
       }
 
       yield newState.copyWith(
@@ -241,8 +241,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  List<Case> _filterCases(List<Case> cases, bool isShowAllCases,
-      Suburb suburb, DateTimeRange dates) {
+  List<Case> _filterCases(List<Case> cases, bool isShowAllCases, Suburb suburb,
+      DateTimeRange dates) {
     return cases.where((myCase) {
       return _filterByStatus(myCase, isShowAllCases) &&
           _filterBySuburb(myCase, suburb) &&
