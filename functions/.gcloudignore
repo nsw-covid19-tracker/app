@@ -188,3 +188,4 @@ dmypy.json
 # Unused scripts
 deploy.sh
 fetch_data_old.py
+get_hash.py
