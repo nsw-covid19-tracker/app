@@ -2,6 +2,8 @@
 
 Before you visit a suburb, search if there have been any active cases in those public locations.
 
+![Screenshots](images/screenshots.png)
+
 ## Getting Started
 
 ### Setup Flutter
