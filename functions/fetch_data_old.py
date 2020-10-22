@@ -25,6 +25,7 @@ def main():
         ),
     )
 
+    suburbs_dict = utils.load_suburbs_dict()
     base_url = "https://data.nsw.gov.au/data"
     url = (
         "https://data.nsw.gov.au/data/api/3/action/datastore_search?"
@@ -50,11 +51,20 @@ def main():
             suburb = venue.split(":")[0]
             postcode = re.search(r"\d{4}", address)
 
+            if suburb == "Brighton Le Sands":
+                suburb = "Brighton-Le-Sands"
+            elif suburb == "Cambelltown":
+                suburb = "Campbelltown"
+            elif suburb == "Rouse Hill Town Centre, including Target":
+                suburb = "Rouse Hill"
+            elif suburb == "Rushcutter's Bay":
+                suburb = "Rushcutters Bay"
+
             if postcode is None:
                 logger.warning(f"Failed to find postcode in {address}")
             else:
                 postcode = postcode[0]
-                utils.add_location(postcode, suburb)
+                postcode = utils.add_suburb(suburbs_dict, postcode, suburb)
 
             datetimes = get_datetimes(venue, record)
             case_dict = {

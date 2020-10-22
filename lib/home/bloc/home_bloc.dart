@@ -26,8 +26,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapFetchAllToState(event);
     } else if (event is Search) {
       yield* _mapSearchToState(event);
-    } else if (event is FilterCasesByPostcode) {
-      yield* _mapFilterCasesByPostcodeToState(event);
+    } else if (event is FilterCasesBySuburb) {
+      yield* _mapFilterCasesBySuburbToState(event);
     } else if (event is SearchHandled) {
       yield* _mapSearchHandledToState(event);
     } else if (event is ClearFilteredCases) {
@@ -56,14 +56,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeInitial) {
       try {
         await _homeRepo.signInAnonymously();
-        final locations = await _homeRepo.fetchLocations();
+        final suburbs = await _homeRepo.fetchSuburbs();
         final cases = await _homeRepo.fetchCases();
         final isShowDisclaimer = await _homeRepo.getIsShowDisclaimer();
         final activeCases =
             cases.where((myCase) => (!myCase.isExpired)).toList();
 
         yield HomeSuccess(
-          locations: locations,
+          suburbs: suburbs,
           cases: cases,
           casesResult: activeCases,
           isEmptyActiveCases: activeCases.isEmpty,
@@ -79,14 +79,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currState = state;
     if (currState is HomeSuccess) {
       final query = event.query.toLowerCase();
-      var locationsResult = <Location>[];
+      var suburbsResult = <Suburb>[];
       var searchCases = <Case>[];
 
       if (query.isNotEmpty) {
-        locationsResult = currState.locations
-            .where((location) =>
-                location.postcode.contains(query) ||
-                location.suburb.toLowerCase().contains(query))
+        suburbsResult = currState.suburbs
+            .where((suburb) =>
+                suburb.postcode.contains(query) ||
+                suburb.name.toLowerCase().contains(query))
             .take(5)
             .toList();
         final cases = List<Case>.from(currState.cases)
@@ -98,29 +98,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
 
       yield currState.copyWith(
-          locationsResult: locationsResult, searchCases: searchCases);
+          suburbsResult: suburbsResult, searchCases: searchCases);
     }
   }
 
-  Stream<HomeState> _mapFilterCasesByPostcodeToState(
-      FilterCasesByPostcode event) async* {
+  Stream<HomeState> _mapFilterCasesBySuburbToState(
+      FilterCasesBySuburb event) async* {
     final currState = state;
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
       final results = _filterCases(cases, currState.isShowAllCases,
-          event.postcode, currState.filteredDates);
+          event.suburb, currState.filteredDates);
       HomeSuccess newState;
 
       if (results.isEmpty) {
         newState = currState.copyWithNull(targetLatLng: true);
       } else {
-        newState = currState.copyWith(targetLatLng: results.first.latLng);
+        newState = currState.copyWith(targetLatLng: event.suburb.latLng);
       }
 
       yield newState.copyWith(
         casesResult: results,
         isEmptyActiveCases: !currState.isShowAllCases && results.isEmpty,
-        filteredPostcode: event.postcode,
+        filteredSuburb: event.suburb,
       );
     }
   }
@@ -143,9 +143,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }).toList();
       yield currState.copyWith(
         casesResult: results,
-        locationsResult: <Location>[],
+        suburbsResult: <Suburb>[],
         searchCases: <Case>[],
-      ).copyWithNull(filteredPostcode: true);
+      ).copyWithNull(filteredSuburb: true);
     }
   }
 
@@ -155,7 +155,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
       final results = _filterCases(cases, event.isShowAllCases,
-          currState.filteredPostcode, currState.filteredDates);
+          currState.filteredSuburb, currState.filteredDates);
       yield currState.copyWith(
         casesResult: results,
         isShowAllCases: event.isShowAllCases,
@@ -170,7 +170,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeSuccess) {
       final cases = List<Case>.from(currState.cases);
       final results = _filterCases(cases, currState.isShowAllCases,
-          currState.filteredPostcode, event.dates);
+          currState.filteredSuburb, event.dates);
       yield currState.copyWith(
         casesResult: results,
         isEmptyActiveCases: !currState.isShowAllCases && results.isEmpty,
@@ -241,11 +241,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  List<Case> _filterCases(List<Case> cases, bool isShowAllCases,
-      String postcode, DateTimeRange dates) {
+  List<Case> _filterCases(List<Case> cases, bool isShowAllCases, Suburb suburb,
+      DateTimeRange dates) {
     return cases.where((myCase) {
       return _filterByStatus(myCase, isShowAllCases) &&
-          _filterByPostcode(myCase, postcode) &&
+          _filterBySuburb(myCase, suburb) &&
           _filterByDates(myCase, dates);
     }).toList();
   }
@@ -254,8 +254,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     return (!isShowAllCases && !myCase.isExpired) || isShowAllCases;
   }
 
-  bool _filterByPostcode(Case myCase, String postcode) {
-    return postcode == null || myCase.postcode == postcode;
+  bool _filterBySuburb(Case myCase, Suburb suburb) {
+    return suburb == null ||
+        (myCase.postcode == suburb.postcode && myCase.suburb == suburb.name);
   }
 
   bool _filterByDates(Case myCase, DateTimeRange dates) {

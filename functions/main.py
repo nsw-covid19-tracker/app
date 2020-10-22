@@ -26,6 +26,7 @@ def main(data, context):
         ),
     )
 
+    suburbs_dict = utils.load_suburbs_dict()
     r = requests.get(
         "https://data.nsw.gov.au/data/dataset/"
         "0a52e6c1-bc0b-48af-8b45-d791a6d8e289/resource/"
@@ -44,7 +45,7 @@ def main(data, context):
                 logger.warning(f"Failed to find postcode in {address}")
             else:
                 postcode = postcode[0]
-                utils.add_location(postcode, suburb)
+                postcode = utils.add_suburb(suburbs_dict, postcode, suburb)
 
             datetimes = get_datetimes(result)
             case_dict = {

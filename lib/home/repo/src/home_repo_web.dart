@@ -16,18 +16,17 @@ class HomeRepoWeb extends HomeRepo {
   }
 
   @override
-  Future<List<Location>> fetchLocations() async {
-    final event = await _db.ref('locations').once('value');
+  Future<List<Suburb>> fetchSuburbs() async {
+    final event = await _db.ref('suburbs').once('value');
     final value = event.snapshot.val();
-    final queue = PriorityQueue<Location>(
-      (Location a, Location b) => a.suburb.compareTo(b.suburb),
+    final queue = PriorityQueue<Suburb>(
+      (Suburb a, Suburb b) => a.name.compareTo(b.name),
     );
 
     if (value != null) {
       for (MapEntry entry in value.entries) {
         final data = Map<String, dynamic>.from(entry.value);
-        data['postcode'] = entry.key;
-        queue.add(Location.fromJson(data));
+        queue.add(Suburb.fromJson(data));
       }
     }
 
