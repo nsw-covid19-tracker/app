@@ -24,7 +24,6 @@ jobs:
           flutter pub get
           flutter pub run build_runner build
           flutter build web
-          sed -i 's/<base.*//g' build/web/index.html  # Remove base tag for GitHub Pages to work properly
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.7.1
