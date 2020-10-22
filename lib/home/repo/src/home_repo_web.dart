@@ -16,7 +16,7 @@ class HomeRepoWeb extends HomeRepo {
   }
 
   @override
-  Future<DateTime> getDataUpdatedAt() async {
+  Future<DateTime> fetchDataUpdatedAt() async {
     DateTime updatedAt;
     final event = await _db.ref('logs/dataUpdatedAt').once('value');
     final value = event.snapshot.val();
@@ -62,5 +62,12 @@ class HomeRepoWeb extends HomeRepo {
     }
 
     return queue.toList();
+  }
+
+  @override
+  Future<int> fetchLogValue(String key) async {
+    final event = await _db.ref('logs/$key').once('value');
+
+    return event.snapshot.val();
   }
 }

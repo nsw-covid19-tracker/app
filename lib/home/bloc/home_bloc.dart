@@ -57,7 +57,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currState is HomeInitial) {
       try {
         await _homeRepo.signInAnonymously();
-        final updatedAt = await _homeRepo.getDataUpdatedAt();
+        final updatedAt = await _homeRepo.fetchDataUpdatedAt();
         final suburbs = await _homeRepo.fetchSuburbs();
         final cases = await _homeRepo.fetchCases();
         final isShowDisclaimer = await _homeRepo.getIsShowDisclaimer();
