@@ -69,14 +69,8 @@ def add_case(case_dict, datetimes):
         case_ref.update(
             {
                 "dateTimes": result_datetimes,
-                "isExpired": is_case_expired(result_datetimes),
+                "isExpired": snapshot["isExpired"] and case_dict["isExpired"],
             }
         )
 
-
-def is_case_expired(datetimes):
-    tmp_list = [arrow.get(x["end"] / 1000) for x in datetimes]
-    last_datetime = sorted(tmp_list)[-1].shift(days=14)
-    curr_datetime = arrow.utcnow()
-
-    return last_datetime < curr_datetime
+    return key
