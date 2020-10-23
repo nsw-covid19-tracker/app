@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -15,6 +17,13 @@ class Suburb extends Equatable {
 
   factory Suburb.fromJson(Map<String, dynamic> json) => _$SuburbFromJson(json);
   Map<String, dynamic> toJson() => _$SuburbToJson(this);
+
+  factory Suburb.fromString(String string) {
+    return Suburb.fromJson(jsonDecode(string));
+  }
+
+  @override
+  String toString() => jsonEncode(toJson());
 
   @override
   List<Object> get props => [postcode, name, latitude, longitude];

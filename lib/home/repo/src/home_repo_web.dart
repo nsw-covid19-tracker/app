@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:nsw_covid_tracker/home/repo/models/models.dart';
 import 'package:nsw_covid_tracker/home/repo/src/home_repo.dart';
 import 'package:firebase/firebase.dart' as fb;
+import 'package:shared_preferences/shared_preferences.dart';
 
 HomeRepo getHomeRepo() => HomeRepoWeb();
 
@@ -30,20 +31,49 @@ class HomeRepoWeb extends HomeRepo {
 
   @override
   Future<List<Suburb>> fetchSuburbs() async {
+    final shouldFetch = await shouldFetchFromServer(suburbsUpdatedAtKey);
+    var suburbs = <Suburb>[];
+
+    if (shouldFetch) {
+      suburbs = await _fetchSuburbsFromServer();
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      final stringList = prefs.getStringList(suburbsKey);
+
+      if (stringList != null) {
+        suburbs = stringList.map((e) => Suburb.fromString(e)).toList();
+      } else {
+        suburbs = await _fetchSuburbsFromServer();
+      }
+    }
+
+    return suburbs;
+  }
+
+  Future<List<Suburb>> _fetchSuburbsFromServer() async {
     final event = await _db.ref(suburbsKey).once('value');
-    final value = event.snapshot.val();
+    final values = event.snapshot.val().values;
     final queue = PriorityQueue<Suburb>(
       (Suburb a, Suburb b) => a.name.compareTo(b.name),
     );
 
-    if (value != null) {
-      for (MapEntry entry in value.entries) {
-        final data = Map<String, dynamic>.from(entry.value);
+    if (values != null) {
+      for (final value in values) {
+        final data = Map<String, dynamic>.from(value);
         queue.add(Suburb.fromJson(data));
       }
     }
 
-    return queue.toList();
+    final suburbs = queue.toList();
+    await _cacheSuburbs(suburbs);
+
+    return suburbs;
+  }
+
+  Future<void> _cacheSuburbs(List<Suburb> suburbs) async {
+    final prefs = await SharedPreferences.getInstance();
+    final stringList = suburbs.map((e) => e.toString()).toList();
+    await prefs.setStringList(suburbsKey, stringList);
   }
 
   @override
