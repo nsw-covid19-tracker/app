@@ -1,20 +1,13 @@
-import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nsw_covid_tracker/home/repo/models/models.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:nsw_covid_tracker/home/repo/src/home_repo.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 HomeRepo getHomeRepo() => HomeRepoMobile();
 
 class HomeRepoMobile extends HomeRepo {
   static final _rootRef = FirebaseDatabase.instance.reference();
   final _auth = FirebaseAuth.instance;
-  final _suburbsRef = _rootRef.child('suburbs');
-  final _casesRef = _rootRef.child('cases');
-  final _logsRef = _rootRef.child('logs');
-  final _suburbsKey = 'suburbsUpdatedAt';
-  final _casesKey = 'casesUpdatedAt';
 
   @override
   Future<void> signInAnonymously() async {
@@ -23,9 +16,9 @@ class HomeRepoMobile extends HomeRepo {
   }
 
   @override
-  Future<DateTime> getDataUpdatedAt() async {
+  Future<DateTime> fetchDataUpdatedAt() async {
     DateTime updatedAt;
-    final query = _logsRef.child('dataUpdatedAt');
+    final query = _rootRef.child('$logsKey/$dataUpdatedAtKey');
     await query.keepSynced(true);
     final snapshot = await query.once();
 
@@ -39,63 +32,32 @@ class HomeRepoMobile extends HomeRepo {
 
   @override
   Future<List<Suburb>> fetchSuburbs() async {
-    final isKeepSynced = await _getIsKeepSynced(_suburbsKey);
-    if (isKeepSynced) await _suburbsRef.keepSynced(true);
-    final snapshot = await _suburbsRef.once();
-    final queue = PriorityQueue<Suburb>(
-      (Suburb a, Suburb b) => a.name.compareTo(b.name),
-    );
+    final query = _rootRef.child(suburbsKey);
+    final isKeepSynced = await shouldFetchFromServer(suburbsUpdatedAtKey);
+    if (isKeepSynced) await query.keepSynced(true);
+    final snapshot = await query.once();
+    final suburbs = parseSuburbs(snapshot.value);
 
-    if (snapshot.value != null) {
-      for (MapEntry entry in snapshot.value.entries) {
-        final data = Map<String, dynamic>.from(entry.value);
-        queue.add(Suburb.fromJson(data));
-      }
-    }
-
-    return queue.toList();
+    return suburbs;
   }
 
   @override
   Future<List<Case>> fetchCases() async {
-    final isKeepSynced = await _getIsKeepSynced(_casesKey);
-    if (isKeepSynced) await _casesRef.keepSynced(true);
-    final snapshot = await _casesRef.once();
-    final queue = PriorityQueue<Case>(
-      (Case a, Case b) => a.venue.compareTo(b.venue),
-    );
+    final query = _rootRef.child(casesKey);
+    final isKeepSynced = await shouldFetchFromServer(casesUpdatedAtKey);
+    if (isKeepSynced) await query.keepSynced(true);
+    final snapshot = await query.once();
+    final cases = parseCases(snapshot.value);
 
-    if (snapshot.value != null) {
-      for (MapEntry entry in snapshot.value.entries) {
-        final data = Map<String, dynamic>.from(entry.value);
-        queue.add(Case.fromJson(data));
-      }
-    }
-
-    return queue.toList();
+    return cases;
   }
 
-  Future<bool> _getIsKeepSynced(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    final epoch = prefs.getInt(key);
-    DateTime localUpdatedAt, serverUpdatedAt;
+  @override
+  Future<int> fetchLogValue(String key) async {
+    final query = _rootRef.child('$logsKey/$key');
+    await query.keepSynced(true);
+    final snapshot = await query.once();
 
-    if (epoch != null) {
-      localUpdatedAt = DateTime.fromMillisecondsSinceEpoch(epoch);
-      final query = _logsRef.child(key);
-      await query.keepSynced(true);
-      final snapshot = await query.once();
-
-      if (snapshot.value != null) {
-        serverUpdatedAt =
-            DateTime.fromMillisecondsSinceEpoch(snapshot.value, isUtc: true);
-      }
-    }
-
-    final result = localUpdatedAt == null ||
-        (serverUpdatedAt != null && localUpdatedAt.isBefore(serverUpdatedAt));
-    if (result) await prefs.setInt(key, DateTime.now().millisecondsSinceEpoch);
-
-    return result;
+    return snapshot.value;
   }
 }

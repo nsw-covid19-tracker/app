@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -28,6 +30,11 @@ class Case extends Equatable {
 
   factory Case.fromJson(Map<String, dynamic> json) => _$CaseFromJson(json);
   Map<String, dynamic> toJson() => _$CaseToJson(this);
+
+  factory Case.fromString(String string) => Case.fromJson(jsonDecode(string));
+
+  @override
+  String toString() => jsonEncode(toJson());
 
   @override
   List<Object> get props {
