@@ -37,14 +37,7 @@ class HomeRepoWeb extends HomeRepo {
     if (shouldFetch) {
       suburbs = await _fetchSuburbsFromServer();
     } else {
-      final prefs = await SharedPreferences.getInstance();
-      final stringList = prefs.getStringList(suburbsKey);
-
-      if (stringList != null) {
-        suburbs = stringList.map((e) => Suburb.fromString(e)).toList();
-      } else {
-        suburbs = await _fetchSuburbsFromServer();
-      }
+      suburbs = await _fetchSuburbsFromCache();
     }
 
     return suburbs;
@@ -52,28 +45,27 @@ class HomeRepoWeb extends HomeRepo {
 
   Future<List<Suburb>> _fetchSuburbsFromServer() async {
     final event = await _db.ref(suburbsKey).once('value');
-    final values = event.snapshot.val().values;
-    final queue = PriorityQueue<Suburb>(
-      (Suburb a, Suburb b) => a.name.compareTo(b.name),
-    );
+    final suburbs = parseSuburbs(event.snapshot.val());
 
-    if (values != null) {
-      for (final value in values) {
-        final data = Map<String, dynamic>.from(value);
-        queue.add(Suburb.fromJson(data));
-      }
-    }
-
-    final suburbs = queue.toList();
-    await _cacheSuburbs(suburbs);
+    final prefs = await SharedPreferences.getInstance();
+    final stringList = suburbs.map((e) => e.toString()).toList();
+    await prefs.setStringList(suburbsKey, stringList);
 
     return suburbs;
   }
 
-  Future<void> _cacheSuburbs(List<Suburb> suburbs) async {
+  Future<List<Suburb>> _fetchSuburbsFromCache() async {
+    var suburbs = <Suburb>[];
     final prefs = await SharedPreferences.getInstance();
-    final stringList = suburbs.map((e) => e.toString()).toList();
-    await prefs.setStringList(suburbsKey, stringList);
+    final stringList = prefs.getStringList(suburbsKey);
+
+    if (stringList != null) {
+      suburbs = stringList.map((e) => Suburb.fromString(e)).toList();
+    } else {
+      suburbs = await _fetchSuburbsFromServer();
+    }
+
+    return suburbs;
   }
 
   @override

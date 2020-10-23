@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:nsw_covid_tracker/home/repo/models/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nsw_covid_tracker/home/repo/src/home_repo_stub.dart'
@@ -30,18 +31,6 @@ abstract class HomeRepo {
 
   Future<int> fetchLogValue(String key);
 
-  Future<bool> getIsShowDisclaimer() async {
-    final prefs = await SharedPreferences.getInstance();
-    final result = prefs.getBool(_disclaimerKey) ?? true;
-
-    return result;
-  }
-
-  Future<void> setIsShowDisclaimer(bool value) async {
-    var prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_disclaimerKey, value);
-  }
-
   Future<bool> shouldFetchFromServer(String key) async {
     final prefs = await SharedPreferences.getInstance();
     final epoch = prefs.getInt(key);
@@ -62,5 +51,32 @@ abstract class HomeRepo {
     if (result) await prefs.setInt(key, DateTime.now().millisecondsSinceEpoch);
 
     return result;
+  }
+
+  List<Suburb> parseSuburbs(Map json) {
+    final queue = PriorityQueue<Suburb>(
+      (Suburb a, Suburb b) => a.name.compareTo(b.name),
+    );
+
+    if (json != null) {
+      for (final value in json.values) {
+        final data = Map<String, dynamic>.from(value);
+        queue.add(Suburb.fromJson(data));
+      }
+    }
+
+    return queue.toList();
+  }
+
+  Future<bool> getIsShowDisclaimer() async {
+    final prefs = await SharedPreferences.getInstance();
+    final result = prefs.getBool(_disclaimerKey) ?? true;
+
+    return result;
+  }
+
+  Future<void> setIsShowDisclaimer(bool value) async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_disclaimerKey, value);
   }
 }
