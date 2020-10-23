@@ -69,7 +69,7 @@ def add_case(case_dict, datetimes):
         case_ref.update(
             {
                 "dateTimes": result_datetimes,
-                "isExpired": case_dict["isExpired"],
+                "isExpired": snapshot["isExpired"] and case_dict["isExpired"],
             }
         )
 
