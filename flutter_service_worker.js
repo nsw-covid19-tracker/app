@@ -21,10 +21,10 @@ const RESOURCES = {
 "assets/packages/awesome_dialog/assets/flare/warning_without_loop.flr": "c84f528c7e7afe91a929898988012291",
 "assets/AssetManifest.json": "2aecdc51c57b3e3348f442a0080a7a08",
 "manifest.json": "e5200d9bf49c46ee9c9592e7538d4444",
-"main.dart.js": "c1234b64fe841ee8c7f8a81c02d35a19",
+"main.dart.js": "6ac68c237682ebcc82da9056f8b87baf",
 "version.json": "3da8e024dbd7869381938af7460c9e62",
-"index.html": "1c76733cc1ded256a03d58fb48fcbd82",
-"/": "1c76733cc1ded256a03d58fb48fcbd82",
+"index.html": "4b313670c02cc6ff5380c564c529761c",
+"/": "4b313670c02cc6ff5380c564c529761c",
 "icons/Icon-192.png": "8190fd211d2b65ffc8050520a09e0afc",
 "icons/Icon-512.png": "f4994f5c49c4e50fd85c6291d41425cc"
 };
