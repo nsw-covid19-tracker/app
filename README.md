@@ -1,7 +1,7 @@
 # NSW COVID-19 Tracker
 
-![MIT License](https://img.shields.io/github/license/zeshuaro/nsw-covid-tracker)
-![Build and Deploy](https://github.com/zeshuaro/nsw-covid-tracker/workflows/Build%20and%20Deploy/badge.svg)
+[![MIT License](https://img.shields.io/github/license/zeshuaro/nsw-covid-tracker)](https://github.com/zeshuaro/nsw-covid-tracker/blob/master/LICENSE)
+[![Build and Deploy](https://github.com/zeshuaro/nsw-covid-tracker/workflows/Build%20and%20Deploy/badge.svg)](https://github.com/zeshuaro/nsw-covid-tracker/actions?query=workflow%3A%22Build+and+Deploy%22)
 
 Before you visit a suburb, search if there have been any active cases in those public locations.
 
