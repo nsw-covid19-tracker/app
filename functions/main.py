@@ -34,6 +34,7 @@ def main(data, context):
     json = r.json()
     data = json["data"]
     data_updated_at = arrow.get(json["date"], "YYYY-MM-DD")
+    updated_keys = set()
 
     for key in data:
         for result in data[key]:
@@ -57,10 +58,12 @@ def main(data, context):
                 "longitude": float(result["Lon"]),
                 "dateTimes": datetimes,
                 "action": result["Alert"],
-                "isExpired": utils.is_case_expired(datetimes),
+                "isExpired": False,
             }
-            utils.add_case(case_dict, datetimes)
+            case_key = utils.add_case(case_dict, datetimes)
+            updated_keys.add(case_key)
 
+    update_expired_cases(updated_keys)
     logs_ref = db.reference("logs")
     logs_ref.update(
         {
@@ -140,6 +143,15 @@ def parse_datetime(datetime_str):
 
 def datetime_milliseconds(datetime):
     return int(datetime.timestamp * 1000)
+
+
+def update_expired_cases(updated_keys):
+    ref = db.reference("cases")
+    snapshot = ref.order_by_child("isExpired").equal_to(False).get()
+
+    for key in snapshot:
+        if key not in updated_keys:
+            ref.child(key).update({"isExpired": True})
 
 
 if __name__ == "__main__":
