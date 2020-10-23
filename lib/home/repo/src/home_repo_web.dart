@@ -18,7 +18,7 @@ class HomeRepoWeb extends HomeRepo {
   @override
   Future<DateTime> fetchDataUpdatedAt() async {
     DateTime updatedAt;
-    final event = await _db.ref('logs/dataUpdatedAt').once('value');
+    final event = await _db.ref('$logsKey/$dataUpdatedAtKey').once('value');
     final value = event.snapshot.val();
 
     if (value != null) {
@@ -30,7 +30,7 @@ class HomeRepoWeb extends HomeRepo {
 
   @override
   Future<List<Suburb>> fetchSuburbs() async {
-    final event = await _db.ref('suburbs').once('value');
+    final event = await _db.ref(suburbsKey).once('value');
     final value = event.snapshot.val();
     final queue = PriorityQueue<Suburb>(
       (Suburb a, Suburb b) => a.name.compareTo(b.name),
@@ -48,7 +48,7 @@ class HomeRepoWeb extends HomeRepo {
 
   @override
   Future<List<Case>> fetchCases() async {
-    final event = await _db.ref('cases').once('value');
+    final event = await _db.ref(casesKey).once('value');
     final value = event.snapshot.val();
     final queue = PriorityQueue<Case>(
       (Case a, Case b) => a.venue.compareTo(b.venue),
@@ -66,7 +66,7 @@ class HomeRepoWeb extends HomeRepo {
 
   @override
   Future<int> fetchLogValue(String key) async {
-    final event = await _db.ref('logs/$key').once('value');
+    final event = await _db.ref('$logsKey/$key').once('value');
 
     return event.snapshot.val();
   }

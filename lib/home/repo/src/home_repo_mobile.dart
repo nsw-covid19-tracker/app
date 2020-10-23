@@ -9,9 +9,6 @@ HomeRepo getHomeRepo() => HomeRepoMobile();
 class HomeRepoMobile extends HomeRepo {
   static final _rootRef = FirebaseDatabase.instance.reference();
   final _auth = FirebaseAuth.instance;
-  final _suburbsRef = _rootRef.child('suburbs');
-  final _casesRef = _rootRef.child('cases');
-  final _logsRef = _rootRef.child('logs');
 
   @override
   Future<void> signInAnonymously() async {
@@ -22,7 +19,7 @@ class HomeRepoMobile extends HomeRepo {
   @override
   Future<DateTime> fetchDataUpdatedAt() async {
     DateTime updatedAt;
-    final query = _logsRef.child('dataUpdatedAt');
+    final query = _rootRef.child('$logsKey/$dataUpdatedAtKey');
     await query.keepSynced(true);
     final snapshot = await query.once();
 
@@ -36,9 +33,10 @@ class HomeRepoMobile extends HomeRepo {
 
   @override
   Future<List<Suburb>> fetchSuburbs() async {
-    final isKeepSynced = await shouldFetchFromServer(suburbsKey);
-    if (isKeepSynced) await _suburbsRef.keepSynced(true);
-    final snapshot = await _suburbsRef.once();
+    final query = _rootRef.child(suburbsKey);
+    final isKeepSynced = await shouldFetchFromServer(suburbsUpdatedAtKey);
+    if (isKeepSynced) await query.keepSynced(true);
+    final snapshot = await query.once();
     final queue = PriorityQueue<Suburb>(
       (Suburb a, Suburb b) => a.name.compareTo(b.name),
     );
@@ -55,9 +53,10 @@ class HomeRepoMobile extends HomeRepo {
 
   @override
   Future<List<Case>> fetchCases() async {
-    final isKeepSynced = await shouldFetchFromServer(casesKey);
-    if (isKeepSynced) await _casesRef.keepSynced(true);
-    final snapshot = await _casesRef.once();
+    final query = _rootRef.child(casesKey);
+    final isKeepSynced = await shouldFetchFromServer(casesUpdatedAtKey);
+    if (isKeepSynced) await query.keepSynced(true);
+    final snapshot = await query.once();
     final queue = PriorityQueue<Case>(
       (Case a, Case b) => a.venue.compareTo(b.venue),
     );
@@ -74,7 +73,7 @@ class HomeRepoMobile extends HomeRepo {
 
   @override
   Future<int> fetchLogValue(String key) async {
-    final query = _logsRef.child(key);
+    final query = _rootRef.child('$logsKey/$key');
     await query.keepSynced(true);
     final snapshot = await query.once();
 

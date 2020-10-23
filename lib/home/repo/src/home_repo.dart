@@ -12,8 +12,12 @@ abstract class HomeRepo {
     return _instance;
   }
 
-  final suburbsKey = 'suburbsUpdatedAt';
-  final casesKey = 'casesUpdatedAt';
+  final suburbsKey = 'suburbs';
+  final casesKey = 'cases';
+  final logsKey = 'logs';
+  final dataUpdatedAtKey = 'dataUpdatedAt';
+  final suburbsUpdatedAtKey = 'suburbsUpdatedAt';
+  final casesUpdatedAtKey = 'casesUpdatedAt';
   final _disclaimerKey = 'disclaimer';
 
   Future<void> signInAnonymously();
