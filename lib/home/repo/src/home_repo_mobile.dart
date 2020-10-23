@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nsw_covid_tracker/home/repo/models/models.dart';
 import 'package:firebase_database/firebase_database.dart';

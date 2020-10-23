@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:nsw_covid_tracker/home/repo/models/models.dart';
 import 'package:nsw_covid_tracker/home/repo/src/home_repo.dart';
 import 'package:firebase/firebase.dart' as fb;
@@ -49,20 +48,17 @@ class HomeRepoWeb extends HomeRepo {
 
   @override
   Future<List<Case>> fetchCases() async {
-    final event = await _db.ref(casesKey).once('value');
-    final value = event.snapshot.val();
-    final queue = PriorityQueue<Case>(
-      (Case a, Case b) => a.venue.compareTo(b.venue),
-    );
+    final shouldFetch = await shouldFetchFromServer(casesUpdatedAtKey);
+    var cases = <Case>[];
 
-    if (value != null) {
-      for (MapEntry entry in value.entries) {
-        final data = Map<String, dynamic>.from(entry.value);
-        queue.add(Case.fromJson(data));
-      }
+    if (shouldFetch) {
+      cases = await _fetchFromServer(casesKey, parseCases);
+    } else {
+      final mapFunc = (String string) => Case.fromString(string);
+      cases = await _fetchFromCache(casesKey, parseCases, mapFunc);
     }
 
-    return queue.toList();
+    return cases;
   }
 
   @override
