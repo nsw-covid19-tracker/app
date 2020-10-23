@@ -16,7 +16,6 @@ class Case extends Equatable {
   final double longitude;
   final String venue;
   final String address;
-  final String action;
   final bool isExpired;
 
   @JsonKey(
@@ -26,7 +25,7 @@ class Case extends Equatable {
   final List<DateTimeRange> dateTimes;
 
   Case(this.postcode, this.suburb, this.latitude, this.longitude, this.venue,
-      this.address, this.dateTimes, this.action, this.isExpired);
+      this.address, this.dateTimes, this.isExpired);
 
   factory Case.fromJson(Map<String, dynamic> json) => _$CaseFromJson(json);
   Map<String, dynamic> toJson() => _$CaseToJson(this);
@@ -46,7 +45,6 @@ class Case extends Equatable {
       venue,
       address,
       dateTimes,
-      action,
       isExpired,
     ];
   }
