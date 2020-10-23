@@ -159,8 +159,8 @@ class _FloatingModal extends StatelessWidget {
     var horizontal = 24.0;
 
     if (kIsWeb) {
-      bottomPadding = 48;
-    } else if (Device.get().isIphoneX) {
+      bottomPadding = 36;
+    } else if (!Device.get().isIphoneX) {
       bottomPadding = 24;
     }
 
