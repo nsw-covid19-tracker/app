@@ -68,6 +68,21 @@ abstract class HomeRepo {
     return queue.toList();
   }
 
+  List<Case> parseCases(Map json) {
+    final queue = PriorityQueue<Case>(
+      (Case a, Case b) => a.venue.compareTo(b.venue),
+    );
+
+    if (json != null) {
+      for (final value in json.values) {
+        final data = Map<String, dynamic>.from(value);
+        queue.add(Case.fromJson(data));
+      }
+    }
+
+    return queue.toList();
+  }
+
   Future<bool> getIsShowDisclaimer() async {
     final prefs = await SharedPreferences.getInstance();
     final result = prefs.getBool(_disclaimerKey) ?? true;

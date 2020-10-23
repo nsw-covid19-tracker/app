@@ -48,18 +48,9 @@ class HomeRepoMobile extends HomeRepo {
     final isKeepSynced = await shouldFetchFromServer(casesUpdatedAtKey);
     if (isKeepSynced) await query.keepSynced(true);
     final snapshot = await query.once();
-    final queue = PriorityQueue<Case>(
-      (Case a, Case b) => a.venue.compareTo(b.venue),
-    );
+    final cases = parseCases(snapshot.value);
 
-    if (snapshot.value != null) {
-      for (MapEntry entry in snapshot.value.entries) {
-        final data = Map<String, dynamic>.from(entry.value);
-        queue.add(Case.fromJson(data));
-      }
-    }
-
-    return queue.toList();
+    return cases;
   }
 
   @override
