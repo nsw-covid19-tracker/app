@@ -4,6 +4,9 @@ import 'package:nsw_covid_tracker/home/repo/src/home_repo.dart';
 import 'package:firebase/firebase.dart' as fb;
 import 'package:shared_preferences/shared_preferences.dart';
 
+typedef ParseFunc = List Function(Map json);
+typedef MapFunc = dynamic Function(String string);
+
 HomeRepo getHomeRepo() => HomeRepoWeb();
 
 class HomeRepoWeb extends HomeRepo {
@@ -35,34 +38,10 @@ class HomeRepoWeb extends HomeRepo {
     var suburbs = <Suburb>[];
 
     if (shouldFetch) {
-      suburbs = await _fetchSuburbsFromServer();
+      suburbs = await _fetchFromServer(suburbsKey, parseSuburbs);
     } else {
-      suburbs = await _fetchSuburbsFromCache();
-    }
-
-    return suburbs;
-  }
-
-  Future<List<Suburb>> _fetchSuburbsFromServer() async {
-    final event = await _db.ref(suburbsKey).once('value');
-    final suburbs = parseSuburbs(event.snapshot.val());
-
-    final prefs = await SharedPreferences.getInstance();
-    final stringList = suburbs.map((e) => e.toString()).toList();
-    await prefs.setStringList(suburbsKey, stringList);
-
-    return suburbs;
-  }
-
-  Future<List<Suburb>> _fetchSuburbsFromCache() async {
-    var suburbs = <Suburb>[];
-    final prefs = await SharedPreferences.getInstance();
-    final stringList = prefs.getStringList(suburbsKey);
-
-    if (stringList != null) {
-      suburbs = stringList.map((e) => Suburb.fromString(e)).toList();
-    } else {
-      suburbs = await _fetchSuburbsFromServer();
+      final mapFunc = (String string) => Suburb.fromString(string);
+      suburbs = await _fetchFromCache(suburbsKey, parseSuburbs, mapFunc);
     }
 
     return suburbs;
@@ -91,5 +70,31 @@ class HomeRepoWeb extends HomeRepo {
     final event = await _db.ref('$logsKey/$key').once('value');
 
     return event.snapshot.val();
+  }
+
+  Future<List> _fetchFromServer(String key, ParseFunc parseFunc) async {
+    final event = await _db.ref(key).once('value');
+    final results = parseFunc(event.snapshot.val());
+
+    final prefs = await SharedPreferences.getInstance();
+    final stringList = results.map((e) => e.toString()).toList();
+    await prefs.setStringList(key, stringList);
+
+    return results;
+  }
+
+  Future<List> _fetchFromCache(
+      String key, ParseFunc parseFunc, MapFunc mapFunc) async {
+    var results = [];
+    final prefs = await SharedPreferences.getInstance();
+    final stringList = prefs.getStringList(key);
+
+    if (stringList != null) {
+      results = stringList.map((e) => mapFunc(e)).toList();
+    } else {
+      results = await _fetchFromServer(key, parseFunc);
+    }
+
+    return results;
   }
 }
