@@ -2,6 +2,9 @@
 
 Before you visit a suburb, search if there have been any active cases in those public locations.
 
+![MIT License](https://img.shields.io/github/license/zeshuaro/nsw-covid-tracker)
+![Build and Deploy](https://github.com/zeshuaro/nsw-covid-tracker/workflows/Build%20and%20Deploy/badge.svg)
+
 ![Screenshots](images/screenshots.png)
 
 ## Getting Started
@@ -28,6 +31,10 @@ Enable Realtime Database by going into the corresponding tab.
 #### Service Account
 
 Create a service account by going into Settings > Project settings > Service accounts > Firebase Admin SDK > Generate new private key. Rename the file to `keyfile.json` and place it under `functions/`.
+
+### Setup Google Maps
+
+Follow the instructions [here](https://pub.dev/packages/google_maps_flutter#getting-started) to setup Google Maps.
 
 ### Setup Database
 
