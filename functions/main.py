@@ -111,7 +111,8 @@ def get_datetimes(result):
 
 def split_datetimes(datetimes):
     return [
-        x.strip() for x in datetimes.replace(",", ";").replace("and", ";").split(";")
+        re.sub(r"\s+", " ", x.strip())
+        for x in datetimes.replace(",", ";").replace("and", ";").split(";")
     ]
 
 
@@ -122,6 +123,9 @@ def parse_datetime(datetime_str):
         "dddd D MMMM YYYY h:mmA",
         "dddd D MMMM YYYY h.mmA",
         "dddd D MMMM YYYY hA",
+        "dddd D MMM YYYY h:mmA",
+        "dddd D MMM YYYY h.mmA",
+        "dddd D MMM YYYY hA",
         "dddd D MMMM h:mmA",
         "dddd D MMMM hA",
         "dddd D MMMM",
