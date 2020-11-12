@@ -49,13 +49,22 @@ def main(data, context):
                 postcode = utils.add_suburb(suburbs_dict, postcode, suburb)
 
             datetimes = get_datetimes(result)
+            try:
+                latitude = float(result["Lat"])
+            except KeyError:
+                latitude = float(result["Latitude"])
+            try:
+                longitude = float(result["Lon"])
+            except KeyError:
+                longitude = float(result["Longitude"])
+
             case_dict = {
                 "postcode": postcode,
                 "suburb": suburb,
                 "venue": f"{suburb}: {result['Venue']}",
                 "address": address,
-                "latitude": float(result["Lat"]),
-                "longitude": float(result["Lon"]),
+                "latitude": latitude,
+                "longitude": longitude,
                 "dateTimes": datetimes,
                 "action": result["Alert"],
                 "isExpired": False,
