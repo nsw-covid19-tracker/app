@@ -22,7 +22,7 @@ class MyBottomSheet {
   }) {
     showCustomModalBottomSheet(
       context: context,
-      builder: (context, scrollController) => SafeArea(
+      builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
