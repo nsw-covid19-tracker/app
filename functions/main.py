@@ -42,6 +42,9 @@ def main(data, context):
             suburb = result["Suburb"]
             postcode = re.search(r"\d{4}", address.split(", ")[-1])
 
+            if suburb == "Avalon":
+                suburb = "Avalon Beach"
+
             if postcode is None:
                 logger.warning(f"Failed to find postcode in {address}")
             else:
@@ -100,7 +103,7 @@ def get_datetimes(result):
             start_date = end_date = date
 
         time = time.replace("-", " - ").replace("-", "to").strip()
-        if time.lower() == "all day":
+        if time.lower() == "all day" or time.lower() == "all day until closed":
             start = parse_datetime(start_date).floor("day")
             end = parse_datetime(end_date).ceil("day")
         else:
