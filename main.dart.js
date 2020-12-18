@@ -18607,9 +18607,10 @@ a8C:function a8C(a){this.a=a},
 a8B:function a8B(a){this.a=a},
 a8D:function a8D(a){this.a=a},
 a8E:function a8E(){},
-aE7:function(a){return new S.GC(R.aEf(new X.yI(null),new S.XN(a),t.Iv),null)},
-GC:function GC(a,b){this.e=a
-this.a=b},
+aE7:function(a){return new S.GC(R.aEf(new X.yI(null),new S.XN(a),t.Iv),"NSW COVID-19 Tracker",null)},
+GC:function GC(a,b,c){this.e=a
+this.dy=b
+this.a=c},
 XN:function XN(a){this.a=a},
 xd:function xd(a,b,c){this.c=a
 this.d=b
@@ -46704,11 +46705,11 @@ n.a.toString
 b.toString
 s=b
 return new M.B9(new K.wD(o,s,C.J,C.y,m,m),m)},
-a08:function(a){var s,r=this,q=null,p=r.a
-p=p.e
+a08:function(a){var s,r=this,q=null,p=r.a,o=p.e
+p=p.dy
 s=r.gLF()
 r.a.toString
-return new S.Ct(q,q,q,new S.ak_(),q,q,q,q,p,C.DY,q,q,C.Cj,r.ga6_(),"",q,C.Jf,C.lC,q,s,q,q,C.tk,!1,!1,!1,!1,r.ga5q(),!0,q,q,q,new N.mr(r,t.bT))},
+return new S.Ct(q,q,q,new S.ak_(),q,q,q,q,o,C.DY,q,q,C.Cj,r.ga6_(),p,q,C.Jf,C.lC,q,s,q,q,C.tk,!1,!1,!1,!1,r.ga5q(),!0,q,q,q,new N.mr(r,t.bT))},
 G:function(a,b){var s=this.a08(b),r=this.e?this.d:H.f(H.x("_heroController"))
 return K.axe(new S.ak3(),new K.p4(r,s,null))}}
 S.ak_.prototype={
