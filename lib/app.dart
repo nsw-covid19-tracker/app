@@ -9,6 +9,7 @@ class App extends MaterialApp {
 
   App(this.homeRepo)
       : super(
+          title: 'NSW COVID-19 Tracker',
           home: BlocProvider(
             create: (context) => HomeBloc(homeRepo),
             child: HomePage(),
