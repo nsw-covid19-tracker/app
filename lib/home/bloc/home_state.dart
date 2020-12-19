@@ -78,7 +78,7 @@ class HomeSuccess extends HomeState {
   }
 
   String get formattedUpdatedAt {
-    final dateFormat = DateFormat('d MMM, yyyy hh:mm aaa');
+    final dateFormat = DateFormat('d MMM, yyyy');
 
     return updatedAt != null ? dateFormat.format(updatedAt) : 'Unknown';
   }
