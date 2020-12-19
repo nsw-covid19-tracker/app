@@ -78229,7 +78229,7 @@ p=s.e
 q=q+H.c(p==null?r:p.length)+", searchCases: "
 p=s.f
 return q+H.c(p==null?r:p.length)+", isShowAllCases: "+H.c(s.r)+", targetLatLng: "+H.c(s.z)+", isEmptyActiveCases: "+H.c(s.x)+", isSortCases: "+H.c(s.y)+", filteredSuburb: "+H.c(s.Q)+", filteredDates: "+H.c(s.ch)+", isShowDisclaimer: "+H.c(s.cx)+", selectedCase: "+(s.cy!=null)+" }"},
-gRc:function(){var s=T.xG("d MMM, yyyy hh:mm aaa"),r=this.a
+gRc:function(){var s=T.xG("d MMM, yyyy"),r=this.a
 return r!=null?s.jq(r):"Unknown"}}
 V.e9.prototype={
 c6:function(){var s=this
