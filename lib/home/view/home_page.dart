@@ -234,9 +234,23 @@ class _DisclaimerBody extends StatelessWidget {
                       'latest-news-and-updates'),
               ),
               TextSpan(
-                text: '.\n\nThis app is not affiliated with '
-                    'the NSW Government in any way.',
-              )
+                text: '.\n\nThis app is',
+              ),
+              TextSpan(
+                text: ' NOT ',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              TextSpan(
+                text: 'affiliated with the NSW Government in any way, and is',
+              ),
+              TextSpan(
+                text: ' NOT ',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              TextSpan(
+                text: 'to be relied on for any purpose or '
+                    'for the accuracy of the data.',
+              ),
             ],
           ),
         )
