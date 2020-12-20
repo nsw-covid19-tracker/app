@@ -5,6 +5,9 @@ import 'package:nsw_covid_tracker/home/repo/src/home_repo_stub.dart'
     if (dart.library.io) 'package:nsw_covid_tracker/home/repo/src/home_repo_mobile.dart'
     if (dart.library.html) 'package:nsw_covid_tracker/home/repo/src/home_repo_web.dart';
 
+typedef ParseFunc = List Function(Map json);
+typedef MapFunc = dynamic Function(String string);
+
 abstract class HomeRepo {
   static HomeRepo _instance;
 
@@ -25,11 +28,9 @@ abstract class HomeRepo {
 
   Future<DateTime> fetchDataUpdatedAt();
 
-  Future<List<Suburb>> fetchSuburbs();
-
-  Future<List<Case>> fetchCases();
-
   Future<int> fetchLogValue(String key);
+
+  Future<List> fetchFromServer(String key, ParseFunc parseFunc);
 
   Future<bool> shouldFetchFromServer(String key) async {
     final prefs = await SharedPreferences.getInstance();
@@ -51,6 +52,58 @@ abstract class HomeRepo {
     if (result) await prefs.setInt(key, DateTime.now().millisecondsSinceEpoch);
 
     return result;
+  }
+
+  Future<List<Suburb>> fetchSuburbs() async {
+    final shouldFetch = await shouldFetchFromServer(suburbsUpdatedAtKey);
+    var suburbs = <Suburb>[];
+
+    if (shouldFetch) {
+      suburbs = await fetchFromServer(suburbsKey, parseSuburbs);
+    } else {
+      final mapFunc = (String string) => Suburb.fromString(string);
+      suburbs = await fetchFromCache(suburbsKey, parseSuburbs, mapFunc);
+    }
+
+    return suburbs;
+  }
+
+  Future<List<Case>> fetchCases() async {
+    final shouldFetch = await shouldFetchFromServer(casesUpdatedAtKey);
+    var cases = <Case>[];
+
+    if (shouldFetch) {
+      cases = await fetchFromServer(casesKey, parseCases);
+    } else {
+      final mapFunc = (String string) => Case.fromString(string);
+      cases = await fetchFromCache(casesKey, parseCases, mapFunc);
+    }
+
+    return cases;
+  }
+
+  Future<List> fetchFromCache(
+    String key,
+    ParseFunc parseFunc,
+    MapFunc mapFunc,
+  ) async {
+    var results = [];
+    final prefs = await SharedPreferences.getInstance();
+    final stringList = prefs.getStringList(key);
+
+    if (stringList != null) {
+      results = stringList.map((e) => mapFunc(e)).toList();
+    } else {
+      results = await fetchFromServer(key, parseFunc);
+    }
+
+    return results;
+  }
+
+  Future<void> cacheListResults(String key, List results) async {
+    final prefs = await SharedPreferences.getInstance();
+    final stringList = results.map((e) => e.toString()).toList();
+    await prefs.setStringList(key, stringList);
   }
 
   List<Suburb> parseSuburbs(Map json) {
