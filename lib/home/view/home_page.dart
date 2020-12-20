@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _homeBloc = context.bloc<HomeBloc>()..add(FetchAll());
+    _homeBloc = context.read<HomeBloc>()..add(FetchAll());
   }
 
   @override

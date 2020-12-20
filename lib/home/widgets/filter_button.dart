@@ -20,7 +20,7 @@ class _FilterButtonState extends State<FilterButton> {
   @override
   void initState() {
     super.initState();
-    _homeBloc = context.bloc<HomeBloc>();
+    _homeBloc = context.read<HomeBloc>();
   }
 
   @override
