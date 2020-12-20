@@ -20,7 +20,7 @@ class _SearchBarState extends State<SearchBar> {
   @override
   void initState() {
     super.initState();
-    _homeBloc = context.bloc<HomeBloc>();
+    _homeBloc = context.read<HomeBloc>();
   }
 
   @override
@@ -131,7 +131,7 @@ class _SearchResults extends StatelessWidget {
             onTap: () {
               controller.query = suburb.displayName;
               controller.close();
-              context.bloc<HomeBloc>().add(FilterCasesBySuburb(suburb));
+              context.read<HomeBloc>().add(FilterCasesBySuburb(suburb));
             },
           );
         }),
@@ -148,7 +148,7 @@ class _SearchResults extends StatelessWidget {
             onTap: () {
               controller.query = myCase.venue;
               controller.close();
-              context.bloc<HomeBloc>().add(ShowCase(myCase));
+              context.read<HomeBloc>().add(ShowCase(myCase));
             },
           );
         }),

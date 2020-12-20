@@ -46,7 +46,7 @@ class _MapWidgetState extends State<MapWidget> {
           final controller = await _completer.future;
           await controller.animateCamera(
               CameraUpdate.newLatLngZoom(state.targetLatLng, 15));
-          context.bloc<HomeBloc>().add(SearchHandled());
+          context.read<HomeBloc>().add(SearchHandled());
         }
       },
       buildWhen: (previous, current) {
