@@ -1,34 +1,31 @@
 part of 'home_bloc.dart';
 
-abstract class HomeState extends Equatable {
-  const HomeState();
-
-  @override
-  List<Object> get props => [];
-}
-
-class HomeInitial extends HomeState {}
-
-class HomeFailure extends HomeState {}
+enum HomeStatus { initial, success, failure }
 
 @CopyWith(generateCopyWithNull: true)
-class HomeSuccess extends HomeState {
+class HomeState extends Equatable {
+  final HomeStatus status;
   final DateTime updatedAt;
+
   final List<Suburb> suburbs;
-  final List<Case> cases;
   final List<Suburb> suburbsResult;
+
+  final List<Case> cases;
   final List<Case> casesResult;
   final List<Case> searchCases;
+
   final bool isShowAllCases;
   final bool isEmptyActiveCases;
   final bool isSortCases;
+  final bool isShowDisclaimer;
+
   final LatLng targetLatLng;
   final Suburb filteredSuburb;
   final DateTimeRange filteredDates;
-  final bool isShowDisclaimer;
   final Case selectedCase;
 
-  HomeSuccess({
+  HomeState({
+    this.status = HomeStatus.initial,
     this.updatedAt,
     this.suburbs,
     this.cases,
@@ -48,6 +45,7 @@ class HomeSuccess extends HomeState {
   @override
   List<Object> get props {
     return [
+      status,
       updatedAt,
       suburbs,
       cases,
@@ -66,8 +64,9 @@ class HomeSuccess extends HomeState {
 
   @override
   String toString() {
-    return 'HomeSuccess: { updatedAt: $updatedAt, suburbs: ${suburbs?.length}, '
-        'cases: ${cases?.length}, suburbsResult: ${suburbsResult?.length}, '
+    return 'HomeSuccess: { status: $status, updatedAt: $updatedAt, '
+        'suburbs: ${suburbs?.length}, cases: ${cases?.length}, '
+        'suburbsResult: ${suburbsResult?.length}, '
         'casesResult: ${casesResult?.length}, '
         'searchCases: ${searchCases?.length}, '
         'isShowAllCases: $isShowAllCases, targetLatLng: $targetLatLng, '

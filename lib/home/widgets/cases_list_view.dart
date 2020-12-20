@@ -22,9 +22,9 @@ class CasesListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) {
-        return previous is HomeInitial ||
-            (previous is HomeSuccess &&
-                current is HomeSuccess &&
+        return previous.status == HomeStatus.initial ||
+            (previous.status == HomeStatus.success &&
+                current.status == HomeStatus.success &&
                 previous.casesResult != current.casesResult);
       },
       builder: (context, state) {
@@ -32,7 +32,7 @@ class CasesListView extends StatelessWidget {
         final expiredCases = <Case>[];
         var itemCount = 0;
 
-        if (state is HomeSuccess) {
+        if (state.status == HomeStatus.success) {
           for (final myCase in state.casesResult) {
             itemCount++;
             if (myCase.isExpired) {

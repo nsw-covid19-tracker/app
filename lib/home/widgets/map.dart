@@ -37,12 +37,12 @@ class _MapWidgetState extends State<MapWidget> {
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
       listenWhen: (previous, current) {
-        return previous is HomeSuccess &&
-            current is HomeSuccess &&
+        return previous.status == HomeStatus.success &&
+            current.status == HomeStatus.success &&
             previous.targetLatLng != current.targetLatLng;
       },
       listener: (context, state) async {
-        if (state is HomeSuccess && state.targetLatLng != null) {
+        if (state.status == HomeStatus.success && state.targetLatLng != null) {
           final controller = await _completer.future;
           await controller.animateCamera(
               CameraUpdate.newLatLngZoom(state.targetLatLng, 15));
@@ -50,14 +50,14 @@ class _MapWidgetState extends State<MapWidget> {
         }
       },
       buildWhen: (previous, current) {
-        return previous is HomeInitial ||
-            (previous is HomeSuccess &&
-                current is HomeSuccess &&
+        return previous.status == HomeStatus.initial ||
+            (previous.status == HomeStatus.success &&
+                current.status == HomeStatus.success &&
                 previous.casesResult != current.casesResult);
       },
       builder: (context, state) {
         var cases = <Case>[];
-        if (state is HomeSuccess) cases = state.casesResult;
+        if (state.status == HomeStatus.success) cases = state.casesResult;
 
         return widget.isShowMap
             ? GoogleMap(
