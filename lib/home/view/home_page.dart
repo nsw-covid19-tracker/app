@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
       resizeToAvoidBottomInset: false,
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
-          if (state is HomeSuccess) {
+          if (state.status == HomeStatus.success) {
             if (state.isEmptyActiveCases) {
               _showNoActiveCasesDialog();
               _homeBloc.add(EmptyActiveCasesHandled());
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
       controller: _panelController,
       minHeight: _panelMinHeight,
       maxHeight: MediaQuery.of(context).size.height * 0.8,
-      collapsed: state is HomeSuccess
+      collapsed: state.status == HomeStatus.success
           ? CollapsedPanel(controller: _panelController)
           : LoadingPanel(),
       panelBuilder: (sc) => Panel(panelSc: sc),
@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
           SearchBar(
             onSearchBarTap: () => _panelController.close(),
           ),
-          if (state is HomeSuccess)
+          if (state.status == HomeStatus.success)
             Align(
               alignment: Alignment.bottomLeft,
               child: _buildDataUpdatedAt(
@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         Expanded(
           flex: 1,
-          child: state is HomeSuccess
+          child: state.status == HomeStatus.success
               ? Padding(
                   padding: const EdgeInsets.only(top: 16),
                   child: CasesListView(dialogSc: _scrollController),
@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                 scrollController: _scrollController,
               ),
               SearchBar(),
-              if (state is HomeSuccess)
+              if (state.status == HomeStatus.success)
                 Align(
                   alignment: Alignment.bottomLeft,
                   child: _buildDataUpdatedAt(

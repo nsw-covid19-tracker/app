@@ -19,7 +19,7 @@ typedef CasesComparator = int Function(Case a, Case b);
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final HomeRepo _homeRepo;
 
-  HomeBloc(this._homeRepo) : super(HomeInitial());
+  HomeBloc(this._homeRepo) : super(HomeState());
 
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
@@ -53,8 +53,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _mapFetchAllToState(FetchAll event) async* {
-    final currState = state;
-    if (currState is HomeInitial) {
+    if (state.status == HomeStatus.initial) {
       try {
         await _homeRepo.signInAnonymously();
         final updatedAt = await _homeRepo.fetchDataUpdatedAt();
@@ -64,7 +63,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         final activeCases =
             cases.where((myCase) => (!myCase.isExpired)).toList();
 
-        yield HomeSuccess(
+        yield state.copyWith(
+          status: HomeStatus.success,
           updatedAt: updatedAt,
           suburbs: suburbs,
           cases: cases,
@@ -73,26 +73,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           isShowDisclaimer: isShowDisclaimer,
         );
       } catch (_) {
-        yield HomeFailure();
+        yield state.copyWith(status: HomeStatus.failure);
       }
     }
   }
 
   Stream<HomeState> _mapSearchToState(Search event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
+    if (state.status == HomeStatus.success) {
       final query = event.query.toLowerCase();
       var suburbsResult = <Suburb>[];
       var searchCases = <Case>[];
 
       if (query.isNotEmpty) {
-        suburbsResult = currState.suburbs
-            .where((suburb) =>
-                suburb.postcode.contains(query) ||
-                suburb.name.toLowerCase().contains(query))
+        suburbsResult = state.suburbs
+            .where((suburb) {
+              return suburb.postcode.contains(query) ||
+                  suburb.name.toLowerCase().contains(query);
+            })
             .take(5)
             .toList();
-        final cases = List<Case>.from(currState.cases)
+        final cases = List<Case>.from(state.cases)
           ..sort((a, b) => a.venue.compareTo(b.venue));
         searchCases = cases
             .where((myCase) => myCase.venue.toLowerCase().contains(query))
@@ -100,51 +100,55 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             .toList();
       }
 
-      yield currState.copyWith(
-          suburbsResult: suburbsResult, searchCases: searchCases);
+      yield state.copyWith(
+        suburbsResult: suburbsResult,
+        searchCases: searchCases,
+      );
     }
   }
 
   Stream<HomeState> _mapFilterCasesBySuburbToState(
       FilterCasesBySuburb event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
-      final cases = List<Case>.from(currState.cases);
-      final results = _filterCases(cases, currState.isShowAllCases,
-          event.suburb, currState.filteredDates);
-      HomeSuccess newState;
+    if (state.status == HomeStatus.success) {
+      final cases = List<Case>.from(state.cases);
+      final results = _filterCases(
+        cases,
+        state.isShowAllCases,
+        event.suburb,
+        state.filteredDates,
+      );
 
+      HomeState newState;
       if (results.isEmpty) {
-        newState = currState.copyWithNull(targetLatLng: true);
+        newState = state.copyWithNull(targetLatLng: true);
       } else {
-        newState = currState.copyWith(targetLatLng: event.suburb.latLng);
+        newState = state.copyWith(targetLatLng: event.suburb.latLng);
       }
 
       yield newState.copyWith(
         casesResult: results,
-        isEmptyActiveCases: !currState.isShowAllCases && results.isEmpty,
+        isEmptyActiveCases: !state.isShowAllCases && results.isEmpty,
         filteredSuburb: event.suburb,
       );
     }
   }
 
   Stream<HomeState> _mapSearchHandledToState(SearchHandled event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
-      yield currState.copyWithNull(targetLatLng: true);
+    if (state.status == HomeStatus.success) {
+      yield state.copyWithNull(targetLatLng: true);
     }
   }
 
   Stream<HomeState> _mapClearFilteredCasesToState(
-      ClearFilteredCases event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
-      final cases = List<Case>.from(currState.cases);
+    ClearFilteredCases event,
+  ) async* {
+    if (state.status == HomeStatus.success) {
+      final cases = List<Case>.from(state.cases);
       final results = cases.where((myCase) {
-        return _filterByStatus(myCase, currState.isShowAllCases) &&
-            _filterByDates(myCase, currState.filteredDates);
+        return _filterByStatus(myCase, state.isShowAllCases) &&
+            _filterByDates(myCase, state.filteredDates);
       }).toList();
-      yield currState.copyWith(
+      yield state.copyWith(
         casesResult: results,
         suburbsResult: <Suburb>[],
         searchCases: <Case>[],
@@ -154,12 +158,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _mapFilterCasesByExpiryToState(
       FilterCasesByExpiry event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
-      final cases = List<Case>.from(currState.cases);
+    if (state.status == HomeStatus.success) {
+      final cases = List<Case>.from(state.cases);
       final results = _filterCases(cases, event.isShowAllCases,
-          currState.filteredSuburb, currState.filteredDates);
-      yield currState.copyWith(
+          state.filteredSuburb, state.filteredDates);
+      yield state.copyWith(
         casesResult: results,
         isShowAllCases: event.isShowAllCases,
         isEmptyActiveCases: !event.isShowAllCases && results.isEmpty,
@@ -169,14 +172,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _mapFilterCasesByDatesToState(
       FilterCasesByDates event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
-      final cases = List<Case>.from(currState.cases);
-      final results = _filterCases(cases, currState.isShowAllCases,
-          currState.filteredSuburb, event.dates);
-      yield currState.copyWith(
+    if (state.status == HomeStatus.success) {
+      final cases = List<Case>.from(state.cases);
+      final results = _filterCases(
+          cases, state.isShowAllCases, state.filteredSuburb, event.dates);
+      yield state.copyWith(
         casesResult: results,
-        isEmptyActiveCases: !currState.isShowAllCases && results.isEmpty,
+        isEmptyActiveCases: !state.isShowAllCases && results.isEmpty,
         filteredDates: event.dates,
       );
     }
@@ -184,19 +186,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _mapEmptyActiveCasesHandledToState(
       EmptyActiveCasesHandled event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
-      yield currState
+    if (state.status == HomeStatus.success) {
+      yield state
           .copyWith(isEmptyActiveCases: false, isShowDisclaimer: false)
           .copyWithNull(targetLatLng: true);
     }
   }
 
   Stream<HomeState> _mapSortCasesToState(SortCases event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
-      final cases = List<Case>.from(currState.cases);
-      final casesResult = List<Case>.from(currState.casesResult);
+    if (state.status == HomeStatus.success) {
+      final cases = List<Case>.from(state.cases);
+      final casesResult = List<Case>.from(state.casesResult);
       CasesComparator comparator;
 
       if (event.sortBy == kAlphabetically) {
@@ -208,39 +208,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       cases.sort(comparator);
       casesResult.sort(comparator);
-      yield currState.copyWith(
+      yield state.copyWith(
           cases: cases, casesResult: casesResult, isSortCases: true);
     }
   }
 
   Stream<HomeState> _mapSortCasesHandledToState(SortCasesHandled event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
-      yield currState.copyWith(isSortCases: false);
+    if (state.status == HomeStatus.success) {
+      yield state.copyWith(isSortCases: false);
     }
   }
 
   Stream<HomeState> _mapDisclaimerHandledToState(
       DisclaimerHandled event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
+    if (state.status == HomeStatus.success) {
       await _homeRepo.setIsShowDisclaimer(false);
-      yield currState.copyWith(
-          isEmptyActiveCases: false, isShowDisclaimer: false);
+      yield state.copyWith(isEmptyActiveCases: false, isShowDisclaimer: false);
     }
   }
 
   Stream<HomeState> _mapShowCaseToState(ShowCase event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
-      yield currState.copyWith(selectedCase: event.myCase);
+    if (state.status == HomeStatus.success) {
+      yield state.copyWith(selectedCase: event.myCase);
     }
   }
 
   Stream<HomeState> _mapShowCaseHandledToState(ShowCaseHandled event) async* {
-    final currState = state;
-    if (currState is HomeSuccess) {
-      yield currState.copyWithNull(selectedCase: true);
+    if (state.status == HomeStatus.success) {
+      yield state.copyWithNull(selectedCase: true);
     }
   }
 

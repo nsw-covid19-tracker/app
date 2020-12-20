@@ -72,13 +72,13 @@ class _SearchBarState extends State<SearchBar> {
             elevation: 4.0,
             child: BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) {
-                return previous is HomeSuccess &&
-                    current is HomeSuccess &&
+                return previous.status == HomeStatus.success &&
+                    current.status == HomeStatus.success &&
                     (previous.suburbsResult != current.suburbsResult ||
                         previous.searchCases != current.searchCases);
               },
               builder: (context, state) {
-                if (state is HomeSuccess &&
+                if (state.status == HomeStatus.success &&
                     (state.suburbsResult.isNotEmpty ||
                         state.searchCases.isNotEmpty)) {
                   return _SearchResults(
