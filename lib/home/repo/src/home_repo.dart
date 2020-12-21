@@ -62,7 +62,8 @@ abstract class HomeRepo {
       suburbs = await fetchFromServer(suburbsKey, parseSuburbs);
     } else {
       final mapFunc = (String string) => Suburb.fromString(string);
-      suburbs = await fetchFromCache(suburbsKey, parseSuburbs, mapFunc);
+      suburbs = await fetchFromCache<Suburb>(suburbsKey, parseSuburbs, mapFunc);
+      ;
     }
 
     return suburbs;
@@ -76,23 +77,24 @@ abstract class HomeRepo {
       cases = await fetchFromServer(casesKey, parseCases);
     } else {
       final mapFunc = (String string) => Case.fromString(string);
-      cases = await fetchFromCache(casesKey, parseCases, mapFunc);
+      cases = await fetchFromCache<Case>(casesKey, parseCases, mapFunc);
+      ;
     }
 
     return cases;
   }
 
-  Future<List> fetchFromCache(
+  Future<List<T>> fetchFromCache<T>(
     String key,
     ParseFunc parseFunc,
     MapFunc mapFunc,
   ) async {
-    var results = [];
+    var results = <T>[];
     final prefs = await SharedPreferences.getInstance();
     final stringList = prefs.getStringList(key);
 
     if (stringList != null) {
-      results = stringList.map((e) => mapFunc(e)).toList();
+      results = stringList.map<T>((e) => mapFunc(e)).toList();
     } else {
       results = await fetchFromServer(key, parseFunc);
     }
