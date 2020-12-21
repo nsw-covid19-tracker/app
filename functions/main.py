@@ -38,7 +38,11 @@ def main(data, context):
 
     for key in data:
         for result in data[key]:
-            address = result["Address"]
+            try:
+                address = result["Address"]
+            except KeyError:
+                address = result["Adress"]
+
             suburb = result["Suburb"]
             postcode = re.search(r"\d{4}", address.split(", ")[-1])
 
