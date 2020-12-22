@@ -43,16 +43,29 @@ def main(data, context):
             except KeyError:
                 address = result["Adress"]
 
+            venue = result["Venue"]
             suburb = result["Suburb"]
             postcode = re.search(r"\d{4}", address.split(", ")[-1])
 
             if suburb == "Avalon":
                 suburb = "Avalon Beach"
 
-            if postcode is None:
-                logger.warning(f"Failed to find postcode in {address}")
-            else:
+            if postcode is not None:
                 postcode = postcode[0]
+            else:
+                postcode = get_postcode_from_dict(suburb, suburbs_dict)
+                if postcode is None:
+                    venue, suburb = suburb, venue
+                    postcode = get_postcode_from_dict(suburb, suburbs_dict)
+
+                    if postcode is None:
+                        venue, suburb = suburb, venue
+                        logger.warning(
+                            f"Failed to find postcode in '{address}' and "
+                            f"failed to retrieve postcode for '{suburb}'"
+                        )
+
+            if postcode is not None:
                 postcode = utils.add_suburb(suburbs_dict, postcode, suburb)
 
             datetimes = get_datetimes(result)
@@ -68,7 +81,7 @@ def main(data, context):
             case_dict = {
                 "postcode": postcode,
                 "suburb": suburb,
-                "venue": f"{suburb}: {result['Venue']}",
+                "venue": f"{suburb}: {venue}",
                 "address": address,
                 "latitude": latitude,
                 "longitude": longitude,
@@ -89,9 +102,19 @@ def main(data, context):
     )
 
 
+def get_postcode_from_dict(suburb, suburbs_dict):
+    postcode = None
+    postcodes = suburbs_dict.get(suburb)
+
+    if postcodes is not None:
+        postcode = list(postcodes.keys())[0]
+
+    return postcode
+
+
 def get_datetimes(result):
     datetimes = []
-    dates = split_datetimes(result["Date"])
+    dates = split_datetimes(result["Date"], is_date=True)
     times = split_datetimes(result["Time"])
 
     for i in range(len(dates)):
@@ -106,8 +129,8 @@ def get_datetimes(result):
         else:
             start_date = end_date = date
 
-        time = time.replace("-", " - ").replace("-", "to").strip()
-        if time.lower() == "all day" or time.lower() == "all day until closed":
+        time = time.replace("-", " - ").replace("-", "to").strip().lower()
+        if "all day" in time or time == "":
             start = parse_datetime(start_date).floor("day")
             end = parse_datetime(end_date).ceil("day")
         else:
@@ -125,10 +148,26 @@ def get_datetimes(result):
     return datetimes
 
 
-def split_datetimes(datetimes):
+def split_datetimes(datetimes, is_date=False):
+    if is_date:
+        datetimes = datetimes.replace("December2020", "December 2020")
+        for day in [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ]:
+            datetimes = datetimes.replace(f"{day},", day)
+
     return [
         re.sub(r"\s+", " ", x.strip())
-        for x in datetimes.replace(",", ";").replace("and", ";").split(";")
+        for x in datetimes.replace("<br/>", ";")
+        .replace(",", ";")
+        .replace("and", ";")
+        .split(";")
     ]
 
 
@@ -143,6 +182,7 @@ def parse_datetime(datetime_str):
         "dddd D MMM YYYY h.mmA",
         "dddd D MMM YYYY hA",
         "dddd D MMMM h:mmA",
+        "dddd D MMMM h.mmA",
         "dddd D MMMM hA",
         "dddd D MMMM",
         "D MMMM",
