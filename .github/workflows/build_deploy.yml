@@ -20,6 +20,7 @@ jobs:
 
       - name: Build Web App 🔧
         run: |
+          sed -i "s/VERSION_NUM/$GITHUB_RUN_NUMBER/g" web/index.html
           flutter config --enable-web
           flutter pub get
           flutter pub run build_runner build
