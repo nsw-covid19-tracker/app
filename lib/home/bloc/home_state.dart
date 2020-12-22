@@ -18,6 +18,7 @@ class HomeState extends Equatable {
   final bool isEmptyActiveCases;
   final bool isSortCases;
   final bool isShowDisclaimer;
+  final bool isMapEnabled;
 
   final LatLng targetLatLng;
   final Suburb filteredSuburb;
@@ -40,6 +41,7 @@ class HomeState extends Equatable {
     this.filteredDates,
     this.isShowDisclaimer = true,
     this.selectedCase,
+    this.isMapEnabled = true,
   });
 
   @override
@@ -59,6 +61,7 @@ class HomeState extends Equatable {
       filteredDates,
       isShowDisclaimer,
       selectedCase,
+      isMapEnabled,
     ];
   }
 
@@ -73,12 +76,14 @@ class HomeState extends Equatable {
         'isEmptyActiveCases: $isEmptyActiveCases, isSortCases: $isSortCases, '
         'filteredSuburb: $filteredSuburb, filteredDates: $filteredDates, '
         'isShowDisclaimer: $isShowDisclaimer, '
-        'selectedCase: ${selectedCase != null} }';
+        'selectedCase: ${selectedCase != null}, isMapEnabled: $isMapEnabled }';
   }
 
   String get formattedUpdatedAt {
-    final dateFormat = DateFormat('d MMM, yyyy');
-
-    return updatedAt != null ? dateFormat.format(updatedAt) : 'Unknown';
+    return updatedAt != null
+        ? DateFormat('d MMM, yyyy').format(updatedAt)
+        : 'Unknown';
   }
+
+  bool get isMapEnabledFinal => !kIsWeb || (kIsWeb && isMapEnabled);
 }

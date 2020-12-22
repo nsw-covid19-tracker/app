@@ -26,16 +26,18 @@ class _FilterButtonState extends State<FilterButton> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: () => MyBottomSheet.show(
-        context: context,
-        isShowAllCases: _isShowAllCases,
-        showAllCallback: _setIsShowAllCases,
-        startDate: _startDate,
-        endDate: _endDate,
-        filterDateCallback: _setStartEndDates,
-        sortBy: _sortBy,
-        sortCallbackFunc: _setSortBy,
-      ),
+      onPressed: () {
+        MyBottomSheet.show(
+          context: context,
+          isShowAllCases: _isShowAllCases,
+          showAllCallback: _setIsShowAllCases,
+          startDate: _startDate,
+          endDate: _endDate,
+          filterDateCallback: _setStartEndDates,
+          sortBy: _sortBy,
+          sortCallbackFunc: _setSortBy,
+        );
+      },
       child: FaIcon(FontAwesomeIcons.filter, size: 20),
     );
   }

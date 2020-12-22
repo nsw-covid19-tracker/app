@@ -55,6 +55,9 @@ class _SearchBarState extends State<SearchBar> {
       onFocusChanged: (isFocused) {
         if (isFocused) {
           widget.onSearchBarTap?.call();
+          _homeBloc.add(DisableMap());
+        } else {
+          _homeBloc.add(EnableMap());
         }
       },
       clearQueryOnClose: false,

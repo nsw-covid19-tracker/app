@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:nsw_covid_tracker/home/common/consts.dart';
@@ -49,6 +50,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapShowCaseToState(event);
     } else if (event is ShowCaseHandled) {
       yield* _mapShowCaseHandledToState(event);
+    } else if (event is EnableMap) {
+      yield state.copyWith(isMapEnabled: true);
+    } else if (event is DisableMap) {
+      yield state.copyWith(isMapEnabled: false);
     }
   }
 
