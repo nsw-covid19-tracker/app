@@ -1,16 +1,18 @@
 import 'package:flutter/foundation.dart';
+import 'package:nsw_covid_tracker/home/bloc/home_bloc.dart';
 import 'package:nsw_covid_tracker/home/common/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 typedef ShowAllCallbackFunc = void Function(bool value);
 typedef FilterDateCallbackFunc = void Function(DateTimeRange dates);
 typedef SortCallbackFunc = void Function(String value);
 
 class MyBottomSheet {
-  static void show({
+  static Future<void> show({
     @required BuildContext context,
     @required bool isShowAllCases,
     @required ShowAllCallbackFunc showAllCallback,
@@ -19,8 +21,9 @@ class MyBottomSheet {
     @required FilterDateCallbackFunc filterDateCallback,
     @required String sortBy,
     @required SortCallbackFunc sortCallbackFunc,
-  }) {
-    showCustomModalBottomSheet(
+  }) async {
+    context.read<HomeBloc>().add(DisableMap());
+    await showCustomModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
         child: Column(
@@ -50,6 +53,7 @@ class MyBottomSheet {
       },
       expand: false,
     );
+    context.read<HomeBloc>().add(EnableMap());
   }
 }
 

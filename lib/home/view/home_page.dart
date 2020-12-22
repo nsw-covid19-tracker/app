@@ -67,14 +67,16 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
-      floatingActionButton: LayoutBuilder(builder: (context, constraints) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: constraints.maxWidth < kPhoneWidth ? _panelMinHeight : 0,
-          ),
-          child: FilterButton(),
-        );
-      }),
+      floatingActionButton: LayoutBuilder(
+        builder: (context, constraints) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: constraints.maxWidth < kPhoneWidth ? _panelMinHeight : 0,
+            ),
+            child: FilterButton(),
+          );
+        },
+      ),
     );
   }
 
@@ -96,7 +98,9 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.only(bottom: _panelMinHeight),
             child: MapView(
               scrollController: _scrollController,
-              onMapTap: () => _panelController.close(),
+              onMapTap: () {
+                if (_panelController.isPanelOpen) _panelController.close();
+              },
             ),
           ),
           SearchBar(
