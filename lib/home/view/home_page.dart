@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
               alignment: Alignment.bottomLeft,
               child: _buildDataUpdatedAt(
                 state.formattedUpdatedAt,
-                bottomPadding: _panelMinHeight,
+                bottomPadding: _panelMinHeight + 24,
               ),
             ),
         ],
