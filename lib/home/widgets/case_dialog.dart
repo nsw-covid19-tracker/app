@@ -1,13 +1,19 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:nsw_covid_tracker/home/bloc/home_bloc.dart';
 import 'package:nsw_covid_tracker/home/common/common.dart';
 import 'package:nsw_covid_tracker/home/repo/repo.dart';
 import 'package:nsw_covid_tracker/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CaseDialog {
-  static void show(
-      BuildContext context, ScrollController controller, Case myCase) {
-    AwesomeDialog(
+  static Future<void> show(
+    BuildContext context,
+    ScrollController controller,
+    Case myCase,
+  ) async {
+    context.read<HomeBloc>().add(DisableMap());
+    await AwesomeDialog(
       context: context,
       animType: AnimType.SCALE,
       dialogType: myCase.isExpired ? DialogType.INFO : DialogType.WARNING,
@@ -15,7 +21,8 @@ class CaseDialog {
           ? kDialogWebWidth
           : null,
       body: _CaseInfo(myCase: myCase, controller: controller),
-    )..show();
+    ).show();
+    context.read<HomeBloc>().add(EnableMap());
   }
 }
 
