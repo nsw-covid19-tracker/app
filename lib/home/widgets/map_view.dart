@@ -12,11 +12,8 @@ class MapView extends StatefulWidget {
   final ScrollController scrollController;
   final Function onMapTap;
 
-  MapView({
-    Key key,
-    @required this.scrollController,
-    this.onMapTap,
-  })  : assert(scrollController != null),
+  MapView({Key key, @required this.scrollController, this.onMapTap})
+      : assert(scrollController != null),
         super(key: key);
 
   @override
@@ -47,7 +44,7 @@ class _MapViewState extends State<MapView> {
       },
       buildWhen: (previous, current) {
         return previous.casesResult != current.casesResult ||
-            previous.isMapEnabled != current.isMapEnabled;
+            previous.isMapEnabledFinal != current.isMapEnabledFinal;
       },
       builder: (context, state) {
         return GoogleMap(
@@ -59,20 +56,30 @@ class _MapViewState extends State<MapView> {
           onMapCreated: (GoogleMapController controller) {
             if (!_completer.isCompleted) _completer.complete(controller);
           },
-          markers: _mapCasesToMarkers(context, state.casesResult),
+          markers: _mapCasesToMarkers(
+            context: context,
+            cases: state.casesResult,
+            isMapEnabled: state.isMapEnabledFinal,
+          ),
           onTap: (_) => widget.onMapTap?.call(),
-          scrollGesturesEnabled: !kIsWeb || (kIsWeb && state.isMapEnabled),
+          scrollGesturesEnabled: state.isMapEnabledFinal,
         );
       },
     );
   }
 
-  Set<Marker> _mapCasesToMarkers(BuildContext context, List<Case> cases) {
+  Set<Marker> _mapCasesToMarkers({
+    @required BuildContext context,
+    @required List<Case> cases,
+    @required bool isMapEnabled,
+  }) {
     return cases.map((myCase) {
       return Marker(
         markerId: MarkerId(myCase.venue),
         position: myCase.latLng,
-        onTap: () => CaseDialog.show(context, widget.scrollController, myCase),
+        onTap: isMapEnabled
+            ? () => CaseDialog.show(context, widget.scrollController, myCase)
+            : null,
       );
     }).toSet();
   }

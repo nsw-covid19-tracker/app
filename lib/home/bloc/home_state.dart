@@ -84,4 +84,6 @@ class HomeState extends Equatable {
         ? DateFormat('d MMM, yyyy').format(updatedAt)
         : 'Unknown';
   }
+
+  bool get isMapEnabledFinal => !kIsWeb || (kIsWeb && isMapEnabled);
 }
