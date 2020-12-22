@@ -104,7 +104,9 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           SearchBar(
-            onSearchBarTap: () => _panelController.close(),
+            onSearchBarTap: () {
+              if (_panelController.isPanelOpen) _panelController.close();
+            },
           ),
           if (state.status == HomeStatus.success)
             Align(
