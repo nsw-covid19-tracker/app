@@ -8,25 +8,22 @@ import 'package:nsw_covid_tracker/home/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class MapWidget extends StatefulWidget {
+class MapView extends StatefulWidget {
   final ScrollController scrollController;
   final Function onMapTap;
-  final bool isShowMap;
 
-  MapWidget({
+  MapView({
     Key key,
     @required this.scrollController,
     this.onMapTap,
-    isShowMap = true,
   })  : assert(scrollController != null),
-        isShowMap = isShowMap || !kIsWeb,
         super(key: key);
 
   @override
-  _MapWidgetState createState() => _MapWidgetState();
+  _MapViewState createState() => _MapViewState();
 }
 
-class _MapWidgetState extends State<MapWidget> {
+class _MapViewState extends State<MapView> {
   final _completer = Completer<GoogleMapController>();
   final _kGooglePlex = CameraPosition(
     target: LatLng(-33.918200, 151.035000),
@@ -37,44 +34,35 @@ class _MapWidgetState extends State<MapWidget> {
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
       listenWhen: (previous, current) {
-        return previous.status == HomeStatus.success &&
-            current.status == HomeStatus.success &&
-            previous.targetLatLng != current.targetLatLng;
+        return previous.targetLatLng != current.targetLatLng;
       },
       listener: (context, state) async {
-        if (state.status == HomeStatus.success && state.targetLatLng != null) {
+        if (state.targetLatLng != null) {
           final controller = await _completer.future;
           await controller.animateCamera(
-              CameraUpdate.newLatLngZoom(state.targetLatLng, 15));
+            CameraUpdate.newLatLngZoom(state.targetLatLng, 15),
+          );
           context.read<HomeBloc>().add(SearchHandled());
         }
       },
       buildWhen: (previous, current) {
-        return previous.status == HomeStatus.initial ||
-            (previous.status == HomeStatus.success &&
-                current.status == HomeStatus.success &&
-                previous.casesResult != current.casesResult);
+        return previous.casesResult != current.casesResult ||
+            previous.isMapEnabled != current.isMapEnabled;
       },
       builder: (context, state) {
-        var cases = <Case>[];
-        if (state.status == HomeStatus.success) cases = state.casesResult;
-
-        return widget.isShowMap
-            ? GoogleMap(
-                mapType: MapType.normal,
-                initialCameraPosition: _kGooglePlex,
-                myLocationEnabled: false,
-                myLocationButtonEnabled: false,
-                zoomControlsEnabled: false,
-                onMapCreated: (GoogleMapController controller) {
-                  if (!_completer.isCompleted) _completer.complete(controller);
-                },
-                markers: cases.isNotEmpty
-                    ? _mapCasesToMarkers(context, cases)
-                    : null,
-                onTap: (_) => widget.onMapTap?.call(),
-              )
-            : SizedBox.shrink();
+        return GoogleMap(
+          mapType: MapType.normal,
+          initialCameraPosition: _kGooglePlex,
+          myLocationEnabled: false,
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
+          onMapCreated: (GoogleMapController controller) {
+            if (!_completer.isCompleted) _completer.complete(controller);
+          },
+          markers: _mapCasesToMarkers(context, state.casesResult),
+          onTap: (_) => widget.onMapTap?.call(),
+          scrollGesturesEnabled: !kIsWeb || (kIsWeb && state.isMapEnabled),
+        );
       },
     );
   }

@@ -18,7 +18,6 @@ class _HomePageState extends State<HomePage> {
   final _scrollController = ScrollController();
   final _panelMinHeight = 80.0;
   HomeBloc _homeBloc;
-  bool _isShowMap = true;
 
   @override
   void initState() {
@@ -88,15 +87,17 @@ class _HomePageState extends State<HomePage> {
           ? CollapsedPanel(controller: _panelController)
           : LoadingPanel(),
       panelBuilder: (sc) => Panel(panelSc: sc),
-      onPanelOpened: () => setState(() => _isShowMap = false),
-      onPanelClosed: () => setState(() => _isShowMap = true),
+      onPanelOpened: () => _homeBloc.add(DisableMap()),
+      onPanelClosed: () => _homeBloc.add(EnableMap()),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          MapWidget(
-            scrollController: _scrollController,
-            onMapTap: () => _panelController.close(),
-            isShowMap: _isShowMap,
+          Padding(
+            padding: EdgeInsets.only(bottom: _panelMinHeight),
+            child: MapView(
+              scrollController: _scrollController,
+              onMapTap: () => _panelController.close(),
+            ),
           ),
           SearchBar(
             onSearchBarTap: () => _panelController.close(),
@@ -131,7 +132,7 @@ class _HomePageState extends State<HomePage> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              MapWidget(
+              MapView(
                 scrollController: _scrollController,
               ),
               SearchBar(),

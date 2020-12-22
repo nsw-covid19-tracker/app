@@ -74,3 +74,7 @@ class ShowCase extends HomeEvent {
 }
 
 class ShowCaseHandled extends HomeEvent {}
+
+class EnableMap extends HomeEvent {}
+
+class DisableMap extends HomeEvent {}

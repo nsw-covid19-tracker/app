@@ -49,6 +49,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapShowCaseToState(event);
     } else if (event is ShowCaseHandled) {
       yield* _mapShowCaseHandledToState(event);
+    } else if (event is EnableMap) {
+      yield state.copyWith(isMapEnabled: true);
+    } else if (event is DisableMap) {
+      yield state.copyWith(isMapEnabled: false);
     }
   }
 
