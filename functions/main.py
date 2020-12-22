@@ -91,7 +91,7 @@ def main(data, context):
 
 def get_datetimes(result):
     datetimes = []
-    dates = split_datetimes(result["Date"])
+    dates = split_datetimes(result["Date"], is_date=True)
     times = split_datetimes(result["Time"])
 
     for i in range(len(dates)):
@@ -106,8 +106,8 @@ def get_datetimes(result):
         else:
             start_date = end_date = date
 
-        time = time.replace("-", " - ").replace("-", "to").strip()
-        if time.lower() == "all day" or time.lower() == "all day until closed":
+        time = time.replace("-", " - ").replace("-", "to").strip().lower()
+        if "all day" in time or time == "":
             start = parse_datetime(start_date).floor("day")
             end = parse_datetime(end_date).ceil("day")
         else:
@@ -125,10 +125,26 @@ def get_datetimes(result):
     return datetimes
 
 
-def split_datetimes(datetimes):
+def split_datetimes(datetimes, is_date=False):
+    if is_date:
+        datetimes = datetimes.replace("December2020", "December 2020")
+        for day in [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ]:
+            datetimes = datetimes.replace(f"{day},", day)
+
     return [
         re.sub(r"\s+", " ", x.strip())
-        for x in datetimes.replace(",", ";").replace("and", ";").split(";")
+        for x in datetimes.replace("<br/>", ";")
+        .replace(",", ";")
+        .replace("and", ";")
+        .split(";")
     ]
 
 
