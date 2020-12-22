@@ -68,15 +68,12 @@ class _MapViewState extends State<MapView> {
   }
 
   Set<Marker> _mapCasesToMarkers(BuildContext context, List<Case> cases) {
-    final markers = <Marker>{};
-    for (var myCase in cases) {
-      markers.add(Marker(
+    return cases.map((myCase) {
+      return Marker(
         markerId: MarkerId(myCase.venue),
         position: myCase.latLng,
         onTap: () => CaseDialog.show(context, widget.scrollController, myCase),
-      ));
-    }
-
-    return markers;
+      );
+    }).toSet();
   }
 }
