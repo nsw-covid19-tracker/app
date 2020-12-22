@@ -43,16 +43,29 @@ def main(data, context):
             except KeyError:
                 address = result["Adress"]
 
+            venue = result["Venue"]
             suburb = result["Suburb"]
             postcode = re.search(r"\d{4}", address.split(", ")[-1])
 
             if suburb == "Avalon":
                 suburb = "Avalon Beach"
 
-            if postcode is None:
-                logger.warning(f"Failed to find postcode in {address}")
-            else:
+            if postcode is not None:
                 postcode = postcode[0]
+            else:
+                postcode = get_postcode_from_dict(suburb, suburbs_dict)
+                if postcode is None:
+                    venue, suburb = suburb, venue
+                    postcode = get_postcode_from_dict(suburb, suburbs_dict)
+
+                    if postcode is None:
+                        venue, suburb = suburb, venue
+                        logger.warning(
+                            f"Failed to find postcode in '{address}' and "
+                            f"failed to retrieve postcode for '{suburb}'"
+                        )
+
+            if postcode is not None:
                 postcode = utils.add_suburb(suburbs_dict, postcode, suburb)
 
             datetimes = get_datetimes(result)
@@ -68,7 +81,7 @@ def main(data, context):
             case_dict = {
                 "postcode": postcode,
                 "suburb": suburb,
-                "venue": f"{suburb}: {result['Venue']}",
+                "venue": f"{suburb}: {venue}",
                 "address": address,
                 "latitude": latitude,
                 "longitude": longitude,
@@ -87,6 +100,16 @@ def main(data, context):
             "casesUpdatedAt": datetime_milliseconds(arrow.utcnow()),
         }
     )
+
+
+def get_postcode_from_dict(suburb, suburbs_dict):
+    postcode = None
+    postcodes = suburbs_dict.get(suburb)
+
+    if postcodes is not None:
+        postcode = list(postcodes.keys())[0]
+
+    return postcode
 
 
 def get_datetimes(result):

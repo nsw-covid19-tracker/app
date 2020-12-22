@@ -66,11 +66,14 @@ def add_case(case_dict, datetimes):
         new_datetimes = set((x["start"], x["end"]) for x in datetimes)
         new_datetimes.update(old_datetimes)
         result_datetimes = [{"start": x[0], "end": x[1]} for x in new_datetimes]
-        case_ref.update(
-            {
-                "dateTimes": result_datetimes,
-                "isExpired": snapshot["isExpired"] and case_dict["isExpired"],
-            }
-        )
+        data = {
+            "dateTimes": result_datetimes,
+            "isExpired": snapshot["isExpired"] and case_dict["isExpired"],
+        }
+
+        if "postcode" not in snapshot:
+            data["postcode"] = case_dict["postcode"]
+
+        case_ref.update(data)
 
     return key
