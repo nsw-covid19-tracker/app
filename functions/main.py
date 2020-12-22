@@ -182,6 +182,7 @@ def parse_datetime(datetime_str):
         "dddd D MMM YYYY h.mmA",
         "dddd D MMM YYYY hA",
         "dddd D MMMM h:mmA",
+        "dddd D MMMM h.mmA",
         "dddd D MMMM hA",
         "dddd D MMMM",
         "D MMMM",
