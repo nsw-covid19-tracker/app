@@ -49,6 +49,8 @@ def main(data, context):
 
             if suburb == "Avalon":
                 suburb = "Avalon Beach"
+            elif venue == "Warriewood Square" and suburb == "Nails":
+                suburb = "Warriewood"
 
             if postcode is not None:
                 postcode = postcode[0]
@@ -115,7 +117,11 @@ def get_postcode_from_dict(suburb, suburbs_dict):
 def get_datetimes(result):
     datetimes = []
     dates = split_datetimes(result["Date"], is_date=True)
-    times = split_datetimes(result["Time"])
+
+    if result["Time"] == "Strength and Conditioning Class":
+        times = [""]
+    else:
+        times = split_datetimes(result["Time"])
 
     for i in range(len(dates)):
         if i < len(times):
