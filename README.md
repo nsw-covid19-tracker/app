@@ -1,7 +1,8 @@
 # NSW COVID-19 Tracker
 
-[![MIT License](https://img.shields.io/github/license/zeshuaro/nsw-covid-tracker)](https://github.com/zeshuaro/nsw-covid-tracker/blob/master/LICENSE)
-[![Build and Deploy](https://github.com/zeshuaro/nsw-covid-tracker/workflows/Build%20and%20Deploy/badge.svg)](https://github.com/zeshuaro/nsw-covid-tracker/actions?query=workflow%3A%22Build+and+Deploy%22)
+[![GitHub license](https://img.shields.io/github/license/nsw-covid19-tracker/app)](https://github.com/nsw-covid19-tracker/app/blob/master/LICENSE)
+[![Build and Deploy](https://github.com/nsw-covid19-tracker/app/workflows/Build%20and%20Deploy/badge.svg)](https://github.com/nsw-covid19-tracker/app/actions?query=workflow%3A%22Build+and+Deploy%22)
+[![Effective Dart](https://img.shields.io/badge/style-Effective%20Dart-40c4ff.svg)](https://github.com/google/pedantic)
 
 The intent for this app is before you visit a venue you can check if there have been any confirmed cases or retrospectively check if you have been to any location with confirmed cases.
 
@@ -28,27 +29,13 @@ Enable Anonymous sign in in the Authentication tab.
 
 Enable Realtime Database by going into the corresponding tab.
 
-#### Service Account
-
-Create a service account by going into Settings > Project settings > Service accounts > Firebase Admin SDK > Generate new private key. Rename the file to `keyfile.json` and place it under `functions/`.
-
 ### Setup Google Maps
 
 Follow the instructions [here](https://pub.dev/packages/google_maps_flutter#getting-started) to setup Google Maps.
 
 ### Setup Database
 
-We provide some Python scripts to fetch and add data into the database. The scripts require Python 3.6+. 
-
-Install the required packages with the command below:
-
-    cd functions/
-    pip3 install -r requirements.txt
-
-Then run the following commands to fetch and add all the data:
-
-    python fetch_data_old.py  # For fetching the outdated data
-    python main.py            # For fetching the latest data
+Follow the instructions [here](https://github.com/nsw-covid19-tracker/functions) to fetch and store the data.
 
 ### Setup and Running the App
 
