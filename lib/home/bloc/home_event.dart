@@ -64,17 +64,6 @@ class SortCasesHandled extends HomeEvent {}
 
 class DisclaimerHandled extends HomeEvent {}
 
-class ShowCase extends HomeEvent {
-  final Case myCase;
-
-  ShowCase(this.myCase);
-
-  @override
-  List<Object> get props => [myCase];
-}
-
-class ShowCaseHandled extends HomeEvent {}
-
 class EnableMap extends HomeEvent {}
 
 class DisableMap extends HomeEvent {}

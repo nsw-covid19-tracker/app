@@ -11,7 +11,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 part 'home_bloc.g.dart';
-
 part 'home_event.dart';
 part 'home_state.dart';
 
@@ -31,7 +30,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } else if (event is FilterCasesBySuburb) {
       yield* _mapFilterCasesBySuburbToState(event);
     } else if (event is SearchHandled) {
-      yield* _mapSearchHandledToState(event);
+      yield state.copyWithNull(targetLatLng: true);
     } else if (event is ClearFilteredCases) {
       yield* _mapClearFilteredCasesToState(event);
     } else if (event is FilterCasesByExpiry) {
@@ -43,13 +42,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } else if (event is SortCases) {
       yield* _mapSortCasesToState(event);
     } else if (event is SortCasesHandled) {
-      yield* _mapSortCasesHandledToState(event);
+      yield state.copyWith(isSortCases: false);
     } else if (event is DisclaimerHandled) {
       yield* _mapDisclaimerHandledToState(event);
-    } else if (event is ShowCase) {
-      yield* _mapShowCaseToState(event);
-    } else if (event is ShowCaseHandled) {
-      yield* _mapShowCaseHandledToState(event);
     } else if (event is EnableMap) {
       yield state.copyWith(isMapEnabled: true);
     } else if (event is DisableMap) {
@@ -138,12 +133,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Stream<HomeState> _mapSearchHandledToState(SearchHandled event) async* {
-    if (state.status == HomeStatus.success) {
-      yield state.copyWithNull(targetLatLng: true);
-    }
-  }
-
   Stream<HomeState> _mapClearFilteredCasesToState(
     ClearFilteredCases event,
   ) async* {
@@ -218,29 +207,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Stream<HomeState> _mapSortCasesHandledToState(SortCasesHandled event) async* {
-    if (state.status == HomeStatus.success) {
-      yield state.copyWith(isSortCases: false);
-    }
-  }
-
   Stream<HomeState> _mapDisclaimerHandledToState(
       DisclaimerHandled event) async* {
     if (state.status == HomeStatus.success) {
       await _homeRepo.setIsShowDisclaimer(false);
       yield state.copyWith(isEmptyActiveCases: false, isShowDisclaimer: false);
-    }
-  }
-
-  Stream<HomeState> _mapShowCaseToState(ShowCase event) async* {
-    if (state.status == HomeStatus.success) {
-      yield state.copyWith(selectedCase: event.myCase);
-    }
-  }
-
-  Stream<HomeState> _mapShowCaseHandledToState(ShowCaseHandled event) async* {
-    if (state.status == HomeStatus.success) {
-      yield state.copyWithNull(selectedCase: true);
     }
   }
 
