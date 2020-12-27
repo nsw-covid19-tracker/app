@@ -23,7 +23,6 @@ class HomeState extends Equatable {
   final LatLng targetLatLng;
   final Suburb filteredSuburb;
   final DateTimeRange filteredDates;
-  final Case selectedCase;
 
   HomeState({
     this.status = HomeStatus.initial,
@@ -40,7 +39,6 @@ class HomeState extends Equatable {
     this.filteredSuburb,
     this.filteredDates,
     this.isShowDisclaimer = true,
-    this.selectedCase,
     this.isMapEnabled = true,
   });
 
@@ -60,7 +58,6 @@ class HomeState extends Equatable {
       filteredSuburb,
       filteredDates,
       isShowDisclaimer,
-      selectedCase,
       isMapEnabled,
     ];
   }
@@ -75,8 +72,7 @@ class HomeState extends Equatable {
         'isShowAllCases: $isShowAllCases, targetLatLng: $targetLatLng, '
         'isEmptyActiveCases: $isEmptyActiveCases, isSortCases: $isSortCases, '
         'filteredSuburb: $filteredSuburb, filteredDates: $filteredDates, '
-        'isShowDisclaimer: $isShowDisclaimer, '
-        'selectedCase: ${selectedCase != null}, isMapEnabled: $isMapEnabled }';
+        'isShowDisclaimer: $isShowDisclaimer, isMapEnabled: $isMapEnabled }';
   }
 
   String get formattedUpdatedAt {

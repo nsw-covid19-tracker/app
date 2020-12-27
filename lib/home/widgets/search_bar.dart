@@ -3,11 +3,16 @@ import 'package:nsw_covid_tracker/home/repo/repo.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nsw_covid_tracker/home/widgets/widgets.dart';
 
 class SearchBar extends StatefulWidget {
+  final ScrollController scrollController;
   final Function onSearchBarTap;
 
-  const SearchBar({Key key, this.onSearchBarTap}) : super(key: key);
+  const SearchBar(
+      {Key key, @required this.scrollController, this.onSearchBarTap})
+      : assert(scrollController != null),
+        super(key: key);
 
   @override
   _SearchBarState createState() => _SearchBarState();
@@ -75,17 +80,15 @@ class _SearchBarState extends State<SearchBar> {
             elevation: 4.0,
             child: BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) {
-                return previous.status == HomeStatus.success &&
-                    current.status == HomeStatus.success &&
-                    (previous.suburbsResult != current.suburbsResult ||
-                        previous.searchCases != current.searchCases);
+                return previous.suburbsResult != current.suburbsResult ||
+                    previous.searchCases != current.searchCases;
               },
               builder: (context, state) {
-                if (state.status == HomeStatus.success &&
-                    (state.suburbsResult.isNotEmpty ||
-                        state.searchCases.isNotEmpty)) {
+                if (state.suburbsResult.isNotEmpty ||
+                    state.searchCases.isNotEmpty) {
                   return _SearchResults(
-                    controller: _controller,
+                    searchController: _controller,
+                    scrollController: widget.scrollController,
                     suburbs: state.suburbsResult,
                     cases: state.searchCases,
                   );
@@ -102,16 +105,19 @@ class _SearchBarState extends State<SearchBar> {
 }
 
 class _SearchResults extends StatelessWidget {
-  final FloatingSearchBarController controller;
+  final FloatingSearchBarController searchController;
+  final ScrollController scrollController;
   final List<Suburb> suburbs;
   final List<Case> cases;
 
   const _SearchResults({
     Key key,
-    @required this.controller,
+    @required this.searchController,
+    @required this.scrollController,
     @required this.suburbs,
     @required this.cases,
-  })  : assert(controller != null),
+  })  : assert(searchController != null),
+        assert(scrollController != null),
         assert(suburbs != null),
         assert(cases != null),
         super(key: key);
@@ -132,8 +138,8 @@ class _SearchResults extends StatelessWidget {
           return ListTile(
             title: Text(suburb.displayName),
             onTap: () {
-              controller.query = suburb.displayName;
-              controller.close();
+              searchController.query = suburb.displayName;
+              searchController.close();
               context.read<HomeBloc>().add(FilterCasesBySuburb(suburb));
             },
           );
@@ -149,9 +155,9 @@ class _SearchResults extends StatelessWidget {
           return ListTile(
             title: Text(myCase.venue),
             onTap: () {
-              controller.query = myCase.venue;
-              controller.close();
-              context.read<HomeBloc>().add(ShowCase(myCase));
+              searchController.query = myCase.venue;
+              searchController.close();
+              CaseDialog.show(context, scrollController, myCase);
             },
           );
         }),

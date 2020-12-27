@@ -44,9 +44,6 @@ class _HomePageState extends State<HomePage> {
             } else if (state.isSortCases && _panelController.isAttached) {
               _panelController.open();
               _homeBloc.add(SortCasesHandled());
-            } else if (state.selectedCase != null) {
-              CaseDialog.show(context, _scrollController, state.selectedCase);
-              _homeBloc.add(ShowCaseHandled());
             }
 
             if (state.isShowDisclaimer) {
@@ -104,6 +101,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           SearchBar(
+            scrollController: _scrollController,
             onSearchBarTap: () {
               if (_panelController.isPanelOpen) _panelController.close();
             },
@@ -141,7 +139,9 @@ class _HomePageState extends State<HomePage> {
               MapView(
                 scrollController: _scrollController,
               ),
-              SearchBar(),
+              SearchBar(
+                scrollController: _scrollController,
+              ),
               if (state.status == HomeStatus.success)
                 Align(
                   alignment: Alignment.bottomLeft,
