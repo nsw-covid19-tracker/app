@@ -6,7 +6,7 @@
 
 The intent for this app is before you visit a venue you can check if there have been any confirmed cases or retrospectively check if you have been to any location with confirmed cases.
 
-Download APK: [Link](https://appdistribution.firebase.dev/i/57b34e104803998d)
+**Download APK:** [Link](https://appdistribution.firebase.dev/i/57b34e104803998d)
 
 ![Screenshots](images/screenshots.png)
 
