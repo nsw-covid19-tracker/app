@@ -127,7 +127,10 @@ class CasesListView extends StatelessWidget {
                   .apply(fontWeightDelta: 1),
             ),
             WidgetPaddingSm(),
-            Text(myCase.formattedDateTimes),
+            Text(
+              myCase.formattedDateTimes,
+              style: TextStyle(fontFamily: 'RobotoMono'),
+            ),
           ],
         ),
       ),
