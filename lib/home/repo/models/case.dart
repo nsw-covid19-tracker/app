@@ -54,9 +54,13 @@ class Case extends Equatable {
   String get formattedDateTimes {
     var result = '';
     for (final dateTime in dateTimes) {
-      if (dateTime.start != dateTime.end) {
-        final formattedStart =
-            DateFormat('E d MMM, y h:mma').format(dateTime.start);
+      if (dateTime.end.difference(dateTime.start).inMinutes == 1439) {
+        final formattedDate = DateFormat('E d MMM, y').format(dateTime.start);
+        result += '- $formattedDate All Day\n';
+      } else if (dateTime.start != dateTime.end) {
+        final formattedStart = DateFormat('E d MMM, y h:mma').format(
+          dateTime.start,
+        );
         String formattedEnd;
         if (dateTime.start.year != dateTime.end.year ||
             dateTime.start.month != dateTime.end.month ||
