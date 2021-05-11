@@ -15,8 +15,8 @@ class HomeRepoMobile extends HomeRepo {
   }
 
   @override
-  Future<DateTime> fetchDataUpdatedAt() async {
-    DateTime updatedAt;
+  Future<DateTime?> fetchDataUpdatedAt() async {
+    DateTime? updatedAt;
     final query = _rootRef.child('$logsKey/$dataUpdatedAtKey');
     final snapshot = await query.once();
 
@@ -39,7 +39,7 @@ class HomeRepoMobile extends HomeRepo {
   }
 
   @override
-  Future<List> fetchFromServer(String key, ParseFunc parseFunc) async {
+  Future<List<T>> fetchFromServer<T>(String key, ParseFunc<T> parseFunc) async {
     final query = _rootRef.child(key);
     final snapshot = await query.once();
     final results = parseFunc(snapshot.value);

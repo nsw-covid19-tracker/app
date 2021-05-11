@@ -7,12 +7,11 @@ import 'package:nsw_covid_tracker/home/widgets/widgets.dart';
 
 class SearchBar extends StatefulWidget {
   final ScrollController scrollController;
-  final Function onSearchBarTap;
+  final Function? onSearchBarTap;
 
   const SearchBar(
-      {Key key, @required this.scrollController, this.onSearchBarTap})
-      : assert(scrollController != null),
-        super(key: key);
+      {Key? key, required this.scrollController, this.onSearchBarTap})
+      : super(key: key);
 
   @override
   _SearchBarState createState() => _SearchBarState();
@@ -20,7 +19,7 @@ class SearchBar extends StatefulWidget {
 
 class _SearchBarState extends State<SearchBar> {
   final _controller = FloatingSearchBarController();
-  HomeBloc _homeBloc;
+  late final HomeBloc _homeBloc;
 
   @override
   void initState() {
@@ -48,7 +47,7 @@ class _SearchBarState extends State<SearchBar> {
       physics: const BouncingScrollPhysics(),
       axisAlignment: isPortrait ? 0.0 : -1.0,
       openAxisAlignment: 0.0,
-      maxWidth: isPortrait ? 600 : 500,
+      width: isPortrait ? 600 : 500,
       debounceDelay: const Duration(milliseconds: 500),
       onQueryChanged: (query) {
         if (query.isNotEmpty) {
@@ -111,16 +110,12 @@ class _SearchResults extends StatelessWidget {
   final List<Case> cases;
 
   const _SearchResults({
-    Key key,
-    @required this.searchController,
-    @required this.scrollController,
-    @required this.suburbs,
-    @required this.cases,
-  })  : assert(searchController != null),
-        assert(scrollController != null),
-        assert(suburbs != null),
-        assert(cases != null),
-        super(key: key);
+    Key? key,
+    required this.searchController,
+    required this.scrollController,
+    required this.suburbs,
+    required this.cases,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -131,8 +126,10 @@ class _SearchResults extends StatelessWidget {
           Text(
             'Suburbs',
             textAlign: TextAlign.center,
-            style:
-                Theme.of(context).textTheme.subtitle1.apply(fontWeightDelta: 1),
+            style: Theme.of(context)
+                .textTheme
+                .subtitle1
+                ?.apply(fontWeightDelta: 1),
           ),
         ...suburbs.map((suburb) {
           return ListTile(
@@ -148,8 +145,10 @@ class _SearchResults extends StatelessWidget {
           Text(
             'Case Locations',
             textAlign: TextAlign.center,
-            style:
-                Theme.of(context).textTheme.subtitle1.apply(fontWeightDelta: 1),
+            style: Theme.of(context)
+                .textTheme
+                .subtitle1
+                ?.apply(fontWeightDelta: 1),
           ),
         ...cases.map((myCase) {
           return ListTile(

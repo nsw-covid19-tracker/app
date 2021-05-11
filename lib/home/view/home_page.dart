@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   final _panelController = PanelController();
   final _scrollController = ScrollController();
   final _panelMinHeight = 80.0;
-  HomeBloc _homeBloc;
+  late final HomeBloc _homeBloc;
 
   @override
   void initState() {
@@ -147,8 +147,8 @@ class _HomePageState extends State<HomePage> {
                   alignment: Alignment.bottomLeft,
                   child: _buildDataUpdatedAt(
                     state.formattedUpdatedAt,
-                    leftPadding: 4,
-                    bottomPadding: 24,
+                    leftPadding: 4.0,
+                    bottomPadding: 24.0,
                   ),
                 ),
             ],
@@ -169,7 +169,7 @@ class _HomePageState extends State<HomePage> {
       ),
       child: Text(
         'Last Updated: $updatedAt',
-        style: Theme.of(context).textTheme.caption.apply(color: Colors.white),
+        style: Theme.of(context).textTheme.caption?.apply(color: Colors.white),
       ),
     );
   }
@@ -185,7 +185,7 @@ class _HomePageState extends State<HomePage> {
       title: 'No active cases found',
       desc: 'Keep maintaining social distancing and '
           'wear a mask when physical distancing is not possible.',
-    )..show();
+    ).show();
   }
 
   void _showDisclaimerDialog() {
@@ -200,7 +200,7 @@ class _HomePageState extends State<HomePage> {
         padding: kLayoutPadding,
         child: _DisclaimerBody(),
       ),
-    )..show();
+    ).show();
   }
 }
 

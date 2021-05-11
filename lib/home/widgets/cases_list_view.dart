@@ -8,15 +8,14 @@ import 'package:nsw_covid_tracker/home/widgets/case_dialog.dart';
 import 'package:nsw_covid_tracker/home/widgets/padding.dart';
 
 class CasesListView extends StatelessWidget {
-  final ScrollController panelSc;
+  final ScrollController? panelSc;
   final ScrollController dialogSc;
 
   const CasesListView({
-    Key key,
+    Key? key,
     this.panelSc,
-    @required this.dialogSc,
-  })  : assert(dialogSc != null),
-        super(key: key);
+    required this.dialogSc,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +95,7 @@ class CasesListView extends StatelessWidget {
       child: Text(
         title,
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.subtitle1.apply(fontWeightDelta: 3),
+        style: Theme.of(context).textTheme.subtitle1?.apply(fontWeightDelta: 3),
       ),
     );
   }
@@ -124,7 +123,7 @@ class CasesListView extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .subtitle1
-                  .apply(fontWeightDelta: 1),
+                  ?.apply(fontWeightDelta: 1),
             ),
             WidgetPaddingSm(),
             Text(

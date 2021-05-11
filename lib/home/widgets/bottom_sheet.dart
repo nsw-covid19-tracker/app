@@ -13,14 +13,14 @@ typedef SortCallbackFunc = void Function(String value);
 
 class MyBottomSheet {
   static Future<void> show({
-    @required BuildContext context,
-    @required bool isShowAllCases,
-    @required ShowAllCallbackFunc showAllCallback,
-    @required DateTime startDate,
-    @required DateTime endDate,
-    @required FilterDateCallbackFunc filterDateCallback,
-    @required String sortBy,
-    @required SortCallbackFunc sortCallbackFunc,
+    required BuildContext context,
+    required bool isShowAllCases,
+    required ShowAllCallbackFunc showAllCallback,
+    required DateTime startDate,
+    required DateTime endDate,
+    required FilterDateCallbackFunc filterDateCallback,
+    required String sortBy,
+    required SortCallbackFunc sortCallbackFunc,
   }) async {
     context.read<HomeBloc>().add(DisableMap());
     await showCustomModalBottomSheet(
@@ -33,7 +33,7 @@ class MyBottomSheet {
               title: const Text('Show all cases'),
               value: isShowAllCases,
               onChanged: (value) {
-                showAllCallback(value);
+                showAllCallback(value!);
                 Navigator.of(context).pop();
               },
             ),
@@ -63,14 +63,11 @@ class _DateListTile extends StatelessWidget {
   final FilterDateCallbackFunc callback;
 
   const _DateListTile({
-    Key key,
-    @required this.start,
-    @required this.end,
-    @required this.callback,
-  })  : assert(start != null),
-        assert(end != null),
-        assert(callback != null),
-        super(key: key);
+    Key? key,
+    required this.start,
+    required this.end,
+    required this.callback,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -113,10 +110,8 @@ class _SortListTile extends StatelessWidget {
   final String sortBy;
   final SortCallbackFunc callback;
 
-  const _SortListTile({Key key, @required this.sortBy, @required this.callback})
-      : assert(sortBy != null),
-        assert(callback != null),
-        super(key: key);
+  const _SortListTile({Key? key, required this.sortBy, required this.callback})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +131,7 @@ class _SortListTile extends StatelessWidget {
               color: Theme.of(context).primaryColor,
             ),
             onChanged: (value) {
-              callback(value);
+              callback(value!);
               Navigator.of(context).pop();
             },
             items: kSortOptions.map<DropdownMenuItem<String>>((String value) {
@@ -155,7 +150,7 @@ class _SortListTile extends StatelessWidget {
 class _FloatingModal extends StatelessWidget {
   final Widget child;
 
-  const _FloatingModal({Key key, this.child}) : super(key: key);
+  const _FloatingModal({Key? key, required this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

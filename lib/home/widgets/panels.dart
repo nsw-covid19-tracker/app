@@ -13,9 +13,7 @@ class LoadingPanel extends StatelessWidget {
 class CollapsedPanel extends StatelessWidget {
   final PanelController controller;
 
-  const CollapsedPanel({Key key, @required this.controller})
-      : assert(controller != null),
-        super(key: key);
+  const CollapsedPanel({Key? key, required this.controller}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +44,9 @@ class Panel extends StatefulWidget {
   final ScrollController panelSc;
 
   const Panel({
-    Key key,
-    @required this.panelSc,
-  })  : assert(panelSc != null),
-        super(key: key);
+    Key? key,
+    required this.panelSc,
+  }) : super(key: key);
 
   @override
   _PanelState createState() => _PanelState();

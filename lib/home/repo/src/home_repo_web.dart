@@ -17,8 +17,8 @@ class HomeRepoWeb extends HomeRepo {
   }
 
   @override
-  Future<DateTime> fetchDataUpdatedAt() async {
-    DateTime updatedAt;
+  Future<DateTime?> fetchDataUpdatedAt() async {
+    DateTime? updatedAt;
     final event = await _db.ref('$logsKey/$dataUpdatedAtKey').once('value');
     final value = event.snapshot.val();
 
@@ -37,7 +37,7 @@ class HomeRepoWeb extends HomeRepo {
   }
 
   @override
-  Future<List> fetchFromServer(String key, ParseFunc parseFunc) async {
+  Future<List<T>> fetchFromServer<T>(String key, parseFunc) async {
     final event = await _db.ref(key).once('value');
     final results = parseFunc(event.snapshot.val());
     await cacheListResults(key, results);

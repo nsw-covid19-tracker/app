@@ -3,11 +3,11 @@ import 'firebase_config_stub.dart'
     if (dart.library.html) 'firebase_config_web.dart';
 
 abstract class FirebaseConfig {
-  static FirebaseConfig _instance;
+  static FirebaseConfig? _instance;
 
   static FirebaseConfig get instance {
     _instance ??= getConfig();
-    return _instance;
+    return _instance!;
   }
 
   Future<void> init();
