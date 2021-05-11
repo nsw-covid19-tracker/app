@@ -30,10 +30,8 @@ class _CaseInfo extends StatelessWidget {
   final Case myCase;
   final ScrollController controller;
 
-  const _CaseInfo({Key key, @required this.myCase, @required this.controller})
-      : assert(myCase != null),
-        assert(controller != null),
-        super(key: key);
+  const _CaseInfo({Key? key, required this.myCase, required this.controller})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,14 +44,18 @@ class _CaseInfo extends StatelessWidget {
           Text(
             myCase.isExpired ? 'Expired' : 'Recent Case Location',
             textAlign: TextAlign.center,
-            style:
-                Theme.of(context).textTheme.subtitle1.apply(fontWeightDelta: 3),
+            style: Theme.of(context)
+                .textTheme
+                .subtitle1
+                ?.apply(fontWeightDelta: 3),
           ),
           WidgetPaddingSm(),
           Text(
             myCase.venue,
-            style:
-                Theme.of(context).textTheme.subtitle1.apply(fontWeightDelta: 1),
+            style: Theme.of(context)
+                .textTheme
+                .subtitle1
+                ?.apply(fontWeightDelta: 1),
           ),
           WidgetPaddingSm(),
           Text(

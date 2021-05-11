@@ -15,7 +15,7 @@ class _FilterButtonState extends State<FilterButton> {
   DateTime _startDate = DateTime(2020, 7, 1);
   DateTime _endDate = DateTime.now();
   String _sortBy = kAlphabetically;
-  HomeBloc _homeBloc;
+  late final HomeBloc _homeBloc;
 
   @override
   void initState() {

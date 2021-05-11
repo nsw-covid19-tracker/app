@@ -5,15 +5,15 @@ import 'package:nsw_covid_tracker/home/repo/src/home_repo_stub.dart'
     if (dart.library.io) 'package:nsw_covid_tracker/home/repo/src/home_repo_mobile.dart'
     if (dart.library.html) 'package:nsw_covid_tracker/home/repo/src/home_repo_web.dart';
 
-typedef ParseFunc = List Function(Map json);
+typedef ParseFunc<T> = List<T> Function(Map json);
 typedef MapFunc = dynamic Function(String string);
 
 abstract class HomeRepo {
-  static HomeRepo _instance;
+  static HomeRepo? _instance;
 
   static HomeRepo get instance {
     _instance ??= getHomeRepo();
-    return _instance;
+    return _instance!;
   }
 
   final suburbsKey = 'suburbs';
@@ -26,16 +26,16 @@ abstract class HomeRepo {
 
   Future<void> signInAnonymously();
 
-  Future<DateTime> fetchDataUpdatedAt();
+  Future<DateTime?> fetchDataUpdatedAt();
 
-  Future<int> fetchLogValue(String key);
+  Future<int?> fetchLogValue(String key);
 
-  Future<List> fetchFromServer(String key, ParseFunc parseFunc);
+  Future<List<T>> fetchFromServer<T>(String key, ParseFunc<T> parseFunc);
 
   Future<bool> shouldFetchFromServer(String key) async {
     final prefs = await SharedPreferences.getInstance();
     final epoch = prefs.getInt(key);
-    DateTime localUpdatedAt, serverUpdatedAt;
+    DateTime? localUpdatedAt, serverUpdatedAt;
 
     if (epoch != null) {
       localUpdatedAt = DateTime.fromMillisecondsSinceEpoch(epoch);
@@ -86,7 +86,7 @@ abstract class HomeRepo {
 
   Future<List<T>> fetchFromCache<T>(
     String key,
-    ParseFunc parseFunc,
+    ParseFunc<T> parseFunc,
     MapFunc mapFunc,
   ) async {
     var results = <T>[];
@@ -108,7 +108,7 @@ abstract class HomeRepo {
     await prefs.setStringList(key, stringList);
   }
 
-  List<Suburb> parseSuburbs(Map json) {
+  List<Suburb> parseSuburbs(Map? json) {
     final queue = PriorityQueue<Suburb>(
       (Suburb a, Suburb b) => a.name.compareTo(b.name),
     );
@@ -123,7 +123,7 @@ abstract class HomeRepo {
     return queue.toList();
   }
 
-  List<Case> parseCases(Map json) {
+  List<Case> parseCases(Map? json) {
     final queue = PriorityQueue<Case>(
       (Case a, Case b) => a.venue.compareTo(b.venue),
     );

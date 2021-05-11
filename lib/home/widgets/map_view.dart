@@ -10,11 +10,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapView extends StatefulWidget {
   final ScrollController scrollController;
-  final Function onMapTap;
+  final Function? onMapTap;
 
-  MapView({Key key, @required this.scrollController, this.onMapTap})
-      : assert(scrollController != null),
-        super(key: key);
+  MapView({Key? key, required this.scrollController, this.onMapTap})
+      : super(key: key);
 
   @override
   _MapViewState createState() => _MapViewState();
@@ -37,7 +36,7 @@ class _MapViewState extends State<MapView> {
         if (state.targetLatLng != null) {
           final controller = await _completer.future;
           await controller.animateCamera(
-            CameraUpdate.newLatLngZoom(state.targetLatLng, 15),
+            CameraUpdate.newLatLngZoom(state.targetLatLng!, 15),
           );
           context.read<HomeBloc>().add(SearchHandled());
         }
@@ -69,9 +68,9 @@ class _MapViewState extends State<MapView> {
   }
 
   Set<Marker> _mapCasesToMarkers({
-    @required BuildContext context,
-    @required List<Case> cases,
-    @required bool isMapEnabled,
+    required BuildContext context,
+    required List<Case> cases,
+    required bool isMapEnabled,
   }) {
     return cases.map((myCase) {
       return Marker(

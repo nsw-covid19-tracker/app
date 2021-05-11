@@ -85,14 +85,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       var searchCases = <Case>[];
 
       if (query.isNotEmpty) {
-        suburbsResult = state.suburbs
+        suburbsResult = state.suburbs!
             .where((suburb) {
               return suburb.postcode.contains(query) ||
                   suburb.name.toLowerCase().contains(query);
             })
             .take(5)
             .toList();
-        final cases = List<Case>.from(state.cases)
+        final cases = List<Case>.from(state.cases!)
           ..sort((a, b) => a.venue.compareTo(b.venue));
         searchCases = cases
             .where((myCase) => myCase.venue.toLowerCase().contains(query))
@@ -110,7 +110,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _mapFilterCasesBySuburbToState(
       FilterCasesBySuburb event) async* {
     if (state.status == HomeStatus.success) {
-      final cases = List<Case>.from(state.cases);
+      final cases = List<Case>.from(state.cases!);
       final results = _filterCases(
         cases,
         state.isShowAllCases,
@@ -137,7 +137,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     ClearFilteredCases event,
   ) async* {
     if (state.status == HomeStatus.success) {
-      final cases = List<Case>.from(state.cases);
+      final cases = List<Case>.from(state.cases!);
       final results = cases.where((myCase) {
         return _filterByStatus(myCase, state.isShowAllCases) &&
             _filterByDates(myCase, state.filteredDates);
@@ -153,7 +153,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _mapFilterCasesByExpiryToState(
       FilterCasesByExpiry event) async* {
     if (state.status == HomeStatus.success) {
-      final cases = List<Case>.from(state.cases);
+      final cases = List<Case>.from(state.cases!);
       final results = _filterCases(cases, event.isShowAllCases,
           state.filteredSuburb, state.filteredDates);
       yield state.copyWith(
@@ -167,7 +167,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _mapFilterCasesByDatesToState(
       FilterCasesByDates event) async* {
     if (state.status == HomeStatus.success) {
-      final cases = List<Case>.from(state.cases);
+      final cases = List<Case>.from(state.cases!);
       final results = _filterCases(
           cases, state.isShowAllCases, state.filteredSuburb, event.dates);
       yield state.copyWith(
@@ -189,9 +189,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _mapSortCasesToState(SortCases event) async* {
     if (state.status == HomeStatus.success) {
-      final cases = List<Case>.from(state.cases);
+      final cases = List<Case>.from(state.cases!);
       final casesResult = List<Case>.from(state.casesResult);
-      CasesComparator comparator;
+      CasesComparator? comparator;
 
       if (event.sortBy == kAlphabetically) {
         comparator = (a, b) => a.venue.compareTo(b.venue);
@@ -200,8 +200,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             (a, b) => b.dateTimes.last.end.compareTo(a.dateTimes.last.end);
       }
 
-      cases.sort(comparator);
-      casesResult.sort(comparator);
+      if (comparator != null) {
+        cases.sort(comparator);
+        casesResult.sort(comparator);
+      }
       yield state.copyWith(
           cases: cases, casesResult: casesResult, isSortCases: true);
     }
@@ -215,8 +217,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  List<Case> _filterCases(List<Case> cases, bool isShowAllCases, Suburb suburb,
-      DateTimeRange dates) {
+  List<Case> _filterCases(List<Case> cases, bool isShowAllCases, Suburb? suburb,
+      DateTimeRange? dates) {
     return cases.where((myCase) {
       return _filterByStatus(myCase, isShowAllCases) &&
           _filterBySuburb(myCase, suburb) &&
@@ -228,12 +230,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     return (!isShowAllCases && !myCase.isExpired) || isShowAllCases;
   }
 
-  bool _filterBySuburb(Case myCase, Suburb suburb) {
+  bool _filterBySuburb(Case myCase, Suburb? suburb) {
     return suburb == null ||
         (myCase.postcode == suburb.postcode && myCase.suburb == suburb.name);
   }
 
-  bool _filterByDates(Case myCase, DateTimeRange dates) {
+  bool _filterByDates(Case myCase, DateTimeRange? dates) {
     return dates == null ||
         (myCase.dateTimes.first.start.isBefore(dates.end) &&
             myCase.dateTimes.last.end.isAfter(dates.start));

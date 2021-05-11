@@ -10,7 +10,7 @@ part 'case.g.dart';
 
 @JsonSerializable()
 class Case extends Equatable {
-  final String postcode;
+  final String? postcode;
   final String suburb;
   final double latitude;
   final double longitude;
@@ -24,8 +24,16 @@ class Case extends Equatable {
   )
   final List<DateTimeRange> dateTimes;
 
-  Case(this.postcode, this.suburb, this.latitude, this.longitude, this.venue,
-      this.address, this.dateTimes, this.isExpired);
+  Case({
+    this.postcode,
+    required this.suburb,
+    required this.latitude,
+    required this.longitude,
+    required this.venue,
+    required this.address,
+    required this.dateTimes,
+    required this.isExpired,
+  });
 
   factory Case.fromJson(Map<String, dynamic> json) => _$CaseFromJson(json);
   Map<String, dynamic> toJson() => _$CaseToJson(this);
@@ -36,7 +44,7 @@ class Case extends Equatable {
   String toString() => jsonEncode(toJson());
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       postcode,
       suburb,
@@ -83,15 +91,18 @@ class Case extends Equatable {
 
 class _Converters {
   static List<DateTimeRange> jsonToDateTimeRange(List<dynamic> dateTimes) {
-    return dateTimes
-        .map(
-          (e) => DateTimeRange(
-            start: DateTime.fromMillisecondsSinceEpoch(e['start'], isUtc: true),
-            end: DateTime.fromMillisecondsSinceEpoch(e['end'], isUtc: true),
-          ),
-        )
-        .toList()
-          ..sort((a, b) => a.start.compareTo(b.start));
+    return dateTimes.map(
+      (e) {
+        final start =
+            DateTime.fromMillisecondsSinceEpoch(e['start'], isUtc: true);
+        final end = DateTime.fromMillisecondsSinceEpoch(e['end'], isUtc: true);
+
+        return start.isBefore(end)
+            ? DateTimeRange(start: start, end: end)
+            : DateTimeRange(start: start, end: start);
+      },
+    ).toList()
+      ..sort((a, b) => a.start.compareTo(b.start));
   }
 
   static List<dynamic> dateTimeRangeToJson(List<DateTimeRange> dateTimes) {

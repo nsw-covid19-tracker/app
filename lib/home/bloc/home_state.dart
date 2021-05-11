@@ -5,12 +5,12 @@ enum HomeStatus { initial, success, failure }
 @CopyWith(generateCopyWithNull: true)
 class HomeState extends Equatable {
   final HomeStatus status;
-  final DateTime updatedAt;
+  final DateTime? updatedAt;
 
-  final List<Suburb> suburbs;
+  final List<Suburb>? suburbs;
   final List<Suburb> suburbsResult;
 
-  final List<Case> cases;
+  final List<Case>? cases;
   final List<Case> casesResult;
   final List<Case> searchCases;
 
@@ -20,9 +20,9 @@ class HomeState extends Equatable {
   final bool isShowDisclaimer;
   final bool isMapEnabled;
 
-  final LatLng targetLatLng;
-  final Suburb filteredSuburb;
-  final DateTimeRange filteredDates;
+  final LatLng? targetLatLng;
+  final Suburb? filteredSuburb;
+  final DateTimeRange? filteredDates;
 
   HomeState({
     this.status = HomeStatus.initial,
@@ -43,7 +43,7 @@ class HomeState extends Equatable {
   });
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       status,
       updatedAt,
@@ -66,9 +66,9 @@ class HomeState extends Equatable {
   String toString() {
     return 'HomeSuccess: { status: $status, updatedAt: $updatedAt, '
         'suburbs: ${suburbs?.length}, cases: ${cases?.length}, '
-        'suburbsResult: ${suburbsResult?.length}, '
-        'casesResult: ${casesResult?.length}, '
-        'searchCases: ${searchCases?.length}, '
+        'suburbsResult: ${suburbsResult.length}, '
+        'casesResult: ${casesResult.length}, '
+        'searchCases: ${searchCases.length}, '
         'isShowAllCases: $isShowAllCases, targetLatLng: $targetLatLng, '
         'isEmptyActiveCases: $isEmptyActiveCases, isSortCases: $isSortCases, '
         'filteredSuburb: $filteredSuburb, filteredDates: $filteredDates, '
@@ -77,7 +77,7 @@ class HomeState extends Equatable {
 
   String get formattedUpdatedAt {
     return updatedAt != null
-        ? DateFormat('d MMM, yyyy').format(updatedAt)
+        ? DateFormat('d MMM, yyyy').format(updatedAt!)
         : 'Unknown';
   }
 
