@@ -1,5 +1,11 @@
 {
-  "extends": [
-    "config:base"
+  "extends": ["config:base"],
+  "ignorePaths": ["android/", "ios/"],
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchPaths": [".github/workflows/*.yml"],
+      "labels": ["github-actions"]
+    }
   ]
 }
