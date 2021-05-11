@@ -4,7 +4,7 @@ const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
   "assets/fonts/RobotoMono-Regular.ttf": "e5ca8c0ac474df46fe45840707a0c483",
-"assets/fonts/MaterialIcons-Regular.otf": "4e6447691c9509f7acdbf8a931a85ca1",
+"assets/fonts/MaterialIcons-Regular.otf": "1288c9e28052e028aba623321f7826ac",
 "assets/FontManifest.json": "cb4f97783a2a1a32cea31a672895329d",
 "assets/packages/awesome_dialog/assets/flare/info2.flr": "21af33cb65751b76639d98e106835cfb",
 "assets/packages/awesome_dialog/assets/flare/info.flr": "bc654ba9a96055d7309f0922746fe7a7",
@@ -21,15 +21,15 @@ const RESOURCES = {
 "assets/packages/font_awesome_flutter/lib/fonts/fa-regular-400.ttf": "4b6a9b7c20913279a3ad3dd9c96e155b",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-brands-400.ttf": "00bb2b684be61e89d1bc7d75dee30b58",
 "assets/AssetManifest.json": "731db4625517bfe802d570a038d82991",
-"assets/NOTICES": "09629e8bad182110639282fa6bc5973c",
+"assets/NOTICES": "fd00fde481696c301e6380bf92f52948",
 "icons/Icon-512.png": "f4994f5c49c4e50fd85c6291d41425cc",
 "icons/Icon-192.png": "8190fd211d2b65ffc8050520a09e0afc",
 "favicon.png": "b1d678a6c81adb848e794bd202595958",
 "version.json": "027b355b0e5da5fa4674c9f43f08af3a",
 "manifest.json": "e5200d9bf49c46ee9c9592e7538d4444",
-"main.dart.js": "4a4537cf11086daec0353c9261aa52cf",
-"index.html": "fdfb6f6c94415c5a65a2fe4914201e51",
-"/": "fdfb6f6c94415c5a65a2fe4914201e51"
+"main.dart.js": "da46aaf510c978cac3dfe7f47ca06b23",
+"index.html": "68db08ce4ec10b6418e63ff799757bb0",
+"/": "68db08ce4ec10b6418e63ff799757bb0"
 };
 
 // The application shell files that are downloaded before a service worker can
@@ -47,7 +47,7 @@ self.addEventListener("install", (event) => {
   return event.waitUntil(
     caches.open(TEMP).then((cache) => {
       return cache.addAll(
-        CORE.map((value) => new Request(value, {'cache': 'reload'})));
+        CORE.map((value) => new Request(value + '?revision=' + RESOURCES[value], {'cache': 'reload'})));
     })
   );
 });
