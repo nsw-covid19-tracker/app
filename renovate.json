@@ -2,6 +2,8 @@
   "extends": ["config:base"],
   "ignorePaths": ["android/", "ios/"],
   "labels": ["dependencies"],
+  "stabilityDays": 3,
+  "prCreation": "not-pending",
   "packageRules": [
     {
       "matchPaths": [".github/workflows/*.yml"],
