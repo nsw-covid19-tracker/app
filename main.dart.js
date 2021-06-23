@@ -82801,7 +82801,7 @@ X.TX.prototype={
 J:function(a,b){var s,r,q=null,p=L.br("Disclaimer",q,q,q,K.ad(b).P.f,q,q),o=K.ad(b),n=A.iv(q,q,K.ad(b).b,q,C.fJ,q,q,q,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q),m=N.alA(q)
 m.b9=new X.apX(this)
 n=Q.eI(q,m,n,"Data.NSW")
-m=Q.eI(q,q,q," and presented as is.\n\nFor official news and updates on NSW COVID-19, please refer to the ")
+m=Q.eI(q,q,q," and presented as is. Note that cases on public transport are not presented on the app.\n\nFor official news and updates on NSW COVID-19, please refer to the ")
 s=A.iv(q,q,K.ad(b).b,q,C.fJ,q,q,q,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q)
 r=N.alA(q)
 r.b9=new X.apY(this)
