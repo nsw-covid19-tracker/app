@@ -227,8 +227,10 @@ class _DisclaimerBody extends StatelessWidget {
                   ..onTap = () => _launchURL('https://data.nsw.gov.au/'),
               ),
               TextSpan(
-                text: ' and presented as is.\n\nFor official news and updates '
-                    'on NSW COVID-19, please refer to the ',
+                text:
+                    ' and presented as is. Note that cases on public transport '
+                    'are not presented on the app.\n\nFor official news and '
+                    'updates on NSW COVID-19, please refer to the ',
               ),
               TextSpan(
                 text: 'NSW Government website',
