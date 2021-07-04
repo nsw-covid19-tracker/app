@@ -33,30 +33,34 @@ class _HomePageState extends State<HomePage> {
         width: MediaQuery.of(context).size.width >= kPhoneWidth
             ? kDialogWebWidth
             : null,
-        body: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(
-            text: 'This app is no longer maintained. For official NSW COVID-19 '
-                'case locations map, please visit the ',
-            style: Theme.of(context).textTheme.bodyText1,
-            children: <TextSpan>[
-              TextSpan(
-                text: 'NSW Government website',
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  decoration: TextDecoration.underline,
+        body: Padding(
+          padding: kLayoutPadding,
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              text:
+                  'This app is no longer maintained. For official NSW COVID-19 '
+                  'case locations map, please visit the ',
+              style: Theme.of(context).textTheme.bodyText1,
+              children: <TextSpan>[
+                TextSpan(
+                  text: 'NSW Government website',
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    decoration: TextDecoration.underline,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      _launchURL(
+                        'https://www.nsw.gov.au/covid-19/nsw-covid-19-case-locations-map',
+                      );
+                    },
                 ),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    _launchURL(
-                      'https://www.nsw.gov.au/covid-19/nsw-covid-19-case-locations-map',
-                    );
-                  },
-              ),
-              TextSpan(
-                text: '.',
-              ),
-            ],
+                TextSpan(
+                  text: '.',
+                ),
+              ],
+            ),
           ),
         ),
       ).show();
