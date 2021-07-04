@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
             }
 
             if (state.isShowDisclaimer) {
-              _showDisclaimerDialog();
+              // _showDisclaimerDialog();
               _homeBloc.add(DisclaimerHandled());
             }
           }
