@@ -30,7 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.3
   equatable: ^2.0.0
   firebase: ^9.0.1
-  firebase_auth: ^1.1.4
+  firebase_auth: ^2.0.0
   firebase_core: ^1.1.1
   firebase_database: ^7.0.0-dev.2
   flutter_bloc: ^7.0.0
