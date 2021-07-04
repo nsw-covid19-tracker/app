@@ -23,6 +23,44 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _homeBloc = context.read<HomeBloc>()..add(FetchAll());
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      await AwesomeDialog(
+        context: context,
+        animType: AnimType.SCALE,
+        dialogType: DialogType.INFO,
+        dismissOnBackKeyPress: false,
+        dismissOnTouchOutside: false,
+        width: MediaQuery.of(context).size.width >= kPhoneWidth
+            ? kDialogWebWidth
+            : null,
+        body: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            text: 'This app is no longer maintained. For official NSW COVID-19 '
+                'case locations map, please visit the ',
+            style: Theme.of(context).textTheme.bodyText1,
+            children: <TextSpan>[
+              TextSpan(
+                text: 'NSW Government website',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  decoration: TextDecoration.underline,
+                ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    _launchURL(
+                      'https://www.nsw.gov.au/covid-19/nsw-covid-19-case-locations-map',
+                    );
+                  },
+              ),
+              TextSpan(
+                text: '.',
+              ),
+            ],
+          ),
+        ),
+      ).show();
+    });
   }
 
   @override
@@ -262,16 +300,16 @@ class _DisclaimerBody extends StatelessWidget {
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }
+}
 
-  Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
+Future<void> _launchURL(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
   }
 }

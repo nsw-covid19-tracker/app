@@ -1,3 +1,5 @@
+**⚠️ This app is no longer maintained. For official NSW COVID-19 case locations map, please visit the [NSW Government website](https://www.nsw.gov.au/covid-19/nsw-covid-19-case-locations-map). ⚠️**
+
 # NSW COVID-19 Tracker
 
 [![GitHub license](https://img.shields.io/github/license/nsw-covid19-tracker/app)](https://github.com/nsw-covid19-tracker/app/blob/master/LICENSE)
